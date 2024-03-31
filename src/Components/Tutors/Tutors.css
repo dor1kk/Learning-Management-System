@@ -1,0 +1,38 @@
+.box-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(20rem,1fr));
+    gap:1rem;
+    align-items: center;
+    justify-content: center;
+}
+.box{
+  
+    background-color: pink;
+    border-radius: 12px;
+    color: black;
+    align-items: center;
+    justify-content: center;
+}
+
+.inline-btn {
+    background-color: plum;
+    border-radius: 10px; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  .tutor{
+    margin-top: 4px;
+    text-align: center;
+    border-radius: 10px;
+  }
+ 
+  .tutor .g{
+    border-radius: 12px;
+  }
