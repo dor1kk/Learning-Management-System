@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
@@ -22,12 +23,12 @@ import { MdSchool } from 'react-icons/md';
 import { FaGraduationCap } from 'react-icons/fa';
 import { AiOutlineMessage } from 'react-icons/ai';
 import { FaChalkboardTeacher } from 'react-icons/fa';
-
-
-
+import Course from "./Components/Courses/Coursedata";
+import CourseDetail from "./Components/Courses/Coursedetail";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const location = useLocation();
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -46,7 +47,8 @@ const App = () => {
     textColor: "#ffffff",
     footerBackgroundColor: "#222222",
     footerTextColor: "#ffffff",
-    sidebarColor:"black"
+    sidebarColor:"black",
+    searchColor:"gray"
   };
 
   const colors = darkMode ? darkModeColors : lightModeColors;
@@ -57,51 +59,81 @@ const App = () => {
         <Sidebar className="app" style={{height:"99vh", backgroundColor: colors.sidebarColor, color: colors.textColor }}>
           <Menu>
             <MenuItem
-              className="menu1"
+              className={`menu-item-1 ${location.pathname === "/Profile" ? "active" : ""}`}
               icon={<AccountCircleIcon />}
             >
               <h6>Dorajet Kukaj</h6>
             </MenuItem>
             <MenuItem
-              component={<Link to="/Dashboard" className="link" />}
+              component={<Link to="/" className="link" />}
               icon={<BsGrid3X3Gap />}
+              className={`menu-item ${location.pathname === "/Dashboard" ? "active" : ""}` }
             >
               Dashboard
             </MenuItem>
             <MenuItem 
               component={<Link to="/Students" className="link" />}
-            icon={<IoReceiptOutline />}> Students </MenuItem>
+              icon={<IoReceiptOutline />}
+              className={`menu-item ${location.pathname === "/Students" ? "active" : ""}` }
+            >
+              Students
+            </MenuItem>
             
-            <SubMenu label="Courses" icon={<IoBookOutline />}>
+            <SubMenu 
+              label="Courses" 
+              icon={<IoBookOutline />}
+              className={`menu-item ${(location.pathname === "/Courses" || location.pathname === "/YourCourses") ? "active" : ""}`}
+            >
               <MenuItem
-                   component={<Link to="/YourCourses" className="link" />} 
-              icon={<FaGraduationCap />}>
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/YourCourses" className="link" />} 
+                icon={<FaGraduationCap />}
+                className={`menu-item ${location.pathname === "/YourCourses" ? "active" : ""}` }
+              >
                 Your Courses
               </MenuItem>
               <MenuItem
-               component={<Link to="/Courses" className="link" />}
-              icon={<MdSchool/>}>Explore More...</MenuItem>
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Courses" className="link" />}
+                icon={<MdSchool/>}
+                className={`menu-item ${location.pathname === "/Courses" ? "active" : ""}` }
+              >
+                Explore More...
+              </MenuItem>
             </SubMenu>
             <MenuItem
               component={<Link to="/Tutors" className="link" />}
               icon={<FaChalkboardTeacher/>}
+              className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}` }
             >
               Tutors
             </MenuItem>
+            
             <SubMenu label="Settings" icon={<AiOutlineSetting />}>
               <MenuItem 
-              component={<Link to="/Account" className="link" />}
-              icon={<AiOutlineUser />}> Account </MenuItem>
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Account" className="link" />}
+                icon={<AiOutlineUser />}
+                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
+              >
+                Account
+              </MenuItem>
               <MenuItem 
-              component={<Link to="/Chat" className="link" />}
-              icon={<AiOutlineMessage />}> Chat </MenuItem>
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Chat" className="link" />}
+                icon={<AiOutlineMessage />}
+                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
+                Chat
+              </MenuItem>
               <MenuItem
-              component={<Link to="/Notifications" className="link" />}
-              icon={<AiOutlineNotification />}>
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Notifications" className="link" />}
+                icon={<AiOutlineNotification />}
+                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
                 Notifications
               </MenuItem>
             </SubMenu>
-            <MenuItem icon={<AiOutlineLogout />}> Logout </MenuItem>
+            <MenuItem icon={<AiOutlineLogout />} className={location.pathname === "/Logout" ? "active" : ""}>Logout</MenuItem>
           </Menu>
         </Sidebar>
         <section className="flex-grow-1 d-flex flex-column">
@@ -112,8 +144,9 @@ const App = () => {
               <Route path="/Account" element={<Account />}></Route>
               <Route path="/Tutors" element={<Tutors />}></Route>
               <Route path="/Students" element={<Students />}></Route>             
-              <Route path="/Dashboard" element={<Dashboard />}></Route>
+              <Route path="/" element={<Dashboard />}></Route>
               <Route path="/YourCourses" element={<YourCourses />}></Route>
+              <Route path="/CourseDetail/:id" element={<CourseDetail />}></Route>
               <Route path="/Chat" element={<Chat />}></Route>
               <Route path="/Notifications" element={<Notifications />}></Route>
             </Routes>

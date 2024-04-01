@@ -1,9 +1,10 @@
 body {
   margin: 0;
   font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", "Figtree", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
- 
+  padding: 0;
   height: 70vh;
   font-size: 24px;
+  margin-bottom: 10px;
 }
 
   .app {
@@ -16,7 +17,7 @@ h1 {
   margin: 50px auto;
   font-size: 40px;
 }
-.menu1 {
+.menu-item-1 {
   margin-bottom: 40px;
   margin-top: 20px;
 }
@@ -29,4 +30,14 @@ h2 {
 }
 
 
+
+.menu-item.active {
+  background-color:white;
+  color: black;
+}
+
+
+
+
+/* Add similar styles for other menu items */
 
