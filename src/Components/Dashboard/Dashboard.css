@@ -1,0 +1,158 @@
+.main-container {
+    grid-area: main;
+    overflow-y: auto;
+    padding: 20px 20px;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .main-title {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .main-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    margin: 15px 0;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 8px 15px;
+    border-radius: 15px;
+  }
+
+
+  .card:nth-child(2) {
+    background-color: #ff6d00;
+  }
+
+  .card:nth-child(3) {
+    background-color: #2e7d32;
+  }
+
+  .card:nth-child(4) {
+    background-color: #d50000;
+  }
+
+  .card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-inner > .card_icon {
+    font-size: 25px;
+  }
+
+  .charts {
+    display: flex;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 60px;
+    height: 300px;
+  }
+
+  .card {
+    position: relative; 
+  }
+
+  .card-inner {
+    position: relative;
+    z-index: 1; 
+  }
+
+  .card:first-child {
+    background-image: url("https://static.vecteezy.com/system/resources/previews/012/910/317/non_2x/graphic-illustration-design-of-male-teacher-theme-background-teaching-with-empty-area-free-vector.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 15px;
+  }
+
+  .card:first-child::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(2, 131, 245, 0.6); 
+    z-index: 0; 
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px gray;
+  }
+
+  .card:nth-child(2){
+    background-image: url("https://as1.ftcdn.net/v2/jpg/02/95/95/40/500_F_295954075_zQ56yMQv7UpXhqMbnLQae4rWBq4PvVXl.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 15px;
+
+  }
+
+  .card:nth-child(2)::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(239, 183, 16, 0.8); 
+    z-index: 0; 
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px gray;
+
+
+
+  }
+
+  .card:nth-child(3){
+    background-image: url("https://elearningindustry.com/wp-content/uploads/2022/02/shutterstock_1083147359.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 15px;
+
+  }
+
+  .card:nth-child(3)::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(3, 70, 2, 0.6); 
+    z-index: 0; 
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px gray;
+
+
+
+  }
+
+  .card:nth-child(4){
+    background-image: url("https://st2.depositphotos.com/4520249/7106/v/450/depositphotos_71066225-stock-illustration-people.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 15px;
+
+  }
+
+  .card:nth-child(4)::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 4, 4, 0.6); 
+    z-index: 0; 
+    border-radius: 15px;
+    box-shadow: 1px 1px 5px gray;
+
+
+
+  }
