@@ -97,11 +97,13 @@ const courses = [
         id: "1",
         title: "Node.js Basics",
         url: "https://www.youtube.com/watch?v=ENrzD9HAZK4",
+        poster: "https://wallpapercave.com/wp/wp12220879.png",
       },
       {
         id: "2",
         title: "Express.js Routing",
         url: "https://www.youtube.com/watch?v=JRtHBq29Ck0",
+        poster: "https://mdbootstrap.com/wp-content/uploads/2019/01/html.jpg",
       },
     ],
   },
@@ -212,6 +214,60 @@ const courses = [
         "Discover the basics of React.js library for building user interfaces. Learn about components, props, state management, and JSX syntax. Start building interactive web applications with React. This course is suitable for beginners.",
       category: "Frontend",
       image: "https://img-b.udemycdn.com/course/750x422/1254420_f6cb_4.jpg",
+      prerequisites: ["Basic knowledge of HTML, CSS, and JavaScript"],
+      duration: "5 weeks",
+      lectures: 10,
+      assignments: 6,
+      instructor: "David Wilson",
+      videos: [
+        {
+          id: "1",
+          title: "Node.js Basics",
+          url: "https://www.youtube.com/watch?v=ENrzD9HAZK4",
+          poster: "https://example.com/poster1.jpg", 
+
+        },
+        {
+          id: "2",
+          title: "Express.js Routing",
+          url: "https://www.youtube.com/watch?v=JRtHBq29Ck0",
+        },
+      ],
+    },
+    {
+      id: "8",
+      title: "Data Structures",
+      description:
+        "Discover the basics of React.js library for building user interfaces. Learn about components, props, state management, and JSX syntax. Start building interactive web applications with React. This course is suitable for beginners.",
+      category: "DSA",
+      image: "https://img-b.udemycdn.com/course/480x270/5833610_d40b.jpg",
+      prerequisites: ["Basic knowledge of HTML, CSS, and JavaScript"],
+      duration: "5 weeks",
+      lectures: 10,
+      assignments: 6,
+      instructor: "David Wilson",
+      videos: [
+        {
+          id: "1",
+          title: "Node.js Basics",
+          url: "https://www.youtube.com/watch?v=ENrzD9HAZK4",
+          poster: "https://example.com/poster1.jpg", 
+
+        },
+        {
+          id: "2",
+          title: "Express.js Routing",
+          url: "https://www.youtube.com/watch?v=JRtHBq29Ck0",
+        },
+      ],
+    },
+    {
+      id: "8",
+      title: "Calculus 1",
+      description:
+        "Discover the basics of React.js library for building user interfaces. Learn about components, props, state management, and JSX syntax. Start building interactive web applications with React. This course is suitable for beginners.",
+      category: "Math",
+      image: "https://cdn.vectorstock.com/i/preview-1x/81/74/algebra-concept-thin-line-golden-horizontal-banner-vector-47578174.jpg",
       prerequisites: ["Basic knowledge of HTML, CSS, and JavaScript"],
       duration: "5 weeks",
       lectures: 10,

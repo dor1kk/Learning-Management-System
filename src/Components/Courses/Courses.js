@@ -21,6 +21,8 @@ function Courses() {
     return true;
   });
 
+
+  
   const sortedCourses = filteredCourses.slice().sort((a, b) => {
     if (sortBy === "title") {
       return a.title.localeCompare(b.title);

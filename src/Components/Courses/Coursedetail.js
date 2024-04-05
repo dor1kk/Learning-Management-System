@@ -1,63 +1,87 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import courses from "./Coursedata";
-import { Sidebar, Menu, SubMenu, MenuItem } from "react-pro-sidebar";
-import { FaPlayCircle } from 'react-icons/fa';
+import { Paper, Tabs, Tab, Button, Typography } from "@mui/material";
+import { FaPlayCircle, FaStar, FaInfo, FaBell } from "react-icons/fa";
 import Details from "./Details";
 import ReviewContainer from "./Review";
+import Progress from "./Progress";
+import courses from "./Coursedata";
 
-const VideoList = ({ videos, onVideoClick }) => (
-  <Sidebar style={{ height:"1178px" , width:"200px",boxShadow:" 0 4px 6px rgba(0, 0, 0, 0.1) "}}>
-    <Menu>
+function VideoList({ videos, onVideoClick }) {
+  return (
+    <div className="list-group">
       {videos.map((video) => (
-        <SubMenu key={video.id} label={video.title} className="video-label" style={{width:"209px"}}>
-          {video.subvideos && video.subvideos.map((subvideo) => (
-            <MenuItem key={subvideo.id} onClick={() => onVideoClick(subvideo)} className="subvideo-item">
-              <FaPlayCircle style={{ marginRight: "8px" }} />
-              {subvideo.title}
-            </MenuItem>
-          ))}
-        </SubMenu>
+        <button
+          key={video.id}
+          className="list-group-item list-group-item-action"
+          onClick={() => onVideoClick(video)}
+        >
+          <FaPlayCircle className="play-icon" />
+          {video.title}
+        </button>
       ))}
-    </Menu>
-  </Sidebar>
-);
+    </div>
+  );
+}
 
-const BigVideo = ({ video }) => (
-  <div className="big-video">
-    <video
-      controls
-      poster={video.poster}
-      src={video.url}
-      style={{ width: "70%", height: "100%",boxShadow:"0.5px 0.5px 25px lightgrey",border:"1px solid red" }}
-    ></video>
-  </div>
-);
 
 function CourseDetail() {
   const { id } = useParams();
   const course = courses.find((course) => course.id === id);
-  const [selectedVideo, setSelectedVideo] = useState(
-    course ? course.videos[0] : null
-  );
+  const [selectedVideo, setSelectedVideo] = useState(course ? course.videos[0] : null);
+  const [activeTab, setActiveTab] = useState("courseInfo");
 
-  const handleVideoClick = (video) => {
-    setSelectedVideo(video);
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
   };
 
+  const totalLessons = 7;
+  const targetProgress = Math.ceil(totalLessons * 0.25);
+
   return (
-    <div className="container d-flex flex-column" style={{gap:"25px"}}>
-      <h3>{course?.title}</h3>
-      <div className="d-flex flex-row" style={{gap:"35px"}} >
-        <div className="d-flex flex-column" style={{height:"100%"}}>
-          <VideoList videos={course?.videos} onVideoClick={handleVideoClick} />
+    <div className="container mt-4">
+      <div className="row">
+        <div className="col-md-8">
+          <Paper elevation={1} className="p-4" style={{width:"550px"}}>
+            <div className="course-details" style={{ width: "100%" }}>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <span className="rating">&#9733;&#9733;&#9733;&#9733;&#9733;<span className="rating-info">(5/5, 102 reviews)</span></span>
+                <h3>{course?.title}</h3>
+              </div>
+              <p className="category">Category: {course?.category}</p>
+              <Tabs value={activeTab} onChange={(e, newValue) => handleTabClick(newValue)}>
+                <Tab label={<><FaInfo /> Course Info</>} value="courseInfo" />
+                <Tab label={<><FaStar /> Reviews</>} value="reviews" />
+                <Tab label={<><FaBell /> Announcements</>} value="announcements" />
+              </Tabs>
+              <div className="tab-content mt-3">
+                {activeTab === "reviews" && <ReviewContainer />}
+                {activeTab === "courseInfo" && <Details course={course} />}
+                {activeTab === "announcements" && <div>Announcements Component</div>}
+              </div>
+            </div>
+          </Paper>
         </div>
-        <div className="d-flex flex-column" >
-          <BigVideo video={selectedVideo} />
-          <Details course={course} />
-          <ReviewContainer />
+        <div className="col-md-4">
+          <Paper elevation={1} className="p-3" style={{marginLeft:"-60px"}}>
+            <Progress currentProgress={targetProgress} totalLessons={totalLessons} />
+            <VideoList videos={course.videos} onVideoClick={(video) => setSelectedVideo(video)} />
+            <div className="course-info-box mt-3">
+              <p>Date: {course.date}</p>
+
+              <Typography  variant="h6">What You Will Learn</Typography>
+              <ul className="learn-list mt-4">
+                <li className="list-group-item">Understand the fundamentals of HTML Structures!</li>
+                <li className="list-group-item">Be able to do Styling with CSS</li>
+                <li className="list-group-item">Write scripts and add functionality after learning JavaScript Basics</li>
+                {/* Add more topics as needed */}
+              </ul>
+              <Button variant="contained" color="primary">Go to Lectures</Button>
+            </div>
+          </Paper>
         </div>
       </div>
+   
     </div>
   );
 }

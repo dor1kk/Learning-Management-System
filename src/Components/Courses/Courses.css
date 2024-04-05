@@ -173,4 +173,80 @@ body {
   .btn-submit:hover {
     background-color: #0056b3;
   }
+
+  
+  .course-progress {
+    margin-bottom: 20px;
+  }
+  
+  .progress-bar-container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+  }
+  
+
+
+
+  .course-detail-container {
+    margin-top: 20px;
+  }
+  
+  .rating {
+    color: orange;
+  }
+  
+  .rating-info {
+    color: gray;
+    margin-left: 8px;
+    font-size: 12px;
+  }
+  
+  .category {
+    margin-top: -25px;
+  }
+  
+  .tabs {
+    margin-top: 25px;
+  }
+  
+  .nav-tabs {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-link {
+    color: gray;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-link.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .tab-content {
+    margin-top: 10px;
+  }
+  
+  .sidebar {
+    margin-top: 20px;
+  }
+  
+  .video-list {
+    margin-top: 20px;
+  }
+  
+  .big-video {
+    margin-top: 20px;
+  }
+  
+  .list-group-item {
+    cursor: pointer;
+  }
+  
+  .play-icon {
+    margin-right: 8px;
+  }
   

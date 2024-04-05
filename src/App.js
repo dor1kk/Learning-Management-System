@@ -11,6 +11,8 @@ import { Link } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Footer from "./Components/Footer/Footer";
 import Dashboard from "./Components/Dashboard/Dashboard";
+import Tutoret from "./Components/Tutors/Tutoret";
+import TutorProfile from "./Components/Tutors/TutorProfile";
 import Courses from "./Components/Courses/Courses";
 import Account from "./Components/Account/Account";
 import Tutors from "./Components/Tutors/Tutors";
@@ -143,7 +145,7 @@ const App = () => {
               <Route path="/Courses" element={<Courses />} />
               <Route path="/Account" element={<Account />}></Route>
               <Route path="/Tutors" element={<Tutors />}></Route>
-              <Route path="/Students" element={<Students />}></Route>             
+              <Route path="/Students" element={<Students />}></Route>   
               <Route path="/" element={<Dashboard />}></Route>
               <Route path="/YourCourses" element={<YourCourses />}></Route>
               <Route path="/CourseDetail/:id" element={<CourseDetail />}></Route>
