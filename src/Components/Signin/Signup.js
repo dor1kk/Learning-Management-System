@@ -31,13 +31,16 @@ const Signup = () => {
   };
 
   return (
-    <div style={{ background: '#f0f0f0', minHeight: '100vh', padding: '2rem 0' }}>
-      <Container>
+    <div style={{  minHeight: '100vh', padding: '2rem 0' }}>
+      <Container className='d-flex flex-row justify-content-center align-items-center'>
+      <Row>
+          <img className='img-fluid' style={{width:"auto", height:"400px"}} src="https://img.freepik.com/free-vector/happy-diverse-students-celebrating-graduation-from-school_74855-5853.jpg"></img>
+        </Row>
         <Row className="justify-content-md-center">
-          <Col md="6">
+          <Col md="8">
             <div style={{ background: '#ffffff', padding: '2rem', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
-              <Typography variant="h4" component="h2" align="center" gutterBottom>
-                Sign Up for Our Learning Management System
+              <Typography variant="h4" component="h2" align="center" gutterBottom style={{color:"#1e4589"}}>
+                Sign Up for free
               </Typography>
               <Form onSubmit={handleSubmit}>
                 <TextField
@@ -99,7 +102,7 @@ const Signup = () => {
                   <input type="checkbox" className="form-check-input" id="exampleCheck" />
                   <label className="form-check-label" htmlFor="exampleCheck">I agree to the terms and conditions</label>
                 </div>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
+                <Button type="submit" variant="contained" style={{backgroundColor:"#1e4589", color:"white"}} fullWidth>
                   Sign Up
                 </Button>
               </Form>
