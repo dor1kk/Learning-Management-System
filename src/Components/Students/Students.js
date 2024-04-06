@@ -1,72 +1,65 @@
-import React, { useState } from 'react';
-import { Container, List, ListItem, ListItemText, ListItemIcon, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Typography, Select, MenuItem, FormControl, InputLabel, Grid, InputAdornment } from '@mui/material';
-import { Person, School, Add, Edit, Delete, Search, Clear } from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+import {
+  Button,Container,List,ListItem,ListItemText,
+  ListItemIcon,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  InputAdornment
+} from '@mui/material';
+import { Person, School,Edit, Delete, Search, Clear } from '@mui/icons-material';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import courses from '../Courses/Coursedata';
 import "./Students.css";
-
-
-const initialStudents = [
-  { id: 1, image:"https://cdn-icons-png.freepik.com/512/147/147131.png", name: 'John Doe', grade: 'A', courseId: "1" },
-  { id: 2, image:"https://w7.pngwing.com/pngs/643/98/png-transparent-computer-icons-avatar-mover-business-flat-design-corporate-elderly-care-microphone-heroes-company-thumbnail.png", name: 'Jane Smith', grade: 'B', courseId: "2" },
-  { id: 3, image:"https://cdn3.iconfinder.com/data/icons/avatars-round-flat/33/man5-512.png", name: 'Alex Johnson', grade: 'A+', courseId: "3" },
-  { id: 4, image:"https://cdn-icons-png.freepik.com/512/147/147129.png", name: 'Sarah Brown', grade: 'B-', courseId: "4" },
-  { id: 5, image:"https://static.vecteezy.com/system/resources/thumbnails/002/002/403/small_2x/man-with-beard-avatar-character-isolated-icon-free-vector.jpg", name: 'Michael Davis', grade: 'C', courseId: "5" },
-  { id: 6, image:"https://mir-s3-cdn-cf.behance.net/project_modules/disp/ce54bf11889067.562541ef7cde4.png", name: 'Emily Wilson', grade: 'A-', courseId: "6" }
-];
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const StudentList = () => {
-  const [students, setStudents] = useState(initialStudents);
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState({});
-  const [newStudent, setNewStudent] = useState({ name: '', grade: '' });
+  const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [gradeFilter, setGradeFilter] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
 
-  const handleAddStudent = () => {
-    setOpenAddDialog(true);
+  const fetchStudents = async () => {
+    try {
+      const studentResponse = await fetch('http://localhost:8080/student');
+      const studentData = await studentResponse.json();
+      setStudents(studentData);
+
+      const courseResponse = await fetch('http://localhost:8080/courses');
+      const courseData = await courseResponse.json();
+      setCourses(courseData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
-  const handleCloseAddDialog = () => {
-    setOpenAddDialog(false);
-  };
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
-  const handleEditStudent = (student) => {
-    setSelectedStudent(student);
-    setOpenEditDialog(true);
-  };
-
-  const handleCloseEditDialog = () => {
-    setOpenEditDialog(false);
-  };
-
-  const handleSaveStudent = () => {
-    handleCloseAddDialog();
-  };
-
-  const handleUpdateStudent = () => {
-    handleCloseEditDialog();
-  };
-
-  const handleDeleteStudent = (id) => {
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewStudent(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleChangeEdit = (e) => {
-    const { name, value } = e.target;
-    setSelectedStudent(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+  const handleDeleteStudent = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:8080/student/${id}`);
+      
+      if (response.status === 200) {
+        // If successful, fetch updated student list
+        fetchStudents();
+      } else {
+        throw new Error('Failed to delete student');
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
   };
 
   const handleSearch = (e) => {
@@ -85,12 +78,6 @@ const StudentList = () => {
     setGradeFilter('');
     setCourseFilter('');
   };
-
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (gradeFilter === '' || student.grade === gradeFilter) &&
-    (courseFilter === '' || student.courseId === courseFilter)
-  );
 
   return (
     <Container>
@@ -143,100 +130,47 @@ const StudentList = () => {
           <Button variant="outlined" onClick={clearFilters} startIcon={<Clear />}>Clear Filters</Button>
         </Grid>
       </Grid>
-      <Typography variant="body1" style={{ marginBottom: '10px' }}>Total Students: {filteredStudents.length}</Typography>
+      <Typography variant="body1" style={{ marginBottom: '10px' }}>Total Students: {students.length}</Typography>
       <List>
-        {filteredStudents.map(student => {
-          const course = courses.find(course => course.id === student.courseId);
+        {students.map(student => {
+          const course = courses.find(course => course.id === student.CourseId);
           return (
-            <ListItem key={student.id} className="student-item">
+            <ListItem key={student.ID} className="student-item">
               <ListItemIcon>
-                <img src={student.image} style={{borderRadius:"50%", marginRight:"20px", height:"60px", width:"60px"}}></img>
+                <img src={student.Image} style={{borderRadius:"50%", marginRight:"20px", height:"60px", width:"60px"}} alt="Student"></img>
               </ListItemIcon>
               <ListItemText 
-                primary={student.name} 
+                primary={student.Name} 
                 secondary={
                   <React.Fragment>
                     <Typography component="span" variant="body2" color="textPrimary">
-                      Grade: {student.grade}
+                      Grade: {student.Grade}
                     </Typography>
                     <br />
-                    Course: {course ? course.title : 'N/A'}
+                    Course: {student.Title}
+
                   </React.Fragment>
                 } 
               />
               <ListItemIcon>
                 <School />
               </ListItemIcon>
-              <IconButton onClick={() => handleEditStudent(student)} aria-label="edit" color="primary">
-                <Edit />
-              </IconButton>
-              <IconButton onClick={() => handleDeleteStudent(student.id)} aria-label="delete" color="secondary">
+              <Link to={`Edit/${student.ID}`}>
+  <Button aria-label="edit" color="primary">
+    <Edit />
+  </Button>
+</Link>
+
+              <IconButton onClick={() => handleDeleteStudent(student.ID)} aria-label="delete" color="secondary">
                 <Delete />
               </IconButton>
             </ListItem>
           );
         })}
       </List>
-      <IconButton onClick={handleAddStudent} aria-label="add" className="add-button" color="primary">
-        <Add />
-      </IconButton>
-
-      {/* Add Student Dialog */}
-      <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Add Student</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            name="name"
-            fullWidth
-            value={newStudent.name}
-            onChange={handleChange}
-          />
-          <TextField
-            margin="dense"
-            label="Grade"
-            name="grade"
-            fullWidth
-            value={newStudent.grade}
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleSaveStudent} color="primary">Save</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Edit Student Dialog */}
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Student</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            name="name"
-            fullWidth
-            value={selectedStudent.name}
-            onChange={handleChangeEdit}
-          />
-          <TextField
-            margin="dense"
-            label="Grade"
-            name="grade"
-            fullWidth
-            value={selectedStudent.grade}
-            onChange={handleChangeEdit}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleUpdateStudent} color="primary">Save</Button>
-        </DialogActions>
-      </Dialog>
     </Container>
+
+    
   );
 };
 

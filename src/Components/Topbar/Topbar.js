@@ -22,7 +22,7 @@ function Topbar({ toggleDarkMode, colors }) {
     };
 
     const handleCourseClick = () => {
-        window.location.href = `/Courses`; 
+        window.location.href = `/Home/Courses`; 
     };
     
 

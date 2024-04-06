@@ -6,6 +6,7 @@ import Details from "./Details";
 import ReviewContainer from "./Review";
 import Progress from "./Progress";
 import courses from "./Coursedata";
+import axios from 'axios'
 
 function VideoList({ videos, onVideoClick }) {
   return (
@@ -25,7 +26,19 @@ function VideoList({ videos, onVideoClick }) {
 }
 
 
+
+
 function CourseDetail() {
+  const handleEnrollNow = async () => {
+    try {
+      // Send enrollment request to backend
+      await axios.post("http://localhost:8080/enroll", { courseId: id });
+      alert("Enrolled successfully!"); // Optionally, show a success message
+    } catch (error) {
+      console.error("Error enrolling:", error);
+      alert("Failed to enroll. Please try again."); // Optionally, show an error message
+    }
+  };
   const { id } = useParams();
   const course = courses.find((course) => course.id === id);
   const [selectedVideo, setSelectedVideo] = useState(course ? course.videos[0] : null);
@@ -76,7 +89,7 @@ function CourseDetail() {
                 <li className="list-group-item">Write scripts and add functionality after learning JavaScript Basics</li>
                 {/* Add more topics as needed */}
               </ul>
-              <Button variant="contained" color="primary">Go to Lectures</Button>
+              <Button variant="contained" color="primary" onClick={handleEnrollNow}>Enroll Now...</Button>
             </div>
           </Paper>
         </div>
