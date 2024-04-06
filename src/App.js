@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Signin from "./Components/Signin/Signin";
 import Sidebaar from "./Sidebaar";
-import Home from "./Components/Home/Home";
 import { Dashboard } from "@mui/icons-material";
 import PrivateRoute from "./PrivateRoute";
 import Signup from "./Components/Signin/Signup";

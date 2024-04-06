@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Sidebaar from "./Sidebaar";
-import Home from "./Components/Home/Home";
 import Dashboard from "./Components/Dashboard/Dashboard"; 
 import Courses from "./Components/Courses/Courses";
 
@@ -26,7 +25,7 @@ const PrivateRoute = () => {
       <Route path="/Tutors" element={<Tutors />} />
       <Route path="/Students" element={<StudentList />} />
       <Route path="/Dashboard" element={<Dashboard />} />
-      <Route path="/" element={<Home />}></Route>
+      <Route path="/" element={<Dashboard />}></Route>
       <Route path="/YourCourses" element={<YourCourses />} />
       <Route path="/CourseDetail/:id" element={<CourseDetail />} />
       <Route path="/Chat" element={<Chat />} />
