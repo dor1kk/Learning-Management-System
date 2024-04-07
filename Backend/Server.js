@@ -9,9 +9,10 @@ import bodyParser from 'body-parser';
 const app = express();
 app.use(cors({
   origin: ["http://localhost:3000"],
-  methods: ["POST", "GET"],
+  methods: ["POST", "GET", "DELETE", "PUT"], // Add DELETE method here
   credentials: true
 }));
+
 
 
 app.use(express.json());
@@ -66,8 +67,13 @@ app.post('/signin', (req, res) => {
 
     if (results.length > 0) {
       req.session.username = results[0].Username; 
+      req.session.role = results[0].Role; 
+      req.session.userid = results[0].UserID; 
+
       console.log('Session:', req.session); 
       console.log('Stored username:', req.session.username); 
+      console.log('Stored TutorID:', req.session.userid); 
+
       return res.json({ Login: true });
     } else {
       return res.json({ Login: false });
@@ -76,6 +82,14 @@ app.post('/signin', (req, res) => {
 });
 
 
+app.get('/userid', (req,res)=>{
+  if(req.session.userid){
+    return res.json({valid: true, userid: req.session.userid});
+  } else {
+    return res.json({valid: false});
+  }
+});
+
 app.get('/', (req,res)=>{
   if(req.session.username){
     return res.json({valid: true, username: req.session.username});
@@ -83,6 +97,18 @@ app.get('/', (req,res)=>{
     return res.json({valid: false});
   }
 });
+
+app.get('/role', (req,res)=>{
+  if(req.session.role){
+    return res.json({valid: true, role: req.session.role});
+  } else {
+    return res.json({valid: false});
+  }
+});
+
+
+
+
 
 
 
@@ -112,6 +138,101 @@ app.get('/courses', (req, res) => {
 });
 
 
+app.get('/tutorcourses', (req, res) => {
+  const tutorId = req.session.userid;
+
+  const sql = "SELECT * FROM courses WHERE TutorID = ?";
+
+  db.query(sql, [tutorId], (err, result) => {
+    if (err) {
+      console.error('Error fetching tutor courses:', err);
+      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
+    }
+    return res.json(result);
+  });
+});
+
+
+app.post("/courses", (req, res) => {
+  const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
+
+  db.query(
+    "INSERT INTO courses (Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, TutorID) VALUES (?,?,?,?,?,?,?,?,?)",
+    [title, description, category, image, prerequisites, duration, lectures, assignments, tutorid],
+    (error, result) => {
+      if (error) {
+        console.error("Adding Course error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.status(201).json({ message: "Course added successfully" });
+    }
+  );
+});
+
+app.get('/courses/:id', (req, res) => {
+  const courseId = req.params.id;
+
+  const sql = "SELECT * FROM courses WHERE CourseID = ?";
+
+  db.query(sql, [courseId], (err, result) => {
+    if (err) {
+      console.error('Error fetching course:', err);
+      return res.status(500).json({ error: "Error occurred while fetching course" });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    return res.json(result[0]);
+  });
+});
+
+
+app.delete('/courses/:id', (req, res) => {
+  const courseId = req.params.id;
+  console.log("Deleting course with ID:", courseId); // Add this line to log the course ID being deleted
+  const sql = "DELETE FROM courses WHERE CourseID = ?";
+  db.query(sql, [courseId], (err, result) => {
+    if (err) {
+      console.error("Error occurred during delete:", err);
+      return res.status(500).json({ error: "An error occurred during delete" });
+    }
+    console.log("Record deleted successfully"); // Add this line to log successful deletion
+    return res.json({ success: true, message: "Record deleted successfully" });
+  });
+});
+
+app.put('/courses/:id', (req, res) => {
+  const { id } = req.params;
+  const { Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments } = req.body; 
+  const sql = `UPDATE Courses 
+             SET Title = ?,
+                 Description = ?,
+                 Category = ?,
+                 Image = ?,
+                 Prerequisites = ?,
+                 Duration = ?,
+                 Lectures = ?,
+                 Assignments = ?
+             WHERE CourseID = ?`;
+
+db.query(sql, [Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, id], (err, result) => {
+  if (err) {
+    console.error("Error executing SQL query:", err);
+    res.status(500).send("Internal Server Error");
+    return;
+  }
+  if (result.affectedRows === 1) {
+    res.status(200).send("Course updated successfully");
+  } else {
+    res.status(404).send('Course not found');
+  }
+});
+
+});
+
+
+
+
 app.post("/enroll", (req, res) => {
   const { courseId } = req.body;
 
@@ -126,27 +247,6 @@ app.post("/enroll", (req, res) => {
 
 
 
-app.put('/student/:id', (req, res) => {
-  const { id } = req.params;
-  const { Name, Grade } = req.body; 
-  const sql = `UPDATE Students 
-               SET Name = ${mysql.escape(Name)},
-                   Grade = ${mysql.escape(Grade)}
-               WHERE ID = ${mysql.escape(id)}`;
-               
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error executing SQL query:", err);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-    if (result.affectedRows === 1) {
-      res.status(200).send("Student updated successfully");
-    } else {
-      res.status(404).send('Student not found');
-    }
-  });
-});
 
 app.listen(8080, () => {
   console.log('Server is running on port 8080');

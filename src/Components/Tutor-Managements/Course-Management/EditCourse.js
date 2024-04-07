@@ -1,0 +1,144 @@
+import React, { useEffect, useState } from 'react';
+import { Container, Typography, TextField, Button, Grid } from '@mui/material';
+import axios from 'axios';
+
+const EditCourse = ({ courseId }) => {
+  const [courseData, setCourseData] = useState({
+    Title: '',
+    Description: '',
+    Category: '',
+    Image: '',
+    Prerequisites: '',
+    Duration: '',
+    Lectures: 0,
+    Assignments: 0,
+  });
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/courses/${courseId}`)
+      .then(res => {
+        console.log(res.data); 
+        setCourseData(res.data); 
+      })
+      .catch(err => console.log(err));
+  }, [courseId]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCourseData({ ...courseData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:8080/courses/${courseId}`, courseData);
+    } catch (error) {
+      console.error('Error updating course:', error);
+    }
+  };
+
+  return (
+    <Container maxWidth="md" style={{ marginTop: '20px' }}>
+      <Typography variant="h4" gutterBottom>
+        Edit Course
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Title"
+              variant="outlined"
+              fullWidth
+              name="Title"
+              value={courseData.Title}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Category"
+              variant="outlined"
+              fullWidth
+              name="Category"
+              value={courseData.Category}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Description"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+              name="Description"
+              value={courseData.Description}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Prerequisites"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+              name="Prerequisites"
+              value={courseData.Prerequisites}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Duration"
+              variant="outlined"
+              fullWidth
+              name="Duration"
+              value={courseData.Duration}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Image URL"
+              variant="outlined"
+              fullWidth
+              name="Image"
+              value={courseData.Image}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Number of Lectures"
+              variant="outlined"
+              fullWidth
+              type="number"
+              name="Lectures"
+              value={courseData.Lectures}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Number of Assignments"
+              variant="outlined"
+              fullWidth
+              type="number"
+              name="Assignments"
+              value={courseData.Assignments}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="primary" type="submit">
+              Update Course
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+    </Container>
+  );
+};
+
+export default EditCourse;

@@ -47,20 +47,7 @@ const StudentList = () => {
     fetchStudents();
   }, []);
 
-  const handleDeleteStudent = async (id) => {
-    try {
-      const response = await axios.delete(`http://localhost:8080/student/${id}`);
-      
-      if (response.status === 200) {
-        // If successful, fetch updated student list
-        fetchStudents();
-      } else {
-        throw new Error('Failed to delete student');
-      }
-    } catch (error) {
-      console.error('Error deleting student:', error);
-    }
-  };
+
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -161,7 +148,7 @@ const StudentList = () => {
   </Button>
 </Link>
 
-              <IconButton onClick={() => handleDeleteStudent(student.ID)} aria-label="delete" color="secondary">
+              <IconButton aria-label="delete" color="secondary">
                 <Delete />
               </IconButton>
             </ListItem>

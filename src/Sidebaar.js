@@ -3,9 +3,9 @@ import { useLocation } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-import { AiOutlineMenu, AiOutlineSetting, AiOutlineUser, AiOutlineLock, AiOutlineNotification, AiOutlineLogout, AiOutlineProfile, AiFillProfile } from 'react-icons/ai';
+import { AiOutlineMenu, AiOutlineSetting, AiOutlineUser, AiOutlineLock, AiOutlineNotification, AiOutlineLogout, AiOutlineProfile, AiFillProfile, AiOutlineDashboard } from 'react-icons/ai';
 import { BsGrid3X3Gap } from 'react-icons/bs';
-import { IoReceiptOutline } from 'react-icons/io5';
+import { IoReceiptOutline, IoSchoolOutline } from 'react-icons/io5';
 import Topbar from "./Components/Topbar/Topbar";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -20,21 +20,24 @@ import YourCourses from "./Components/YourCourses/YourCourses";
 import Chat from "./Components/Chat/Chat";
 import Notifications from "./Components/Notifications/Notifcations";
 import { IoBookOutline } from 'react-icons/io5';
-import { MdSchool } from 'react-icons/md';
-import { FaGraduationCap } from 'react-icons/fa';
+import { MdGrade, MdSchool } from 'react-icons/md';
+import { FaChartLine, FaClipboardCheck, FaCode, FaGraduationCap, FaUserPlus } from 'react-icons/fa';
 import { AiOutlineMessage } from 'react-icons/ai';
 import { FaChalkboardTeacher, FaHome } from 'react-icons/fa';
 import Course from "./Components/Courses/Coursedata";
 import CourseDetail from "./Components/Courses/Coursedetail";
 import Signin from "./Components/Signin/Signin";
-import Edit from "./Components/Students/Edit-Student";
 import Signup from "./Components/Signin/Signup";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { FaUser } from "react-icons/fa6";
+import { IoScaleOutline } from "react-icons/io5";
+import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
 
 const Sidebaar = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [name, setName] = useState('');
+  const [role, setRole]=useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,6 +53,20 @@ axios.defaults.withCredentials= true;
       })
       .catch(err => console.log(err));
   }, [location.pathname, navigate]);
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/role')
+      .then(res => {
+        console.log(res.data); 
+        if (res.data.valid) {
+          setRole(res.data.role);
+        } 
+      })
+      .catch(err => console.log(err));
+  }, [location.pathname, navigate]);
+
+
+
   
 
   const toggleDarkMode = () => {
@@ -86,22 +103,127 @@ axios.defaults.withCredentials= true;
             >
             <h6>{name}</h6>
             </MenuItem>
-           
-            <MenuItem
-              component={<Link to="/Home/Dashboard" className="link" />}
-              icon={<BsGrid3X3Gap />}
-              className={`menu-item ${location.pathname === "/Dashboard" ? "active" : ""}` }
-            >
-              Dashboard
-            </MenuItem>
-            <MenuItem 
-              component={<Link to="/Home/Students" className="link" />}
-              icon={<IoReceiptOutline />}
-              className={`menu-item ${location.pathname === "/Students" ? "active" : ""}` }
-            >
-              Students
-            </MenuItem>
+            {role === "Admin" ? (
+          <MenuItem
+        component={<Link to="/Home/Dashboard" className="link" />}
+        icon={<AiOutlineDashboard />}
+       className={`menu-item ${location.pathname === "/Dashboard" ? "active" : ""}`}
+     >
+    Dashboard
+  </MenuItem>
+) : role === "Tutor" ? (
+    <MenuItem
+    component={<Link to="/Home/TutorDashboard" className="link" />}
+    icon={<BsGrid3X3Gap />}
+    className={`menu-item ${location.pathname === "/TutorDashboard" ? "active" : ""}`}
+  >
+    Dashboard
+  </MenuItem>
+) : null}
+
+
             
+      {role === "Admin" ? (
+          <MenuItem
+        component={<Link to="/Home/UserManagement" className="link" />}
+        icon={<FaUser />}
+       className={`menu-item ${location.pathname === "/UserManagement" ? "active" : ""}`}
+     >
+    User Management
+  </MenuItem>):null}
+
+  {role === "Admin" ? (
+          <MenuItem
+        component={<Link to="/Home/EnrollManagement" className="link" />}
+        icon={<FaUserPlus />}
+       className={`menu-item ${location.pathname === "/EnrollManagment" ? "active" : ""}`}
+     >
+    Enroll Management
+  </MenuItem>): role==="Tutor"?(
+    <MenuItem
+    component={<Link to="/Home/T-EnrollManagement" className="link" />}
+    icon={<FaUserPlus />}
+   className={`menu-item ${location.pathname === "/EnrollManagment" ? "active" : ""}`}
+ >
+My Enroll Management
+</MenuItem>
+
+  ) :null}
+            
+
+            {role === "Tutor" ? (
+            <MenuItem
+             component={<Link to="/Home/T-CoursesManagement" className="link" />}
+            icon={<FaCode />}
+            className={`menu-item ${location.pathname === "/Tutor-Courses" ? "active" : ""}` }
+            >
+           My Course Management
+          </MenuItem>
+              ) :role=== "Admin" ? (
+                <MenuItem
+                component={<Link to="/Home/" className="link" />}
+               icon={<FaCode />}
+               className={`menu-item ${location.pathname === "/Tutor-Courses" ? "active" : ""}` }
+               >Course Management
+             </MenuItem>
+              ):null}
+
+
+          {role === "Tutor" ? (
+            <MenuItem
+             component={<Link to="/Home/Students" className="link" />}
+            icon={<IoReceiptOutline />}
+            className={`menu-item ${location.pathname === "/Students" ? "active" : ""}` }
+            >
+            My Student Management
+          </MenuItem>
+              ) : null}
+
+            
+          {role === "Tutor" ? (
+            <MenuItem
+             component={<Link to="/Home/T-ExamsManagement" className="link" />}
+            icon={<FaClipboardCheck />}
+            className={`menu-item ${location.pathname === "/ExamManagement" ? "active" : ""}` }
+            >
+            Exams Management
+          </MenuItem>
+              ) : null}
+
+{role === "Tutor" ? (
+            <MenuItem
+             component={<Link to="/Home/T-GradesManagement" className="link" />}
+            icon={<MdGrade />}
+            className={`menu-item ${location.pathname === "/GradeManagement" ? "active" : ""}` }
+            >
+            Grades Management
+          </MenuItem>
+              ) : null}
+
+{role === "Tutor" ? (
+            <MenuItem
+             component={<Link to="/Home/T-LecturesManagement" className="link" />}
+            icon={<IoSchoolOutline  />}
+            className={`menu-item ${location.pathname === "/LectureManagement" ? "active" : ""}` }
+            >
+            Lectures Management
+          </MenuItem>
+              ) : null}
+
+
+
+           {role === "Admin" ? (
+          <MenuItem
+        component={<Link to="/Home/Analytics" className="link" />}
+        icon={<FaChartLine />}
+       className={`menu-item ${location.pathname === "/Analytics" ? "active" : ""}`}
+     >
+    Analytics
+  </MenuItem>):null}
+
+        
+
+           {role === "Student" ? (
             <SubMenu 
               label="Courses" 
               icon={<IoBookOutline />}
@@ -123,14 +245,17 @@ axios.defaults.withCredentials= true;
               >
                 Explore More...
               </MenuItem>
-            </SubMenu>
+            </SubMenu>):null }
+            
+            {role === "Student" ? (
             <MenuItem
-              component={<Link to="/Home/Tutors" className="link" />}
-              icon={<FaChalkboardTeacher/>}
-              className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}` }
+            component={<Link to="/Home/Tutors" className="link" />}
+            icon={<FaChalkboardTeacher />}
+            className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}`}
             >
-              Tutors
+            Tutors
             </MenuItem>
+                ) : null}
 
             
             
