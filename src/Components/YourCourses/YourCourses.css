@@ -1,0 +1,82 @@
+/* YourCourses.css */
+
+.container {
+    padding: 20px;
+  }
+  
+  .course-cardsi {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .kard {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    text-align: center;
+    height: 130px;
+    width: 90%;
+    margin-top: 15px;
+  }
+
+  
+  .kard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-imgage {
+    width: auto;
+    height: 130px;
+    object-fit: cover;
+  
+  }
+
+
+  
+  .card-bodi {
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    width: 75%;
+  }
+
+
+  .spans{
+    width: 250px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+
+  }
+
+  .links{
+    margin-right: 45px;
+  }
+
+
+
+  .link-assignments, .link-progress,  .link-lectures{
+    background-color: rgb(233, 230, 230);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  
+  .card-bodi span {
+    color: gray;
+    margin: 10px;
+  }
+  

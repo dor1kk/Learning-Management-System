@@ -29,7 +29,7 @@ const Signin = () => {
             console.log('Login state:', res.data.Login); 
             
             if (res.data.Login) {
-                window.location.href='/Home/dashboard';
+                window.location.href='/Home';
             } else {
                 setErr('Invalid username or password');
             }

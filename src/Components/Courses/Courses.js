@@ -43,7 +43,6 @@ function Courses() {
     if (sortBy === "title") {
       return a.Title.localeCompare(b.Title);
     } else if (sortBy === "rating") {
-      // Assuming you have a 'rating' property in your course objects
       return b.rating - a.rating;
     } else {
       return 0;

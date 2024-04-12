@@ -18,6 +18,7 @@ import Tutors from "./Components/Tutors/Tutors";
 import Students from "./Components/Students/Students";
 import YourCourses from "./Components/YourCourses/YourCourses";
 import Chat from "./Components/Chat/Chat";
+import { FaChalkboard, FaUserAstronaut } from "react-icons/fa";
 import Notifications from "./Components/Notifications/Notifcations";
 import { IoBookOutline } from 'react-icons/io5';
 import { MdGrade, MdSchool } from 'react-icons/md';
@@ -224,28 +225,23 @@ My Enroll Management
         
 
            {role === "Student" ? (
-            <SubMenu 
-              label="Courses" 
-              icon={<IoBookOutline />}
-              className={`menu-item ${(location.pathname === "/Courses" || location.pathname === "/YourCourses") ? "active" : ""}`}
-            >
+          
               <MenuItem
-                style={{backgroundColor:colors.backgroundColor}}
                 component={<Link to="/Home/YourCourses" className="link" />} 
                 icon={<FaGraduationCap />}
                 className={`menu-item ${location.pathname === "/YourCourses" ? "active" : ""}` }
               >
-                Your Courses
-              </MenuItem>
+                My Courses
+              </MenuItem>):null }
+              {role === "Student" ? (
               <MenuItem
-                style={{backgroundColor:colors.backgroundColor}}
                 component={<Link to="/Home/Courses" className="link" />}
-                icon={<MdSchool/>}
+                icon={<FaCode/>}
                 className={`menu-item ${location.pathname === "/Courses" ? "active" : ""}` }
               >
-                Explore More...
+                Explore Courses
               </MenuItem>
-            </SubMenu>):null }
+         ):null }
             
             {role === "Student" ? (
             <MenuItem
@@ -254,6 +250,16 @@ My Enroll Management
             className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}`}
             >
             Tutors
+            </MenuItem>
+                ) : null}
+
+{role === "Student" ? (
+            <MenuItem
+            component={<Link to="/Home/Courseslecture" className="link" />}
+            icon={<FaChalkboard />}
+            className={`menu-item ${location.pathname === "/Lectures" ? "active" : ""}`}
+            >
+            Lectures
             </MenuItem>
                 ) : null}
 

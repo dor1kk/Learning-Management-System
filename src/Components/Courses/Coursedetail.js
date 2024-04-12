@@ -8,22 +8,7 @@ import Progress from "./Progress";
 import courses from "./Coursedata";
 import axios from 'axios'
 
-function VideoList({ videos, onVideoClick }) {
-  return (
-    <div className="list-group">
-      {videos.map((video) => (
-        <button
-          key={video.id}
-          className="list-group-item list-group-item-action"
-          onClick={() => onVideoClick(video)}
-        >
-          <FaPlayCircle className="play-icon" />
-          {video.title}
-        </button>
-      ))}
-    </div>
-  );
-}
+
 
 
 
@@ -31,12 +16,11 @@ function VideoList({ videos, onVideoClick }) {
 function CourseDetail() {
   const handleEnrollNow = async () => {
     try {
-      // Send enrollment request to backend
       await axios.post("http://localhost:8080/enroll", { courseId: id });
-      alert("Enrolled successfully!"); // Optionally, show a success message
+      alert("Enrolled successfully!"); 
     } catch (error) {
       console.error("Error enrolling:", error);
-      alert("Failed to enroll. Please try again."); // Optionally, show an error message
+      alert("You have already enrolled to this course!");
     }
   };
   const { id } = useParams();
@@ -78,16 +62,13 @@ function CourseDetail() {
         <div className="col-md-4">
           <Paper elevation={1} className="p-3" style={{marginLeft:"-60px"}}>
             <Progress currentProgress={targetProgress} totalLessons={totalLessons} />
-            <VideoList videos={course.videos} onVideoClick={(video) => setSelectedVideo(video)} />
             <div className="course-info-box mt-3">
-              <p>Date: {course.date}</p>
 
               <Typography  variant="h6">What You Will Learn</Typography>
               <ul className="learn-list mt-4">
                 <li className="list-group-item">Understand the fundamentals of HTML Structures!</li>
                 <li className="list-group-item">Be able to do Styling with CSS</li>
                 <li className="list-group-item">Write scripts and add functionality after learning JavaScript Basics</li>
-                {/* Add more topics as needed */}
               </ul>
               <Button variant="contained" color="primary" onClick={handleEnrollNow}>Enroll Now...</Button>
             </div>

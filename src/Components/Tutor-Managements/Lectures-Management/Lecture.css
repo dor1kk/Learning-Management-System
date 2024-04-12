@@ -1,0 +1,8 @@
+.listitem:hover{
+    background-color: rgb(225, 224, 224);
+    cursor: pointer;
+}
+
+.listitem{
+    background-color:rgb(247, 243, 243); ;
+}

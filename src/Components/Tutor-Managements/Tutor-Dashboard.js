@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import 
 { BsFillArchiveFill, BsFillGrid3X3GapFill, BsPeopleFill, BsFillBellFill}
  from 'react-icons/bs'
@@ -9,9 +9,27 @@ import
 import { MdSchool } from 'react-icons/md';
 import { FaGraduationCap, FaUser } from 'react-icons/fa';
 import { FaChalkboardTeacher } from 'react-icons/fa';
+import axios from 'axios'
+
+
+
 
 
 function TutorDashboard() {
+
+    const [noStudents,setNoStudents]=useState(null);
+
+
+    const fetchNoStudents=async ()=>{
+        const response=await axios.get("http://localhost:8080/totalStudents");
+        setNoStudents(response.data.totalStudents);
+
+    }
+
+    useEffect(()=>{
+        fetchNoStudents();
+    })
+
 
     const data = [
         {
@@ -61,15 +79,15 @@ function TutorDashboard() {
             <div className='card'>
                 <div className='card-inner d-flex flex-column'>
                     <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >STUDENTS</h3>
-                    <FaGraduationCap className='card_icon ' style={{color:"white"}}/>
+                        <h3 className='text-white' >STUDENTS</h3>
+                        <FaGraduationCap className='card_icon ' style={{ color: "white" }} />
                     </div>
                     <div>
-                    <h1 className='text-white'>3452</h1>
-
+                        <h1 className='text-white'>{noStudents}</h1>
                     </div>
                 </div>
             </div>
+
             <div className='card'>
                 <div className='card-inner d-flex flex-column'>
                     <div className='d-flex flex-column justify-content-center align-items-center'>

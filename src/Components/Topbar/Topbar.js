@@ -4,7 +4,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import courses from '../Courses/Coursedata'; // Import your course data
 
 function Topbar({ toggleDarkMode, colors }) {
     const [searchTerm, setSearchTerm] = useState('');

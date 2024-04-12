@@ -13,11 +13,15 @@ import YourCourses from "./Components/YourCourses/YourCourses";
 import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
 import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
 import ExamsManagement from "./Components/Tutor-Managements/ExamsManagement";
-import LectureManagement from "./Components/Tutor-Managements/LectureManagement";
+import LectureManagement from "./Components/Tutor-Managements/Lectures-Management/LectureManagement";
 import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
 import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
+import Lectures from "./Components/Lectures/Lectures";
+import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
+import Lecture from "./Components/Lectures/Lecture";
+import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
 
 const PrivateRoute = () => {
   return (
@@ -41,6 +45,11 @@ const PrivateRoute = () => {
         <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
         <Route path="/UserManagement" element={<UserManagment />}></Route>
+        <Route path="/lectures" element={<Lectures />} />
+        <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
+        <Route path="/Courseslecture" element={<CourseLecture />}></Route>
+        <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
+        
       </Routes>
     </Sidebaar>
   );
