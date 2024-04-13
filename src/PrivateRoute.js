@@ -9,6 +9,8 @@ import StudentList from "./Components/Students/Students";
 import Chat from "./Components/Chat/Chat";
 import Notifications from "./Components/Notifications/Notifcations";
 import Tutors from "./Components/Tutors/Tutors";
+import BecomeTutor from "./Components/Tutors/BecomeTutor";
+import TutorProfile from "./Components/Tutors/TutorProfile";
 import YourCourses from "./Components/YourCourses/YourCourses";
 import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
 import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
@@ -30,6 +32,8 @@ const PrivateRoute = () => {
         <Route path="/Courses" element={<Courses />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Tutors" element={<Tutors />} />
+        <Route path="/BecomeTutor" element={<BecomeTutor />} />
+        <Route path="/TutorProfile" element={<TutorProfile />} />
         <Route path="/Students" element={<StudentList />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/" element={<Dashboard />} />

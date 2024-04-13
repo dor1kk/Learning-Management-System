@@ -314,9 +314,6 @@ app.get('/completed-lectures/:userId', (req, res) => {
   });
 });
 
-
-
-
 app.post("/courses", (req, res) => {
   const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
 
@@ -464,9 +461,6 @@ app.get("/enrolledcourses", (req, res) => {
   );
 });
 
-
-
-
 app.get('/totalStudents', (req, res) => {
   db.query(`
     SELECT COUNT(enrollments.StudentID) AS TotalStudents
@@ -480,6 +474,116 @@ app.get('/totalStudents', (req, res) => {
     res.status(200).json({ message: 'Fetched successfully', totalStudents: results[0].TotalStudents });
   });
 });
+
+app.post('/becomeTutor', (req, res) => {
+  const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
+  const userId = req.session.userid;
+  
+  
+  const sql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  
+  db.query(sql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, userId], (err, result) => {
+    if (err) {
+      console.error('Error saving data to database:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+    console.log('Data saved to database successfully');
+    return res.status(200).send('Data saved successfully');
+  });
+});
+
+
+
+
+app.get('/tutors', (req, res) => {
+  const sql = 'SELECT * FROM tutor';
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error('Error retrieving tutors from database:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    console.log('Tutors retrieved from database:', result);
+    res.status(200).json(result);
+  });
+});
+
+
+app.post('/updateUserRole', (req, res) => {
+  const { email, role } = req.body;
+
+  res.json({ message: `User role updated to ${role} for email ${email}` });
+});
+
+
+app.get('/tutors/:id', (req, res) => {
+  const tutorId = req.params.id;
+
+  const sql = "SELECT * FROM tutors WHERE TutorID = ?";
+
+  db.query(sql, [tutorId], (err, result) => {
+    if (err) {
+      console.error('Error fetching tutor:', err);
+      return res.status(500).json({ error: "Error occurred while fetching tutor" });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Tutor not found" });
+    }
+    return res.json(result[0]);
+  });
+});
+
+
+app.get('/users', (req, res) => {
+  db.query('SELECT * FROM users', (error, results) => {
+    if (error) {
+      console.error('Error fetching users:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results); 
+  });
+});
+
+app.delete('/users/:id', (req, res) => {
+  const userId = req.params.id;
+  console.log("Deleting user with ID:", userId); // Logging the user ID being deleted
+
+  // Assuming your table name is `users`
+  const sql = "DELETE FROM users WHERE UserID = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error occurred during delete:", err);
+      return res.status(500).json({ error: "An error occurred during delete" });
+    }
+    console.log("User deleted successfully"); // Logging successful deletion
+    return res.json({ success: true, message: "User deleted successfully" });
+  });
+});
+
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { Username, Password, Role, Email } = req.body; 
+  const sql = `UPDATE Users 
+               SET Username = ?,
+                   Password = ?,
+                   Role = ?,
+                   Email = ?
+               WHERE UserID = ?`;
+
+  db.query(sql, [Username, Password, Role, Email, id], (err, result) => {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+    if (result.affectedRows === 1) {
+      res.status(200).send("User updated successfully");
+    } else {
+      res.status(404).send('User not found');
+    }
+  });
+});
+
 
 
 app.listen(8080, () => {

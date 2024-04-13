@@ -3,16 +3,25 @@ import { Link, useNavigate } from "react-router-dom";
 import tutorsData from "./Tutorsdata"; 
 import { FaGraduationCap, FaStar, FaUserTie, FaBriefcase, FaInfoCircle } from "react-icons/fa";
 import { Container, Grid, Card, Button, Typography, Avatar, Box } from '@mui/material';
+import axios from "axios";
 
 function Tutors() {
   const navigate = useNavigate();
   const [tutors, setTutors] = useState([]);
 
   useEffect(() => {
-    setTutors(tutorsData); 
+    fetchTutors();
   }, []);
 
-  
+  const fetchTutors = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/tutors");
+      setTutors(response.data);
+    } catch (error) {
+      console.error("Error fetching tutors:", error);
+    }
+  }
+
 
   return (
     <Container className="mt-4">
@@ -21,7 +30,7 @@ function Tutors() {
           <Card className="p-4" sx={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)", borderRadius: "10px" }}>
             <Typography variant="h5" color="primary">Become a tutor</Typography>
             <Typography color="textSecondary" mt={2}>Start your journey sharing your knowledge...</Typography>
-            <Button variant="contained" color="primary" onClick={() => navigate("/TutorProfile")}>
+            <Button variant="contained" color="primary" onClick={() => navigate("/Home/BecomeTutor")}>
               Get started
             </Button>
             <Typography variant="body1" mt={2}>Invite your friends</Typography>
@@ -37,12 +46,12 @@ function Tutors() {
                 <Typography variant="h6" mb={1}>{tutor.name}</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1"><FaGraduationCap /> Courses: {tutor.courses}</Typography>
-                  <Typography variant="subtitle1" className="rating"><FaStar className="icon" /> Rating: {tutor.rating}</Typography>
+
               </Box>
                 <Typography variant="body2" mt={2}><FaUserTie /> Expertise: {tutor.expertise}</Typography>
                 <Typography variant="body2" mt={1}><FaBriefcase /> Experience: {tutor.experience}</Typography>
                 <Typography variant="body2" mt={1}><FaInfoCircle /> Bio: {tutor.bio}</Typography>
-                <Button variant="contained" color="primary" fullWidth mt={2} onClick={() => navigate(`/TutorProfile/${tutor.id}`)}>View profile!</Button>
+                <Button variant="contained" color="primary" fullWidth mt={2} onClick={() => navigate(`/Home/TutorProfile/${tutor.id}`)}>View profile!</Button>
               </Box>
             </Card>
           </Grid>
