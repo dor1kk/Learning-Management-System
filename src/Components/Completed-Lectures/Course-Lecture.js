@@ -25,8 +25,8 @@ function CourseLecture() {
   };
 
   return (
-    <main className="container">
-      <section className="cslec-course-cards">
+    <main className="course-container">
+      <section className="cslec-course-cards" style={{marginLeft:"20px", paddingTop:"20px"}}>
         {enrolledCourses.map((course) => (
           <div
             key={course.EnrollmentID}

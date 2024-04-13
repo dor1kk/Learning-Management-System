@@ -63,7 +63,7 @@ function YourCourses() {
   };
 
   return (
-    <main className="container">
+    <main className="yc-container">
       <section className="course-cardsi">
         {enrolledCourses.map((course) => (
           <div key={course.EnrollmentID} className="kard">

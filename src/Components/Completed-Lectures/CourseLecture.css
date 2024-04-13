@@ -1,3 +1,13 @@
+.course-container{
+  background-image: url("../course-container.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+
+  
+}
+
+
 .cslec-course-cards {
     display: flex;
     flex-wrap: wrap;
@@ -5,7 +15,7 @@
   }
   
   .cslec-card {
-    width: 300px;
+    width: 280px;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;

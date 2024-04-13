@@ -1,7 +1,12 @@
 /* YourCourses.css */
 
-.container {
+.yc-container {
     padding: 20px;
+    background-image: url("../course-container.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+ 
   }
   
   .course-cardsi {

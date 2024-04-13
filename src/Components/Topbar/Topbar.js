@@ -9,14 +9,6 @@ function Topbar({ toggleDarkMode, colors }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
-
-    const courses = [
-        { id: 1, title: 'Course 1', image: 'path_to_image_1' },
-        { id: 2, title: 'Course 2', image: 'path_to_image_2' },
-        // Add more courses as needed
-    ];
-
-
     const handleSearchChange = (event) => {
         const term = event.target.value;
         setSearchTerm(term);

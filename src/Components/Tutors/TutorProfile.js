@@ -1,33 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import axios from 'axios'; // Import axios
 import { Container, Typography, Grid, Card, Avatar, Button } from '@mui/material';
-import { FaGraduationCap, FaStar, FaUserTie, FaBriefcase, FaInfoCircle, FaPhone, FaEnvelope, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaGraduationCap, FaStar, FaUserTie, FaBriefcase, FaInfoCircle, FaPhone, FaEnvelope, FaCalendarAlt, FaMapMarkerAlt, FaUsers } from "react-icons/fa";
+import tutors from "./Tutorsdata"; 
 import "./TutorProfile.css"; 
 
 function TutorProfile() {
-  const { id } = useParams()
+  const { id } = useParams();
+  const tutor = tutors.find((tutor) => tutor.id === id);
 
-  const [tutor, setTutor] = useState(null); 
-
-  useEffect(() => {
-    fetchTutors();
-  }, []);
-
-  const fetchTutors = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/tutors");
-      setTutor(response.data); 
-    } catch (error) {
-      console.error("Error fetching tutors:", error);
-    }
+  if (!tutor) {
+    return <div>Tutor not found</div>; 
   }
-
-  if (!tutor) return null; 
 
   return (
     <Container className="tutor-profile">
-      <Typography variant="h3" className="heading" style={{ textAlign: 'center', color: '#0047AB', fontWeight: 'bold', marginBottom: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>Tutor Profile</Typography>
+    <Typography variant="h3" className="heading" style={{ textAlign: 'center', color: '#0047AB', fontWeight: 'bold', marginBottom: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>Tutor Profile</Typography>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
           <Card className="profile-card">
@@ -60,3 +48,6 @@ function TutorProfile() {
 }
 
 export default TutorProfile;
+
+
+

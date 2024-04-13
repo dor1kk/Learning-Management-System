@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 const app = express();
 app.use(cors({
   origin: ["http://localhost:3000"],
-  methods: ["POST", "GET", "DELETE", "PUT"], // Add DELETE method here
+  methods: ["POST", "GET", "DELETE", "PUT"],
   credentials: true
 }));
 
@@ -152,6 +152,170 @@ app.get('/tutorcourses', (req, res) => {
   });
 });
 
+app.get('/lectures/:id', (req, res) => {
+  let course_id = req.params.id;
+  const sql = "SELECT * FROM lectures WHERE CourseID = ?";
+
+  db.query(sql, [course_id], (err, result) => {
+    if (err) {
+      console.error('Error fetching tutor courses:', err);
+      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
+    }
+    return res.json(result);
+  });
+});
+
+
+app.get('/lecturescourse/:id', (req, res) => {
+  let course_id = req.params.id;
+  const sql = "SELECT * FROM courses INNER JOIN lectures on courses.CourseID=lectures.CourseID WHERE courses.CourseID = ?";
+
+  db.query(sql, [course_id], (err, result) => {
+    if (err) {
+      console.error('Error fetching lectures:', err);
+      return res.status(500).json({ error: "Error occurred while fetching lectures" });
+    }
+    return res.json(result);
+  });
+});
+
+
+
+
+app.get('/lectures', (req, res) => {
+  const sql = "SELECT * FROM lectures";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error('Error fetching tutor courses:', err);
+      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
+    }
+    return res.json(result);
+  });
+});
+
+app.get('/specificlecture/:id', (req, res) => {
+  let lecture_id = req.params.id;
+  const sql = "SELECT * FROM lectures WHERE LectureID = ?";
+
+  db.query(sql, [lecture_id], (err, result) => {
+    if (err) {
+      console.error('Error fetching lecture:', err);
+      return res.status(500).json({ error: "Error occurred while fetching lecture" });
+    }
+    return res.json(result[0]); 
+  });
+});
+
+
+
+
+
+
+app.post("/addlecture", (req, res) => {
+  const { CourseID, LectureTitle, LectureImageUrl, LectureDescription, LectureIndex } = req.body;
+
+  db.query(
+    "INSERT INTO lectures (CourseID, LectureTitle, Image, LectureContent, LectureIndex) VALUES (?, ?, ?, ?, ?)",
+    [CourseID, LectureTitle, LectureImageUrl, LectureDescription, LectureIndex],
+    (error, result) => {
+      if (error) {
+        console.error("Adding Lecture error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      res.status(201).json({ message: "Lecture added successfully" });
+    }
+  );
+});
+
+app.get('/completed-lectures/:userId/:courseId', (req, res) => {
+  const { userId, courseId } = req.params;
+
+  const fetchCompletedLecturesSql = 'SELECT lectureId FROM completed_lectures WHERE userId = ? AND CourseId = ?';
+  db.query(fetchCompletedLecturesSql, [userId, courseId], (error, results) => {
+    if (error) {
+      console.error('Error fetching completed lectures:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    const completedLectures = results.map(result => result.lectureId);
+    res.status(200).json(completedLectures);
+  });
+});
+
+
+app.get('/completed-lectures-info/:userId/:courseId', (req, res) => {
+  const { userId, courseId } = req.params;
+
+  const fetchCompletedLecturesSql = 'SELECT * FROM completed_lectures LEFT JOIN lectures On completed_lectures.lectureId=lectures.LectureID WHERE completed_lectures.userId = ? AND completed_lectures.CourseId = ?';
+  db.query(fetchCompletedLecturesSql, [userId, courseId], (error, results) => {
+    if (error) {
+      console.error('Error fetching completed lectures:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    const completedLectures = results.map(result => ({
+      lectureId: result.lectureId,
+      completionDate: result.completionDate,
+      Title:result.LectureTitle,
+      Image:result.Image,
+      CourseId:result.CourseID
+    }));
+    res.status(200).json(completedLectures);
+  });
+});
+
+
+
+
+app.post('/completed-lectures', (req, res) => {
+  const { lectureId, courseId } = req.body; 
+  const userId = req.session.userid;
+
+  const checkCompletedSql = 'SELECT * FROM completed_lectures WHERE userId = ? AND lectureId = ? AND courseId = ?'; 
+  db.query(checkCompletedSql, [userId, lectureId, courseId], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error('Error checking completed lectures:', checkErr);
+      res.status(500).send('Error checking completed lectures');
+      return;
+    }
+
+    if (checkResult.length > 0) {
+      res.status(400).send('Lecture already completed');
+      return;
+    }
+
+    const insertSql = 'INSERT INTO completed_lectures (userId, lectureId, courseId) VALUES (?, ?, ?)'; 
+    db.query(insertSql, [userId, lectureId, courseId], (insertErr, insertResult) => {
+      if (insertErr) {
+        console.error('Error marking lecture as completed:', insertErr);
+        res.status(500).send('Error marking lecture as completed');
+        return;
+      }
+      console.log('Lecture marked as completed');
+      res.status(200).send('Lecture marked as completed');
+    });
+  });
+});
+
+
+
+
+app.get('/completed-lectures/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  const sql = 'SELECT * FROM completed_lectures WHERE userId = ?';
+  
+  db.query(sql, [userId], (err, result) => {
+      if (err) {
+          console.error('Error fetching completed lectures:', err);
+          res.status(500).send('Error fetching completed lectures');
+          return;
+      }
+      res.json(result);
+  });
+});
+
+
+
 
 app.post("/courses", (req, res) => {
   const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
@@ -189,14 +353,14 @@ app.get('/courses/:id', (req, res) => {
 
 app.delete('/courses/:id', (req, res) => {
   const courseId = req.params.id;
-  console.log("Deleting course with ID:", courseId); // Add this line to log the course ID being deleted
+  console.log("Deleting course with ID:", courseId); 
   const sql = "DELETE FROM courses WHERE CourseID = ?";
   db.query(sql, [courseId], (err, result) => {
     if (err) {
       console.error("Error occurred during delete:", err);
       return res.status(500).json({ error: "An error occurred during delete" });
     }
-    console.log("Record deleted successfully"); // Add this line to log successful deletion
+    console.log("Record deleted successfully"); 
     return res.json({ success: true, message: "Record deleted successfully" });
   });
 });
@@ -235,67 +399,89 @@ db.query(sql, [Title, Description, Category, Image, Prerequisites, Duration, Lec
 
 app.post("/enroll", (req, res) => {
   const { courseId } = req.body;
+  const studentId = req.session.userid;
 
-  db.query("INSERT INTO students (CourseId) VALUES (?)", [courseId], (error, result) => {
+  db.query(
+    "SELECT * FROM enrollments WHERE CourseId = ? AND StudentID = ?",
+    [courseId, studentId],
+    (error, results) => {
+      if (error) {
+        console.error("Error checking enrollment:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+
+      if (results.length > 0) {
+        return res.status(400).json({ error: "Student already enrolled in the course" });
+      }
+
+      db.query(
+        "INSERT INTO enrollments (CourseId, StudentID) VALUES (?, ?)",
+        [courseId, studentId],
+        (error, result) => {
+          if (error) {
+            console.error("Error enrolling student:", error);
+            return res.status(500).json({ error: "Internal server error" });
+          }
+          res.status(201).json({ message: "Enrolled successfully" });
+        }
+      );
+    }
+  );
+});
+
+
+app.delete('/enroll/:courseId/:userId', (req, res) => {
+  const courseId = req.params.courseId;
+  const userId = req.params.userId;
+
+  console.log("Deleting course with ID:", courseId, "for user ID:", userId); 
+
+  const sql = "DELETE FROM enrollments WHERE CourseID = ? AND StudentID = ?";
+  db.query(sql, [courseId, userId], (err, result) => {
+    if (err) {
+      console.error("Error occurred during delete:", err);
+      return res.status(500).json({ error: "An error occurred during delete" });
+    }
+    console.log("Record deleted successfully"); 
+    return res.json({ success: true, message: "Record deleted successfully" });
+  });
+});
+
+
+
+app.get("/enrolledcourses", (req, res) => {
+  const studentId = req.session.userid;
+  db.query(
+    "SELECT * FROM courses INNER JOIN enrollments ON courses.CourseID = enrollments.CourseID WHERE enrollments.StudentID = ?",
+    [studentId],
+    (error, result) => {
+      if (error) {
+        console.log("Error Fetching enrolled courses ", error);
+        return res.status(500).json({ error: "Internal error" });
+      }
+      res.status(200).json({ message: "Fetched successfully", enrolledCourses: result });
+    }
+  );
+});
+
+
+
+
+app.get('/totalStudents', (req, res) => {
+  db.query(`
+    SELECT COUNT(enrollments.StudentID) AS TotalStudents
+    FROM courses
+    LEFT JOIN enrollments ON courses.CourseID = enrollments.CourseID;
+  `, (error, results) => {
     if (error) {
-      console.error("Error enrolling student:", error);
-      return res.status(500).json({ error: "Internal server error" });
+      console.error('Error fetching total number of students:', error);
+      return res.status(500).json({ error: 'Internal error' });
     }
-    res.status(201).json({ message: "Enrolled successfully" });
+    res.status(200).json({ message: 'Fetched successfully', totalStudents: results[0].TotalStudents });
   });
 });
 
-
-
-
-
-app.get('/tutors', (req, res) => {
-  const sql = 'SELECT * FROM tutor';
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error retrieving tutors from database:', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    console.log('Tutors retrieved from database:', result);
-    res.status(200).json(result);
-  });
-});
-
-
-
-
-
-
-app.post('/updateUserRole', (req, res) => {
-  const { email, role } = req.body;
-
-  res.json({ message: `User role updated to ${role} for email ${email}` });
-});
-
-
-app.get('/tutors/:id', (req, res) => {
-  const tutorId = req.params.id;
-
-  const sql = "SELECT * FROM tutors WHERE TutorID = ?";
-
-  db.query(sql, [tutorId], (err, result) => {
-    if (err) {
-      console.error('Error fetching tutor:', err);
-      return res.status(500).json({ error: "Error occurred while fetching tutor" });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ error: "Tutor not found" });
-    }
-    return res.json(result[0]);
-  });
-});
-
-
-   
 
 app.listen(8080, () => {
   console.log('Server is running on port 8080');
 });
-
-

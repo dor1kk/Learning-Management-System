@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import axios from 'axios';
+import "./Signin.css";
 
 const Signin = () => {
     const [formData, setFormData] = useState({
@@ -45,14 +46,11 @@ const Signin = () => {
   
 
   return (
-    <div style={{  minHeight: '100vh', padding: '2rem 0' }}>
+    <div className='signin-container' style={{  minHeight: '100vh', padding: '2rem 0' }}>
       <Container className='d-flex flex-row justify-content-center align-items-center'>
-        <Row>
-          <img className='img-fluid' style={{width:"auto", height:"400px"}} src="https://img.freepik.com/free-vector/happy-diverse-students-celebrating-graduation-from-school_74855-5853.jpg"></img>
-        </Row>
         <Row className="justify-content-md-center">
-          <Col md="8">
-            <div style={{ background: '#ffffff', padding: '2rem', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+          <Col md="10">
+            <div style={{ marginRight:"450px",marginTop:"80px",background: '#ffffff', padding: '2rem', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
               <Typography variant="h4" component="h2" align="center" gutterBottom style={{color:"#1e4589"}}> 
                 Welcome Back!
               </Typography>

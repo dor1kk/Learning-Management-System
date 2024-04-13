@@ -1,0 +1,16 @@
+.signin-container{
+    background-image: url("../course-container.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+ 
+}
+
+
+.signup-container{
+    background-image: url("../course-container.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+
+}

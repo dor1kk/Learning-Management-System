@@ -105,7 +105,7 @@ function Lecture() {
             <Typography variant="h4" align="center" gutterBottom>
                 Lecture Details
             </Typography>
-            <Card>
+            <Card >
                 <CardContent>
                     <Typography variant="h5" component="h2">
                         {lecture.LectureTitle}

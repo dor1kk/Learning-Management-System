@@ -9,7 +9,6 @@ import StudentList from "./Components/Students/Students";
 import Chat from "./Components/Chat/Chat";
 import Notifications from "./Components/Notifications/Notifcations";
 import Tutors from "./Components/Tutors/Tutors";
-import BecomeTutor from "./Components/Tutors/BecomeTutor";
 import YourCourses from "./Components/YourCourses/YourCourses";
 import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
 import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
@@ -23,7 +22,6 @@ import Lectures from "./Components/Lectures/Lectures";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
 import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
-import TutorProfile from "./Components/Tutors/TutorProfile";
 
 const PrivateRoute = () => {
   return (
@@ -51,10 +49,6 @@ const PrivateRoute = () => {
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
-        <Route path="/tutors/:id" component={TutorProfile} />
-
-        
-        <Route path="/BecomeTutor" element={<BecomeTutor />}></Route>
         
       </Routes>
     </Sidebaar>

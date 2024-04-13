@@ -50,16 +50,16 @@ function Courses() {
   });
 
   return (
-    <main className="container">
+    <main className="container-kursi">
       <section className="controls d-flex justify-content-between align-items-center">
         <div className="categories">
           <ul>
-            <li onClick={() => setCategory("")}>All</li>
-            <li onClick={() => setCategory("Frontend")}><SiHtml5 /> Frontend</li>
-            <li onClick={() => setCategory("Backend")}><FaNodeJs/> Backend</li>
-            <li onClick={() => setCategory("Database")}><FaDatabase /> Database</li>
-            <li onClick={() => setCategory("DSA")}><BiNetworkChart /> Data Structures</li>
-            <li onClick={() => setCategory("Math")}><FaCalculator /> Mathematics</li>
+            <li className="bg-white text-primary" onClick={() => setCategory("")}>All</li>
+            <li className="bg-white text-primary"  onClick={() => setCategory("Frontend")}><SiHtml5 /> Frontend</li>
+            <li className="bg-white text-primary"  onClick={() => setCategory("Backend")}><FaNodeJs/> Backend</li>
+            <li className="bg-white text-primary"   onClick={() => setCategory("Database")}><FaDatabase /> Database</li>
+            <li className="bg-white text-primary"   onClick={() => setCategory("DSA")}><BiNetworkChart /> Data Structures</li>
+            <li className="bg-white text-primary"   onClick={() => setCategory("Math")}><FaCalculator /> Mathematics</li>
           </ul>
         </div>
         <div className="sort-by">
@@ -74,11 +74,11 @@ function Courses() {
           </select>
         </div>
       </section>
-      <section className="course-cards d-flex flex-row flex-wrap">
+      <section className="course-cards  d-flex flex-row flex-wrap">
         {sortedCourses.map((course) => (
-          <div key={course.CourseID} className="carda mb-3 col-md-" style={{ minWidth: "240px", height: "330px", boxShadow: "2px 2px 10px lightgrey", position: "relative" }}>
+          <div key={course.CourseID} className="carda bg-white mb-3 col-md-" style={{ minWidth: "240px", height: "330px", boxShadow: "2px 2px 10px lightgrey", position: "relative" }}>
             <div className="d-flex flex-row">
-              <img src={course.Image} className="card-img" style={{ width: "250px", opacity: "0.8", position: "relative", zIndex: "0" }} alt="Course" />
+              <img src={course.Image} className="card-img" style={{ width: "250px", position: "relative", zIndex: "0" }} alt="Course" />
               <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" className="img-fluid" style={{ position: "absolute", zIndex: "10", top: "45%", left: "20%", transform: "translate(-50%, -50%)", borderRadius:"50%", border: "7px solid white", width: "70px", height: "70px" }} alt="Profile" />
             </div>
             <div className="p-2 " style={{marginTop:"38px"}}>
