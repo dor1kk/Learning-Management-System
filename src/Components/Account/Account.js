@@ -1,67 +1,90 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import './Account.css';
+import Typography from '@mui/material/Typography';
 
 function Account() {
+    const [profileData, setProfileData] = useState({});
+
+    useEffect(() => {
+        fetchTutorData();
+    }, []);
+
+    const fetchTutorData = () => {
+        axios.get('http://localhost:8080/tutoria', { withCredentials: true })
+            .then(response => {
+                if (response.data && response.data.length > 0) {
+                    setProfileData(response.data[0]);
+                }
+            })
+            .catch(error => console.error('Error fetching tutor data:', error));
+    };
+
     return (
-        <div className="container mt-5">
+        <div className="container mt-1"> 
             <div className="row">
                 <div className="col-12">
-                    
                     <div className="my-5">
-                        <h3>My Profile</h3>
-                        <hr />
+                    <Typography variant="h3" gutterBottom fontWeight="bold" color="primary">My Profile</Typography>
                     </div>
-                    
                     <form className="file-upload">
                         <div className="row mb-5 gx-5">
                             {/* Contact detail */}
                             <div className="col-md-8 mb-md-0">
                                 <div className="bg-secondary-soft px-4 py-5 rounded">
                                     <div className="row g-3">
-                                        <h4 className="mb-4 mt-0">Profile details</h4>
-                                        
+                                    <Typography variant="h6" gutterBottom fontWeight="bold" color="primary">Profile details</Typography>
                                         <div className="col-md-6">
                                             <label className="form-label">First Name *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="First name" value="Erza" />
+                                            <input type="text" className="form-control" placeholder="" aria-label="First name" value={profileData.name} />
                                         </div>
-                                        
                                         <div className="col-md-6">
-                                            <label className="form-label">Last Name *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Last name" value="Shala" />
+                                            <label className="form-label">Email *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Email" value={profileData.email} />
                                         </div>
-                                        
                                         <div className="col-md-6">
-                                            <label className="form-label">Country *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Country" value="Kosove" />
+                                            <label className="form-label">Expertise *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Expertise" value={profileData.expertise} />
                                         </div>
-                                        
                                         <div className="col-md-6">
-                                            <label className="form-label">Address *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Address" value="Peje" />
+                                            <label className="form-label">Bio *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Bio" value={profileData.bio} />
                                         </div>
-                                        
                                         <div className="col-md-6">
-                                            <label for="inputEmail" className="form-label">Email *</label>
-                                            <input type="email" className="form-control" id="inputEmail" value="erzashala1@icloud.com" />
+                                            <label className="form-label">Courses *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Courses" value={profileData.courses} />
                                         </div>
-                                        
                                         <div className="col-md-6">
-                                            <label className="form-label">Phone Number *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Phone Number" value="049 361 517" />
+                                            <label className="form-label">Experience *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Experience" value={profileData.experience} />
                                         </div>
-
                                         <div className="col-md-6">
-                                            <label className="form-label">Role *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Role" value="Student" />
+                                            <label className="form-label">Education *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Education" value={profileData.education} />
                                         </div>
-                                    </div> 
+                                        <div className="col-md-6">
+                                            <label className="form-label">Location *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Location" value={profileData.location} />
+                                        </div>
+                                        <div className="col-md-6">
+                                            <label className="form-label">Contact *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Contact" value={profileData.contact} />
+                                        </div>
+                                        <div className="col-md-6">
+                                            <label className="form-label">Availability *</label>
+                                            <input type="text" className="form-control" placeholder="" aria-label="Availability" value={profileData.availability} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            {/* Upload profile */}
+
                             <div className="col-md-4">
                                 <div className="bg-secondary-soft px-4 py-5 rounded">
                                     <div className="row g-3">
-                                        <h4 className="mb-4 mt-0">Upload your profile photo</h4>
+                                    
+
+<Typography variant="h4" gutterBottom fontWeight="bold" color="primary">Upload Profile Photo</Typography>
+
                                         <div className="text-center">
                                             
                                             <div className="square position-relative display-2 mb-3">
@@ -79,71 +102,13 @@ function Account() {
                             </div>
                         </div> 
 
-                        {/* Social media detail */}
-                        <div className="row mb-5 gx-5">
-                            <div className="col-md-6 mb-md-0">
-                                <div className="bg-secondary-soft px-4 py-5 rounded">
-                                    <div className="row g-3">
-                                        <h4 className="mb-4 mt-0">Social media detail</h4>
-                                        
-                                        <div className="col-md-6">
-                                            <label className="form-label"><i className="fab fa-fw fa-facebook me-2 text-facebook"></i>Facebook *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Facebook" value="http://www.facebook.com" />
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <label className="form-label"><i className="fab fa-fw fa-twitter text-twitter me-2"></i>Twitter *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Twitter" value="http://www.twitter.com" />
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <label className="form-label"><i className="fab fa-fw fa-linkedin-in text-linkedin me-2"></i>Linkedin *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Linkedin" value="http://www.linkedin.com" />
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <label className="form-label"><i className="fab fa-fw fa-instagram text-instagram me-2"></i>Instagram *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="Instagram" value="http://www.instagram.com" />
-                                        </div>
-                                        
-                                        <div className="col-md-6">
-                                            <label className="form-label"><i className="fas fa-fw fa-basketball-ball text-dribbble me-2"></i>GitHub *</label>
-                                            <input type="text" className="form-control" placeholder="" aria-label="GitHub" value="http://www.github.com" />
-                                        </div>
-                                    </div> {/* Row END */}
-                                </div>
-                            </div>
-
-                            {/* Change password */}
-                            <div className="col-md-6">
-                                <div className="bg-secondary-soft px-4 py-5 rounded">
-                                    <div className="row g-3">
-                                        <h4 className="my-4">Change Password</h4>
-                                        {/* Old password */}
-                                        <div className="col-md-6">
-                                            <label htmlFor="oldPassword" className="form-label">Old password *</label>
-                                            <input type="password" className="form-control" id="oldPassword" />
-                                        </div>
-                                        {/* New password */}
-                                        <div className="col-md-6">
-                                            <label htmlFor="newPassword" className="form-label">New password *</label>
-                                            <input type="password" className="form-control" id="newPassword" />
-                                        </div>
-                                        {/* Confirm password */}
-                                        <div className="col-md-12">
-                                            <label htmlFor="confirmPassword" className="form-label">Confirm Password *</label>
-                                            <input type="password" className="form-control" id="confirmPassword" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> {/* Row END */}
-                        {/* Button */}
-                        <div className="gap-3 d-md-flex justify-content-md-end">
-                            <button type="button" className="btn btn-danger btn-lg me-3">Delete profile</button>
-                            <button type="button" className="btn btn-primary btn-lg">Update profile</button>
-                        </div>
-                    </form> {/* Form END */}
+                       
+                    </form>
+                    {/* Button */}
+                    <div className="gap-3 d-md-flex justify-content-md-end">
+                        <button type="button" className="btn btn-danger btn-lg me-3">Delete profile</button>
+                        <button type="button" className="btn btn-primary btn-lg">Update profile</button>
+                    </div>
                 </div>
             </div>
         </div>

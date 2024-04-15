@@ -14,6 +14,7 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import TutorProfile from "./Components/Tutors/TutorProfile";
 import Courses from "./Components/Courses/Courses";
 import Account from "./Components/Account/Account";
+import Accounttt from "./Components/Account/Accounttt";
 import Tutors from "./Components/Tutors/Tutors";
 import Students from "./Components/Students/Students";
 import YourCourses from "./Components/YourCourses/YourCourses";
@@ -210,6 +211,33 @@ My Enroll Management
             Lectures Management
           </MenuItem>
               ) : null}
+              {role === "Tutor" ? (
+<SubMenu label="Settings" icon={<AiOutlineSetting />}>
+              <MenuItem 
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Account" className="link" />}
+                icon={<AiOutlineUser />}
+                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
+              >
+                Account
+              </MenuItem>
+              <MenuItem 
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Chat" className="link" />}
+                icon={<AiOutlineMessage />}
+                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
+                Chat
+              </MenuItem>
+              <MenuItem
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Notifications" className="link" />}
+                icon={<AiOutlineNotification />}
+                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
+                Notifications
+              </MenuItem>
+            </SubMenu>
+             ) : null}
+
 
 
 
@@ -286,12 +314,12 @@ My Enroll Management
 
             
             
-            <SubMenu label="Settings" icon={<AiOutlineSetting />}>
+<SubMenu label="Settings" icon={<AiOutlineSetting />}>
               <MenuItem 
                 style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Account" className="link" />}
+                component={<Link to="/Home/Accounttt" className="link" />}
                 icon={<AiOutlineUser />}
-                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
+                className={`menu-item ${location.pathname === "/Accounttt" ? "active" : ""}` }
               >
                 Account
               </MenuItem>

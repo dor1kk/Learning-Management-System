@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import './UserManagement.css';
+import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -23,15 +25,13 @@ function UserManagement() {
   const deleteUser = async (userId) => {
     try {
       await axios.delete(`http://localhost:8080/users/${userId}`);
-      fetchUsers(); // After deleting the user, fetch updated user list
+      fetchUsers(); 
     } catch (error) {
       console.error('Error deleting user:', error);
     }
   };
 
-  const editUser = (userId) => {
-    console.log(`Editing user with ID: ${userId}`);
-  };
+
 
   return (
     <div className="user-management-container">
@@ -53,9 +53,14 @@ function UserManagement() {
                 <TableCell>{user.Role}</TableCell>
                 <TableCell>{user.Username}</TableCell>
                 <TableCell>
-                  <IconButton aria-label="edit" onClick={() => editUser(user.UserID)} style={{ color: '#2196f3' }}>
-                    <EditIcon />
-                  </IconButton>
+                <IconButton
+  aria-label="edit"
+  component={Link}
+  to={`/Home/EditUser/${user.UserID}`} 
+  style={{ color: '#2196f3' }}
+>
+  <EditIcon />
+</IconButton>
                   <IconButton aria-label="delete" onClick={() => deleteUser(user.UserID)} style={{ color: '#f44336' }}>
                     <DeleteIcon />
                   </IconButton>

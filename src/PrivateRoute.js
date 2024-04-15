@@ -4,6 +4,7 @@ import Sidebaar from "./Sidebaar";
 import Dashboard from "./Components/Dashboard/Dashboard"; 
 import Courses from "./Components/Courses/Courses";
 import Account from "./Components/Account/Account";
+import Accounttt from "./Components/Account/Accounttt";
 import CourseDetail from "./Components/Courses/Coursedetail";
 import StudentList from "./Components/Students/Students";
 import Chat from "./Components/Chat/Chat";
@@ -38,6 +39,7 @@ const PrivateRoute = () => {
       <Routes>
         <Route path="/Courses" element={<Courses />} />
         <Route path="/Account" element={<Account />} />
+        <Route path="/Accounttt" element={<Accounttt />} />
         <Route path="/Tutors" element={<Tutors />} />
         <Route path="/BecomeTutor" element={<BecomeTutor />} />
         <Route path="/TutorProfile" element={<TutorProfile />} />

@@ -537,12 +537,33 @@ app.get('/tutors', (req, res) => {
 });
 
 
-app.post('/updateUserRole', (req, res) => {
-  const { email, role } = req.body;
+app.post('/becomeTutor', (req, res) => {
+  const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
+  const userId = req.session.userid;
 
-  res.json({ message: `User role updated to ${role} for email ${email}` });
+  if (!userId) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const updateSql = 'UPDATE users SET role = "Tutor", username = ?, email = ? WHERE UserID = ?';
+  db.query(updateSql, [name, email, userId], function(err, updateResult) {
+    if (err) {
+      console.error('Error updating user role:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    const tutorSql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(tutorSql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, userId], function(err, tutorInsertResult) {
+      if (err) {
+        console.error('Error inserting into tutors table:', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      console.log('Data saved successfully');
+      res.status(200).send('Data saved successfully');
+    });
+  });
 });
-
 
 app.get('/tutors/:id', (req, res) => {
   const tutorId = req.params.id;
@@ -610,6 +631,64 @@ app.put('/users/:id', (req, res) => {
     }
   });
 });
+
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.get('/tutoria', (req, res) => {
+  if (!req.session.userid) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserId = tutor.UserId WHERE users.UserId = ?';
+  const userId = req.session.userid;
+
+  db.query(sql, userId, (err, result) => {
+      if (err) {
+          console.error('Error retrieving tutor from database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      
+      console.log('Tutor retrieved from database:', result);
+      res.status(200).json(result);
+  });
+});
+
+app.get('/studentsa', (req, res) => {
+  if (!req.session.userid) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const sql = 'SELECT * FROM students INNER JOIN users ON users.UserId = students.UserId WHERE users.UserId = ?';
+  const userId = req.session.userid;
+
+  db.query(sql, userId, (err, result) => {
+      if (err) {
+          console.error('Error retrieving student from database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      
+      console.log('Student retrieved from database:', result);
+      res.status(200).json(result);
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 app.get('/friends', (req, res) => {
