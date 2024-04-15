@@ -18,7 +18,7 @@ import Tutors from "./Components/Tutors/Tutors";
 import Students from "./Components/Students/Students";
 import YourCourses from "./Components/YourCourses/YourCourses";
 import Chat from "./Components/Chat/Chat";
-import { FaChalkboard, FaUserAstronaut } from "react-icons/fa";
+import { FaChalkboard, FaPencilAlt, FaUserAstronaut, FaUserFriends } from "react-icons/fa";
 import Notifications from "./Components/Notifications/Notifcations";
 import { IoBookOutline } from 'react-icons/io5';
 import { MdGrade, MdSchool } from 'react-icons/md';
@@ -250,6 +250,27 @@ My Enroll Management
             className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}`}
             >
             Tutors
+            </MenuItem>
+                ) : null}
+
+{role === "Student" ? (
+            <MenuItem
+            component={<Link to="/Home/exams" className="link" />}
+            icon={<FaPencilAlt />}
+            className={`menu-item ${location.pathname === "/exams" ? "active" : ""}`}
+            >
+            Exams
+            </MenuItem>
+                ) : null}
+
+
+{role === "Student" ? (
+            <MenuItem
+            component={<Link to="/Home/Friends" className="link" />}
+            icon={<FaUserFriends />}
+            className={`menu-item ${location.pathname === "/Friends" ? "active" : ""}`}
+            >
+            Friends
             </MenuItem>
                 ) : null}
 

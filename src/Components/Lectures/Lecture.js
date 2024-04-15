@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Typography, Card, CardContent, Divider } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 
 function Lecture() {
@@ -8,7 +7,7 @@ function Lecture() {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const courseId = searchParams.get('courseId');
-    
+
     const [lecture, setLecture] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,27 +19,22 @@ function Lecture() {
         fetchUserId();
     }, [lectureId, courseId]);
 
-
     useEffect(() => {
         const fetchCompletedLectures = async () => {
             try {
                 if (!userid) {
                     return;
                 }
-    
+
                 const response = await axios.get(`http://localhost:8080/completed-lectures/${userid}/${courseId}`);
                 setCompleted(response.data.includes(lectureId));
             } catch (error) {
                 setError('Error fetching completed lectures');
             }
         };
-    
+
         fetchCompletedLectures();
     }, [userid, courseId, lectureId]);
-    
-
-
-  
 
     const fetchLecture = async () => {
         try {
@@ -64,69 +58,45 @@ function Lecture() {
         }
     };
 
-    const fetchCompletedLectures = async () => {
-        try {
-            if (!userid) {
-                return;
-            }
-
-            const response = await axios.get(`http://localhost:8080/completed-lectures/${userid}/${courseId}`);
-            setCompleted(response.data.includes(lectureId));
-        } catch (error) {
-            setError('Error fetching completed lectures');
-        }
-    };
     const handleCompleteLecture = async () => {
         if (!completed) {
             try {
                 await axios.post('http://localhost:8080/completed-lectures', { lectureId: lectureId, courseId: courseId });
-                // Update the completed state after the lecture is marked as completed
                 setCompleted(true);
-                // Fetch the updated list of completed lectures
-                fetchCompletedLectures();
             } catch (error) {
                 console.error('Error completing lecture:', error);
             }
         }
     };
-    
-    
 
     if (loading) {
-        return <Typography>Loading...</Typography>;
+        return <p>Loading...</p>;
     }
 
     if (error) {
-        return <Typography>{error}</Typography>;
+        return <p>{error}</p>;
     }
 
     return (
-        <div style={{ width: '90%', margin: 'auto' }}>
-            <Typography variant="h4" align="center" gutterBottom>
-                Lecture Details
-            </Typography>
-            <Card >
-                <CardContent>
-                    <Typography variant="h5" component="h2">
-                        {lecture.LectureTitle}
-                    </Typography>
-                    <Typography variant="body1" color="textSecondary">
-                        {lecture.LectureContent}
-                    </Typography>
-                    <img src={lecture.Image} alt="Lecture" style={{ width: '100%', margin: '20px 0', borderRadius: '5px' }} />
-                    <Divider />
+        <div className="lecture-container p-4 mt-5">
+            <div className="lecture-card">
+                <div className="lecture-card-body">
+                    <h5 className="card-title text-primary" style={{fontSize:"29px"}}>{lecture.LectureTitle}</h5>
+                    <p className="card-text">{lecture.LectureContent}</p>
+                    <img src={lecture.Image} alt="Lecture" className="img-fluid mb-3" style={{ borderRadius: '5px' }} />
+                    <hr />
                     {completed ? (
-                        <Typography variant="body1" style={{ color: 'green' }}>Completed</Typography>
+                        <p className="card-text" style={{ color: 'green' }}>Completed</p>
                     ) : (
                         <button
                             onClick={handleCompleteLecture}
-                            style={{ background: 'blue', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                            className="btn btn-primary"
                         >
                             Complete Lecture
                         </button>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }

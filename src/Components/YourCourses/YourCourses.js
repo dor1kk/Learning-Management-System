@@ -62,6 +62,10 @@ function YourCourses() {
     console.log("Navigating to lectures page with courseId:", courseId);
   };
 
+  const calculateProgress = (completedLectures, totalLectures) => {
+    return (completedLectures / totalLectures) * 100;
+  };
+
   return (
     <main className="yc-container">
       <section className="course-cardsi">
@@ -74,7 +78,7 @@ function YourCourses() {
               </div>
               <div className="progresi">
                 <div className="progress" style={{ width: "150px", marginTop: "10px", marginLeft:"25px" }}>
-                  <div className="progress-bar bg-primary" role="progressbar" style={{ width: "60%" }} aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div className="progress-bar bg-primary" role="progressbar" style={{ width: `${calculateProgress(course.completedLectures, course.totalLectures)}%` }} aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <span style={{fontSize:"11px", color:"gray", marginRight:"20px"}}>
                   You have enrolled on this course on: <br />

@@ -14,7 +14,8 @@ import TutorProfile from "./Components/Tutors/TutorProfile";
 import YourCourses from "./Components/YourCourses/YourCourses";
 import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
 import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
-import ExamsManagement from "./Components/Tutor-Managements/ExamsManagement";
+import ExamManagement from "./Components/Tutor-Managements/Exams-Management/ExamsManagement";
+import AddExam from "./Components/Tutor-Managements/Exams-Management/AddExam";
 import LectureManagement from "./Components/Tutor-Managements/Lectures-Management/LectureManagement";
 import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
@@ -24,6 +25,12 @@ import Lectures from "./Components/Lectures/Lectures";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
 import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
+import Friends from "./Components/Friends/Friends";
+import EditExam from "./Components/Tutor-Managements/Exams-Management/EditExam";
+import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
+import Exams from "./Components/Exams/Exams";
+import Exam from "./Components/Exams/Exam";
+import TakeExam from "./Components/Exams/takeExam";
 
 const PrivateRoute = () => {
   return (
@@ -44,7 +51,7 @@ const PrivateRoute = () => {
         <Route path="/TutorDashboard" element={<TutorDashboard />} />
         <Route path="/T-CoursesManagement" element={<CourseManagement />} />
         <Route path="/T-GradesManagement" element={<GradeManagement />} />
-        <Route path="/T-ExamsManagement" element={<ExamsManagement />} />
+        <Route path="/T-ExamsManagement" element={<ExamManagement />} />
         <Route path="/T-LecturesManagement" element={<LectureManagement />} />
         <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
@@ -53,6 +60,13 @@ const PrivateRoute = () => {
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
+        <Route path="/Friends" element={<Friends />}></Route>
+        <Route path="/addexam" element={<AddExam />}></Route>
+        <Route path="/editexam/:id" element={<EditExam />}></Route>
+        <Route path="/manageQuestions" element={<ManageQuestions />}></Route>
+        <Route path="/exams" element={<Exams />}></Route>
+        <Route path="/exam" element={<Exam />} />
+        <Route path="/takeExam" element={<TakeExam />}></Route>
         
       </Routes>
     </Sidebaar>
