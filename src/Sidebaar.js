@@ -10,36 +10,24 @@ import Topbar from "./Components/Topbar/Topbar";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Footer from "./Components/Footer/Footer";
-import Dashboard from "./Components/Dashboard/Dashboard";
-import TutorProfile from "./Components/Tutors/TutorProfile";
-import Courses from "./Components/Courses/Courses";
-import Account from "./Components/Account/Account";
-import Accounttt from "./Components/Account/Accounttt";
-import Tutors from "./Components/Tutors/Tutors";
-import Students from "./Components/Students/Students";
-import YourCourses from "./Components/YourCourses/YourCourses";
-import Chat from "./Components/Chat/Chat";
+
 import { FaChalkboard, FaPencilAlt, FaUserAstronaut, FaUserFriends } from "react-icons/fa";
-import Notifications from "./Components/Notifications/Notifcations";
 import { IoBookOutline } from 'react-icons/io5';
 import { MdGrade, MdSchool } from 'react-icons/md';
 import { FaChartLine, FaClipboardCheck, FaCode, FaGraduationCap, FaUserPlus } from 'react-icons/fa';
 import { AiOutlineMessage } from 'react-icons/ai';
 import { FaChalkboardTeacher, FaHome } from 'react-icons/fa';
-import Course from "./Components/Courses/Coursedata";
-import CourseDetail from "./Components/Courses/Coursedetail";
-import Signin from "./Components/Signin/Signin";
-import Signup from "./Components/Signin/Signup";
+
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa6";
-import { IoScaleOutline } from "react-icons/io5";
-import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
+
 
 const Sidebaar = ({ children }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [name, setName] = useState('');
   const [role, setRole]=useState('');
+  const [image,setImage]=useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -62,6 +50,18 @@ axios.defaults.withCredentials= true;
         console.log(res.data); 
         if (res.data.valid) {
           setRole(res.data.role);
+        } 
+      })
+      .catch(err => console.log(err));
+  }, [location.pathname, navigate]);
+
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/image')
+      .then(res => {
+        console.log(res.data); 
+        if (res.data.valid) {
+          setImage(res.data.image);
         } 
       })
       .catch(err => console.log(err));
@@ -101,7 +101,7 @@ axios.defaults.withCredentials= true;
           <Menu>
             <MenuItem
               className={`menu-item-1 ${location.pathname === "/Profile" ? "active" : ""}`}
-              icon={<AccountCircleIcon />}
+              icon={<img src={image} style={{width:"40px", height:"40px", borderRadius:"50%"}}></img>}
             >
             <h6>{name}</h6>
             </MenuItem>
@@ -211,32 +211,8 @@ My Enroll Management
             Lectures Management
           </MenuItem>
               ) : null}
-              {role === "Tutor" ? (
-<SubMenu label="Settings" icon={<AiOutlineSetting />}>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Account" className="link" />}
-                icon={<AiOutlineUser />}
-                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
-              >
-                Account
-              </MenuItem>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Chat" className="link" />}
-                icon={<AiOutlineMessage />}
-                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
-                Chat
-              </MenuItem>
-              <MenuItem
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Notifications" className="link" />}
-                icon={<AiOutlineNotification />}
-                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
-                Notifications
-              </MenuItem>
-            </SubMenu>
-             ) : null}
+
+
 
 
 
@@ -312,9 +288,34 @@ My Enroll Management
             </MenuItem>
                 ) : null}
 
-            
-            
+                
+              {role === "Tutor" ? (
 <SubMenu label="Settings" icon={<AiOutlineSetting />}>
+              <MenuItem 
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Account" className="link" />}
+                icon={<AiOutlineUser />}
+                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
+              >
+                Account
+              </MenuItem>
+              <MenuItem 
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Chat" className="link" />}
+                icon={<AiOutlineMessage />}
+                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
+                Chat
+              </MenuItem>
+              <MenuItem
+                style={{backgroundColor:colors.backgroundColor}}
+                component={<Link to="/Home/Notifications" className="link" />}
+                icon={<AiOutlineNotification />}
+                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
+                Notifications
+              </MenuItem>
+            </SubMenu>
+             ) : role=== "Student" ? (
+              <SubMenu label="Settings" icon={<AiOutlineSetting />}>
               <MenuItem 
                 style={{backgroundColor:colors.backgroundColor}}
                 component={<Link to="/Home/Accounttt" className="link" />}
@@ -337,7 +338,12 @@ My Enroll Management
                 className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
                 Notifications
               </MenuItem>
-            </SubMenu>
+            </SubMenu>):null}
+
+
+            
+            
+
             
           </Menu>
         </Sidebar>

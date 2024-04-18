@@ -1,7 +1,7 @@
 .exam-container{
     background-image: url("../course-container.png");
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-size: contain;
+
     height: 100vh;
 
     
@@ -9,14 +9,14 @@
 
 .test-container{
     background-image: url("../course-container.png");
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-size: contain;
     height: 100vh;
 }
 
 
 .exam-container {
     padding: 20px;
+
   }
   
   .exam-course-cards {
@@ -25,7 +25,7 @@
   }
   
   .exam-card {
-    width: 280px;
+    width: 250px;
     margin: 20px;
     border-radius: 8px;
     overflow: hidden;

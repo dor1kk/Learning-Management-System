@@ -43,21 +43,44 @@ const db = mysql.createConnection({
 
 
 app.post('/signup', (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, email, name, image } = req.body;
   console.log('Received data:', { username, password, email });
 
-  db.query('INSERT INTO users (Username, Password, Email) VALUES (?, ?, ?)', [username, password, email], (error, results) => {
+  db.query('INSERT INTO users (Username, Password, Email) VALUES (?, ?, ?)', [username, password, email], (error, userResults) => {
     if (error) {
       console.error('Error registering user:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
-    res.status(201).json({ message: 'User registered successfully' });
+
+    db.query('SELECT UserID FROM users WHERE Username = ?', [username], (error, idResults) => {
+      if (error) {
+        console.error('Error retrieving UserID:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      if (idResults.length === 0) {
+        console.error('No UserID found for username:', username);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      const userId = idResults[0].UserID;
+
+      db.query('INSERT INTO students (Name, Grade, Image, UserId) VALUES (?, ?, ?, ?)', [name, '', image, userId], (error) => {
+        if (error) {
+          console.error('Error adding user to students table:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.status(201).json({ message: 'User registered successfully' });
+      });
+    });
   });
 });
 
+
 app.post('/signin', (req, res) => {
   const { username, password } = req.body;
-  db.query('SELECT * FROM users WHERE Username = ? and Password = ?', [username, password], (error, results) => {
+  db.query('SELECT * FROM users Inner join students on students.UserID=users.UserID WHERE users.Username = ? and users.Password = ?', [username, password], (error, results) => {
     if (error) {
       console.error('Error fetching user:', error);
       return res.status(500).json({ error: 'Internal server error' });
@@ -71,6 +94,11 @@ app.post('/signin', (req, res) => {
       req.session.userid = results[0].UserID; 
       req.session.password=results[0].Password;
       req.session.Email=results[0].Email;
+      req.session.image=results[0].Image;
+
+
+      console.log('image', req.session.image)
+
 
       console.log('Session:', req.session); 
       console.log('Stored username:', req.session.username); 
@@ -92,9 +120,22 @@ app.get('/userid', (req,res)=>{
   }
 });
 
-app.get('/', (req,res)=>{
-  if(req.session.username){
-    return res.json({valid: true, username: req.session.username});
+
+app.get('/', (req, res) => {
+  if (req.session && req.session.username) {
+    return res.json({ valid: true, username: req.session.username });
+  } else {
+    return res.json({ valid: false });
+  }
+});
+
+
+
+
+
+app.get('/image', (req,res)=>{
+  if(req.session.image){
+    return res.json({valid: true, image: req.session.image});
   } else {
     return res.json({valid: false});
   }
@@ -141,7 +182,7 @@ app.get('/courses', (req, res) => {
 
 
 app.get('/coursestutorinfo', (req, res) => {
-  const sql = "SELECT * FROM courses INNER JOIN tutor on courses.TutorID=tutor.TutorID";
+  const sql = "SELECT * FROM courses INNER JOIN tutor on courses.TutorID=tutor.UserID";
   console.log("SQL Query:", sql); 
   db.query(sql, (err, result) => {
     if (err) {
@@ -633,11 +674,7 @@ app.put('/users/:id', (req, res) => {
 });
 
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true
-}));
+
 
 app.get('/tutoria', (req, res) => {
   if (!req.session.userid) {
@@ -866,20 +903,30 @@ app.put('/exams/:id', (req, res) => {
 
 
 
-
 app.post('/examsquestion', (req, res) => {
-  const { examId, questionText, answerText } = req.body;
+  const { examId, questionText, answerText, options, correctOption } = req.body;
 
- 
+  console.log('Received request to add new question:', req.body);
 
-  const sql = 'INSERT INTO exam_questions (examId, questionText, answerText) VALUES (?, ?, ?)';
-  db.query(sql, [examId, questionText, answerText], (error, results) => {
+  db.query('INSERT INTO exam_questions (examId, questionText, answerText) VALUES (?, ?, ?)', [examId, questionText, answerText], (error, results) => {
     if (error) {
-      console.error('Error creating exam question:', error);
+      console.error('Error inserting question:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
-    console.log('New question added successfully.');
-    res.status(201).json({ message: 'Question added successfully' });
+
+    const questionId = results.insertId;
+
+    const optionsValues = options.map((option, index) => [questionId, option, index + 1 === correctOption]);
+
+    db.query('INSERT INTO question_options (questionId, Option1, Option2, Option3, Option4, correctOption) VALUES ?', [optionsValues], (error, results) => {
+      if (error) {
+        console.error('Error inserting options:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      console.log('Question and options added successfully');
+      res.status(201).json({ message: 'Question added successfully' });
+    });
   });
 });
 
@@ -943,9 +990,96 @@ app.delete('/question/:id', (req, res) => {
   });
 });
 
+app.post('/examsquestion', (req, res) => {
+  const { examId, questionText, answerText, options, correctOption } = req.body;
+
+  db.beginTransaction((err) => {
+    if (err) {
+      console.error('Error beginning transaction:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    db.query('INSERT INTO exam_questions (examId, questionText, answerText) VALUES (?, ?, ?)', [examId, questionText, answerText], (error, results) => {
+      if (error) {
+        console.error('Error inserting question:', error);
+        db.rollback(() => {
+          console.error('Transaction rolled back');
+          return res.status(500).json({ error: 'Internal server error' });
+        });
+      }
+
+      const questionId = results.insertId;
+
+      const optionsValues = options.map((option, index) => [questionId, index + 1, option, index + 1 === correctOption]);
+
+      db.query('INSERT INTO question_options (questionId, optionNumber, optionText, isCorrect) VALUES ?', [optionsValues], (error, results) => {
+        if (error) {
+          console.error('Error inserting options:', error);
+          db.rollback(() => {
+            console.error('Transaction rolled back');
+            return res.status(500).json({ error: 'Internal server error' });
+          });
+        }
+
+        db.commit((err) => {
+          if (err) {
+            console.error('Error committing transaction:', err);
+            db.rollback(() => {
+              console.error('Transaction rolled back');
+              return res.status(500).json({ error: 'Internal server error' });
+            });
+          }
+          console.log('Transaction committed successfully');
+          res.status(201).json({ message: 'Question added successfully' });
+        });
+      });
+    });
+  });
+});
 
 
 
+let correctAnswersCount = 0;
+
+
+app.post('/submit-answer', (req, res) => {
+  const { questionId, answerText } = req.body;
+
+  console.log('Question ID:', questionId);
+  console.log('Submitted Answer:', answerText);
+
+  const query = `SELECT answerText FROM exam_questions WHERE questionId = ?`;
+  db.query(query, [questionId], (error, results) => {
+    if (error) {
+      console.error('Error fetching correct answer from database:', error);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: 'Question not found' });
+      return;
+    }
+
+    const correctAnswer = results[0].answerText;
+
+    console.log('Correct Answer:', correctAnswer);
+
+    const isCorrect = answerText.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
+
+    if (isCorrect) {
+      correctAnswersCount++;
+    }
+
+    res.json({ correctAnswersCount });
+  });
+});
+
+
+// Endpoint to get the current count of correct answers
+app.get('/correct-answers-count', (req, res) => {
+  res.json({ correctAnswersCount });
+});
 
 
 

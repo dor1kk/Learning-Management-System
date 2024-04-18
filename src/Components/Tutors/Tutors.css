@@ -8,3 +8,10 @@
   }
 
 
+  .become-container{
+    background-image: url("../course-container.png");
+    background-size: contain;
+    height: 100vh;
+}
+
+

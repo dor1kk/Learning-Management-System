@@ -35,7 +35,6 @@ const CourseManagement = () => {
   
     const handleDeleteCourse = async (id) => {
         try {
-          // Log the course ID being sent to the backend
           console.log('Deleting course with ID:', id);
       
           const response = await axios.delete(`http://localhost:8080/courses/${id}`);
@@ -64,7 +63,7 @@ const CourseManagement = () => {
     });
   
     return (
-      <Container maxWidth="lg" style={{ marginTop: '20px' }}>
+      <Container maxWidth="lg" className='course-management' >
         <Grid container spacing={2} alignItems="center" style={{ marginBottom: '20px', marginTop:"30px" }}>
           <Grid item xs={12} sm={6} md={4}>
             <TextField
@@ -110,7 +109,7 @@ const CourseManagement = () => {
         </Grid>
         <br></br>
   
-        {showAddCourse && <AddCourse onCancel={() => setShowAddCourse(false)} />}
+        {showAddCourse && <AddCourse onCancel={() => setShowAddCourse(false)} etchCourses={fetchCourses} />}
         {showEditCourse && <EditCourse courseId={showEditCourse} onCancel={() => setShowEditCourse(false)} />}
 
   

@@ -24,12 +24,13 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
     const [completedLectures, setCompletedLectures] = useState([]);
     const [courseTitle, setCourseTitle] = useState('');
     const [courseImage, setCourseImage] = useState('');
-    const [userId,setUserId]=useState(""); 
+    const [userId,setUserId]=useState("");
+    const [lectures, setLectures]=useState([]); 
 
     const fetchAllLectures = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/lectures/${courseId}`);
-            setCompletedLectures(response.data);
+            setLectures(response.data);
         } catch (error) {
             console.error('Error fetching all lectures:', error);
         }
@@ -80,7 +81,7 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
                 Lectures for Course: {courseTitle}
             </Typography>
             <Grid container spacing={3}>
-                {completedLectures.map((lecture, index) => (
+                {lectures.map((lecture, index) => (
                     <Grid key={lecture.lectureId} item xs={12} sm={6} md={4} lg={3}>
                         <Card>
                             <Box position="relative">
@@ -94,9 +95,7 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
                                     alt="Lecture"
                                     style={{ filter: 'brightness(50%)' }}
                                 />
-                                {completedLectures.includes(lecture.LectureID) && ( // Conditionally render the Done icon
-                                    <Done style={{ color: 'green', marginTop:"40px" }} />
-                                )}
+                               
                             </Box>
                             <CardContent>
                                 <Typography style={{ width: "220px" }} variant="body1" component="h2" gutterBottom>

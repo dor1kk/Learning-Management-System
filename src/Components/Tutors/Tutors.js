@@ -62,7 +62,7 @@ function Tutors() {
     <List style={{ padding: 0 }}>
   {tutors.slice(0, 4).map((tutor, index) => (
     <ListItem key={tutor.id} disablePadding className="bg-light w-75" style={{ backgroundColor: "lightgrey", marginBottom: '8px' }}>
-      <Avatar alt={tutor.name} src={tutor.image} style={{ marginRight: '16px' }} />
+      <Avatar alt={tutor.name} src={tutor.image_url} style={{ marginRight: '16px' }} />
       <ListItemText primary={`${index + 1}. ${tutor.name}`} />
     </ListItem>
   ))}
@@ -80,7 +80,7 @@ function Tutors() {
             {tutors.map(tutor => (
               <Grid item xs={12} md={6} key={tutor.id}>
                 <Card className="mt-3" sx={{ display: 'flex', boxShadow: "0 3px 6px rgba(0,0,0,0.1)", borderRadius: "10px", width: '97%' }}>
-                  <Avatar src={tutor.image2} sx={{ width: 120, height: 120, margin:3 }} />
+                  <Avatar src={tutor.image_url} sx={{ width: 120, height: 120, margin:3 }} />
                   <Box p={2} style={{ flex: 1 }}>
                     <Typography variant="h6" mb={1}>{tutor.name}</Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -71,6 +71,7 @@ function LectureManagement() {
 
   const handleAddLecture = () => {
     setShowAddForm(true); 
+ 
   };
 
   const handleFormSubmit = async () => {
@@ -83,17 +84,18 @@ function LectureManagement() {
         LectureIndex: lectureCount
       });
       
-      fetchCourses(); 
-
+      await fetchAndDisplayLectures(selectedCourse.CourseID);
+  
+      setNewLectureTitle("");
+      setNewLectureImageUrl("");
+      setNewLectureDescription("");
+  
       console.log('New lecture added:', newLectureTitle);
     } catch (error) {
       console.error('Error adding new lecture:', error);
     }
-
-    setNewLectureTitle("");
-    setNewLectureImageUrl("");
-    setNewLectureDescription("");
   };
+  
 
   return (
     <Container style={{ backgroundColor: '#f9f9f9', height:"100vh", padding: '20px' }}>

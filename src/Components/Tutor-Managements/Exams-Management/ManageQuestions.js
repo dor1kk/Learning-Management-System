@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, List, ListItem, ListItemText, Collapse, ListItemIcon, Button, TextField } from '@mui/material';
+import { Container, List, ListItem, ListItemText, Collapse, ListItemIcon, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { ExpandLess, ExpandMore, Add, School, Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
@@ -11,6 +11,8 @@ function ManageQuestions() {
   const [questions, setQuestions] = useState([]);
   const [newQuestionText, setNewQuestionText] = useState("");
   const [newAnswerText, setNewAnswerText] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]); // Array to store option values
+  const [correctOption, setCorrectOption] = useState(""); // State to store the correct option
   const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
@@ -68,21 +70,45 @@ function ManageQuestions() {
     }
   };
 
+  const handleOptionChange = (index, value) => {
+    const updatedOptions = [...options];
+    updatedOptions[index] = value;
+    setOptions(updatedOptions);
+  };
+
+  const handleCorrectOptionChange = (event) => {
+    setCorrectOption(event.target.value);
+  };
 
   const handleFormSubmit = async () => {
     try {
+      console.log('Submitting form with data:', {
+        examId: selectedExam.examId,
+        questionText: newQuestionText,
+        answerText: newAnswerText,
+        options,
+        correctOption
+      });
+
       await axios.post('http://localhost:8080/examsquestion', {
         examId: selectedExam.examId,
         questionText: newQuestionText,
-        answerText: newAnswerText
+        answerText: newAnswerText,
+        options,
+        correctOption
       });
+
       fetchQuestionsByExam(selectedExam.examId);
       console.log('New question added:', newQuestionText);
     } catch (error) {
       console.error('Error adding new question:', error);
     }
+
     setNewQuestionText("");
     setNewAnswerText("");
+    setOptions(["", "", "", ""]); // Reset options
+    setCorrectOption("");
+    setShowAddForm(false); // Close the form after submission
   };
 
   return (
@@ -122,8 +148,8 @@ function ManageQuestions() {
                 >
                   <ListItemText primary={`${index + 1}. ${question.questionText}`} />
                   <ListItemText primary={`Answer: ${question.answerText}`} />
-                  <Link to={"/editquestion"} className='btn btn-secondary' style={{marginRight:"8px"}} ><Edit /> Edit</Link>
-                  <button className='btn btn-danger'  onClick={() => handleDelete(question.questionId)} ><Delete /> Delete</button>
+                  <Link to={"/editquestion"} className='btn btn-secondary' style={{ marginRight: "8px" }} ><Edit /> Edit</Link>
+                  <button className='btn btn-danger' onClick={() => handleDelete(question.questionId)} ><Delete /> Delete</button>
                 </ListItem>
               ))}
             </List>
@@ -154,6 +180,30 @@ function ManageQuestions() {
                 fullWidth
                 style={{ marginTop: '10px' }}
               />
+              {[0, 1, 2, 3].map((index) => (
+                <TextField
+                  key={index}
+                  label={`Option ${index + 1}`}
+                  value={options[index]}
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  style={{ marginTop: '10px' }}
+                />
+              ))}
+              <FormControl variant="outlined" fullWidth style={{ marginTop: '10px' }}>
+                <InputLabel>Correct Option</InputLabel>
+                <Select
+  value={correctOption}
+  onChange={handleCorrectOptionChange}
+  label="Correct Option"
+>
+  {[0, 1, 2, 3].map((index) => (
+    <MenuItem key={index} value={index + 1}>{`Option ${index + 1}`}</MenuItem>
+  ))}
+</Select>
+
+              </FormControl>
               <Button
                 variant="contained"
                 color="primary"

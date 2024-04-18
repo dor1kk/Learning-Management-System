@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Sidebaar from "./Sidebaar";
 import Dashboard from "./Components/Dashboard/Dashboard"; 
 import Courses from "./Components/Courses/Courses";
@@ -32,8 +32,47 @@ import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/Man
 import Exams from "./Components/Exams/Exams";
 import Exam from "./Components/Exams/Exam";
 import TakeExam from "./Components/Exams/takeExam";
+import axios from "axios";
 
 const PrivateRoute = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+
+
+  axios.defaults.withCredentials=true;
+
+  useEffect(() => {
+    console.log("Checking authentication...");
+    axios.get('http://localhost:8080/')
+      .then(res => {
+        console.log("Authentication response:", res.data);
+        if (res.data.valid) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      })
+      .catch(err => {
+        console.error('Error checking authentication:', err);
+        setIsLoggedIn(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    console.log("Loading...");
+    return <div>Loading...</div>; 
+  }
+
+  if (!isLoggedIn) {
+    console.log("User not authenticated, redirecting to signin page.");
+    return <Navigate to="/signin" />;
+  }
+
+  console.log("User authenticated, rendering private routes.");
   return (
     <Sidebaar>
       <Routes>
@@ -69,7 +108,6 @@ const PrivateRoute = () => {
         <Route path="/exams" element={<Exams />}></Route>
         <Route path="/exam" element={<Exam />} />
         <Route path="/takeExam" element={<TakeExam />}></Route>
-        
       </Routes>
     </Sidebaar>
   );
