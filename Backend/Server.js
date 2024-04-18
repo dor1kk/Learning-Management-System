@@ -943,9 +943,10 @@ app.delete('/question/:id', (req, res) => {
   });
 });
 
-
-
-
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  return res.json({ Status: "Success" });
+});
 
 
 
