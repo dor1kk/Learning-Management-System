@@ -30,9 +30,41 @@ const Sidebaar = ({ children }) => {
   const [image,setImage]=useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const [auth, setAuth] = useState(false);
+ 
 
+  
 axios.defaults.withCredentials= true;
 
+useEffect(() => {
+  axios.get('http://localhost:8080')
+    .then(res => {
+      if (res.data.Status === "Success") {
+        setAuth(true);
+        setName(res.data.name);
+      } else {
+        setAuth(false);
+      }
+    })
+    .catch(err => console.log(err));
+}, []);
+
+const handleLogout = () => {
+  axios.get('http://localhost:8080/logout')
+    .then(res => {
+      if (res.data.Status === "Success") {
+      
+        setAuth(false);
+        setName('');
+        setRole('');
+      
+        navigate('/');
+      } else {
+        alert("Error");
+      }
+    })
+    .catch(err => console.log(err));
+};
   useEffect(() => {
     axios.get('http://localhost:8080/')
       .then(res => {
@@ -69,7 +101,6 @@ axios.defaults.withCredentials= true;
 
 
 
-  
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -151,6 +182,7 @@ My Enroll Management
 </MenuItem>
 
   ) :null}
+            
             
 
             {role === "Tutor" ? (
@@ -246,7 +278,8 @@ My Enroll Management
                 Explore Courses
               </MenuItem>
          ):null }
-            
+
+
             {role === "Student" ? (
             <MenuItem
             component={<Link to="/Home/Tutors" className="link" />}
@@ -345,6 +378,14 @@ My Enroll Management
             
 
             
+            <MenuItem
+  onClick={handleLogout}
+  icon={<AiOutlineLogout />}
+  style={{ backgroundColor: colors.backgroundColor }}
+>
+  Logout
+</MenuItem>
+      
           </Menu>
         </Sidebar>
         <section className="flex-grow-1 d-flex flex-column">

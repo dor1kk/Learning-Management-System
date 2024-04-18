@@ -990,95 +990,9 @@ app.delete('/question/:id', (req, res) => {
   });
 });
 
-app.post('/examsquestion', (req, res) => {
-  const { examId, questionText, answerText, options, correctOption } = req.body;
-
-  db.beginTransaction((err) => {
-    if (err) {
-      console.error('Error beginning transaction:', err);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    db.query('INSERT INTO exam_questions (examId, questionText, answerText) VALUES (?, ?, ?)', [examId, questionText, answerText], (error, results) => {
-      if (error) {
-        console.error('Error inserting question:', error);
-        db.rollback(() => {
-          console.error('Transaction rolled back');
-          return res.status(500).json({ error: 'Internal server error' });
-        });
-      }
-
-      const questionId = results.insertId;
-
-      const optionsValues = options.map((option, index) => [questionId, index + 1, option, index + 1 === correctOption]);
-
-      db.query('INSERT INTO question_options (questionId, optionNumber, optionText, isCorrect) VALUES ?', [optionsValues], (error, results) => {
-        if (error) {
-          console.error('Error inserting options:', error);
-          db.rollback(() => {
-            console.error('Transaction rolled back');
-            return res.status(500).json({ error: 'Internal server error' });
-          });
-        }
-
-        db.commit((err) => {
-          if (err) {
-            console.error('Error committing transaction:', err);
-            db.rollback(() => {
-              console.error('Transaction rolled back');
-              return res.status(500).json({ error: 'Internal server error' });
-            });
-          }
-          console.log('Transaction committed successfully');
-          res.status(201).json({ message: 'Question added successfully' });
-        });
-      });
-    });
-  });
-});
-
-
-
-let correctAnswersCount = 0;
-
-
-app.post('/submit-answer', (req, res) => {
-  const { questionId, answerText } = req.body;
-
-  console.log('Question ID:', questionId);
-  console.log('Submitted Answer:', answerText);
-
-  const query = `SELECT answerText FROM exam_questions WHERE questionId = ?`;
-  db.query(query, [questionId], (error, results) => {
-    if (error) {
-      console.error('Error fetching correct answer from database:', error);
-      res.status(500).json({ error: 'Internal server error' });
-      return;
-    }
-
-    if (results.length === 0) {
-      res.status(404).json({ error: 'Question not found' });
-      return;
-    }
-
-    const correctAnswer = results[0].answerText;
-
-    console.log('Correct Answer:', correctAnswer);
-
-    const isCorrect = answerText.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
-
-    if (isCorrect) {
-      correctAnswersCount++;
-    }
-
-    res.json({ correctAnswersCount });
-  });
-});
-
-
-// Endpoint to get the current count of correct answers
-app.get('/correct-answers-count', (req, res) => {
-  res.json({ correctAnswersCount });
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  return res.json({ Status: "Success" });
 });
 
 
