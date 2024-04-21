@@ -80,7 +80,7 @@ app.post('/signup', (req, res) => {
 
 app.post('/signin', (req, res) => {
   const { username, password } = req.body;
-  db.query('SELECT * FROM users Inner join students on students.UserID=users.UserID WHERE users.Username = ? and users.Password = ?', [username, password], (error, results) => {
+  db.query('SELECT * FROM users  WHERE Username = ? and Password = ?', [username, password], (error, results) => {
     if (error) {
       console.error('Error fetching user:', error);
       return res.status(500).json({ error: 'Internal server error' });
@@ -149,6 +149,20 @@ app.get('/role', (req,res)=>{
   }
 });
 
+
+
+app.get('/studentImage', (req, res) => {
+  const userId=req.session.userid;
+  const sql = "SELECT Image from students  WHERE UserId=?";
+  db.query(sql,[userId], (err, result) => {
+    if (err) {
+      console.error("Error occurred during query:", err); 
+      return res.json({ error: "Error occurred" });
+    }
+    console.log("Query result:", result); 
+    return res.json(result);
+  });
+});
 
 
 
@@ -298,6 +312,63 @@ app.get('/completed-lectures/:userId/:courseId', (req, res) => {
     res.status(200).json(completedLectures);
   });
 });
+
+
+
+app.get('/lecturess/:courseId', (req, res) => {
+  const courseId = req.params.courseId; 
+  const userId = req.session.userid;
+
+  console.log("Received request to fetch lectures for course:", courseId);
+  console.log("User ID:", userId);
+
+  const fetchLecturesSql = `
+    SELECT 
+      l.LectureID,
+      l.LectureTitle AS Title,
+      cl.completionDate,
+      CASE 
+        WHEN cl.lectureid IS NOT NULL THEN 1 
+        ELSE 0 
+      END AS isCompleted
+    FROM 
+      lectures l
+    LEFT JOIN 
+      completed_lectures cl ON l.LectureID = cl.lectureId AND cl.userId = ?
+    WHERE
+      l.CourseID = ?
+    ORDER BY
+      l.LectureID
+  `;
+
+  console.log("Executing SQL query to fetch lectures...");
+
+  db.query(fetchLecturesSql, [userId, courseId], (error, results) => {
+    if (error) {
+      console.error('Error fetching lectures:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    console.log("Lectures fetched successfully:", results);
+
+    const lectures = results.map((lecture, index) => ({
+      LectureID: lecture.LectureID,
+      Title: lecture.Title,
+      isCompleted: lecture.isCompleted,
+      completionDate: lecture.completionDate,
+      isUnlocked: lecture.isCompleted === 1 || index === 0 || (index > 0 && results[index - 1].isCompleted === 1)
+    }));
+
+    console.log("Sending lectures data in response:", lectures);
+
+    res.status(200).json(lectures);
+  });
+});
+
+
+
+ 
+
 
 
 app.get('/completed-lectures-info/:userId/:courseId', (req, res) => {
@@ -902,33 +973,107 @@ app.put('/exams/:id', (req, res) => {
 
 
 
+app.post('/exam-question', (req, res) => {
 
-app.post('/examsquestion', (req, res) => {
-  const { examId, questionText, answerText, options, correctOption } = req.body;
 
-  console.log('Received request to add new question:', req.body);
-
-  db.query('INSERT INTO exam_questions (examId, questionText, answerText) VALUES (?, ?, ?)', [examId, questionText, answerText], (error, results) => {
+  const sql = 'INSERT INTO exam (courseId, examName, startTime, endTime, tutorId) VALUES (?, ?, ?, ?,?)';
+  db.query(sql, [courseId, examName, startTime, endTime, tutorid], (error, results) => {
     if (error) {
-      console.error('Error inserting question:', error);
+      console.error('Error creating exam:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
-
-    const questionId = results.insertId;
-
-    const optionsValues = options.map((option, index) => [questionId, option, index + 1 === correctOption]);
-
-    db.query('INSERT INTO question_options (questionId, Option1, Option2, Option3, Option4, correctOption) VALUES ?', [optionsValues], (error, results) => {
-      if (error) {
-        console.error('Error inserting options:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-
-      console.log('Question and options added successfully');
-      res.status(201).json({ message: 'Question added successfully' });
-    });
+    res.status(201).json({ message: 'Exam created successfully' });
   });
 });
+
+
+
+app.post('/addQuestion', (req, res) => {
+  const { Question, Option1, Option2, Option3, Option4, correctOption, exam } = req.body;
+  console.log('Received data:', req.body); 
+
+  const sql = 'INSERT INTO exam_questions (questionText, Option1, Option2, Option3, Option4, correctOption, examId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [Question, Option1, Option2, Option3, Option4, correctOption, exam], (error, results) => {
+    if (error) {
+      console.error('Error creating exam question:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    console.log('Question created successfully.');
+    res.status(201).json({ message: 'Question created successfully' });
+  });
+});
+
+
+app.post("/passExam", async (req, res) => {
+  const { examId,score } = req.body;
+  const userId = req.session.userid;
+
+
+  const sql = "INSERT INTO passed_exams (exam_id, user_id, score) VALUES (?, ?, ?)";
+  db.query(sql, [examId, userId, score], (error, results) => {
+    if (error) {
+      console.error("Error inserting passed exam data:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    console.log("Passed exam data inserted successfully.");
+    res.status(201).json({ message: "Passed exam data inserted successfully" });
+  });
+});
+
+app.get('/passedexams', (req, res) => {
+  const userID = req.session.userid;
+  const courseId = req.query.courseId; 
+  const sql = `
+    SELECT * FROM passed_exams pe inner join exam e on pe.exam_id=e.examId inner join courses c on e.courseId=c.CourseID WHERE user_id = ? AND e.courseId=?
+  `;
+  db.query(sql, [userID, courseId], (error, results) => {
+    if (error) {
+      console.error('Error fetching exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+});
+
+
+app.get('/passedexams-s', (req, res) => {
+  const userID = req.session.userid;
+  const sql = `
+    SELECT * FROM passed_exams pe inner join exam e on pe.exam_id=e.examId WHERE pe.user_id = ? 
+  `;
+  db.query(sql, [userID], (error, results) => {
+    if (error) {
+      console.error('Error fetching exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+});
+
+
+
+
+app.get('/available-exams/:courseId', (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.session.userid;
+
+  const sql = `
+    SELECT * FROM exam
+    WHERE examId NOT IN (
+      SELECT exam_id FROM passed_exams WHERE user_id = ?
+    )
+    AND courseId = ?
+  `;
+
+  db.query(sql, [userId, courseId], (error, results) => {
+    if (error) {
+      console.error('Error fetching available exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+});
+
 
 
 
@@ -963,7 +1108,7 @@ app.get('/exams-course/:courseId', (req, res) => {
 });
 
 app.get('/examsquestions/:examId', (req, res) => {
-  const { examId } = req.params; // Corrected examId parameter access
+  const { examId } = req.params;
   const sql = 'SELECT * FROM exam_questions WHERE examId=?';
   db.query(sql, [examId], (error, results) => {
     if (error) {
@@ -975,6 +1120,46 @@ app.get('/examsquestions/:examId', (req, res) => {
 });
 
 
+
+
+
+app.get('/passedexam-student', (req, res) => {
+  const userID = req.session.userid;
+  const sql = `
+  SELECT * FROM passed_exams pe
+  INNER JOIN users u ON pe.user_id = u.UserID
+  INNER JOIN students s ON u.UserID = s.userId
+  WHERE s.userId = ?
+  
+  `;
+  db.query(sql, [userID], (error, results) => {
+    if (error) {
+      console.error('Error fetching exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+});
+
+
+
+
+app.get('/passedexam', (req, res) => {
+  const tutorid=req.session.userid;
+
+  console.log("user id", req.session.userid);
+  const sql = `
+  SELECT * FROM passed_exams inner join exam on exam.examId = passed_exams.exam_id inner join students s on s.UserId=passed_exams.user_id Where exam.tutorId=?
+  
+  `;
+  db.query(sql,[tutorid], (error, results) => {
+    if (error) {
+      console.error('Error fetching exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+});
 
 
 app.delete('/question/:id', (req, res) => {
@@ -989,6 +1174,26 @@ app.delete('/question/:id', (req, res) => {
     res.status(201).json({ message: 'Exam deleted successfully' });
   });
 });
+
+
+
+app.post('/completedcourses', (req, res) => {
+  const { courseId, userId, grade} = req.body; 
+  const tutorId=req.session.userid;
+
+  const sql = 'INSERT INTO completedcourse (StudentID, CourseID, Grade, TutorID) VALUES (?, ?, ?, ?)';
+  db.query(sql, [userId, courseId,grade, tutorId ], (error, results) => {
+    if (error) {
+      console.error('Error creating exam question:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    console.log('Question created successfully.');
+    res.status(201).json({ message: 'Question created successfully' });
+  });
+});
+
+
+
 
 app.get('/logout', (req, res) => {
   res.clearCookie('token');

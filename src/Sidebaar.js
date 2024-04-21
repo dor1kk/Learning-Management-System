@@ -377,14 +377,18 @@ My Enroll Management
             
             
 
-            
+          
+
+
             <MenuItem
-  onClick={handleLogout}
-  icon={<AiOutlineLogout />}
-  style={{ backgroundColor: colors.backgroundColor }}
->
-  Logout
-</MenuItem>
+            onClick={handleLogout}
+            
+            icon={<AiOutlineLogout />}
+            className={`menu-item ${location.pathname === "/Friends" ? "active" : ""}`}
+            >
+            Logout
+            </MenuItem>
+           
       
           </Menu>
         </Sidebar>

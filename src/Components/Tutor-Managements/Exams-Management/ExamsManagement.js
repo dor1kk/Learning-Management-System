@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Edit, Delete } from '@mui/icons-material';
+import "./Exam.css";
 
 const ExamManagement = () => {
   const [exams, setExams] = useState([]);
@@ -61,7 +62,7 @@ const ExamManagement = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="exam-container ">
       <h2>Exam Management</h2>
       <div className='d-flex flex-row ' style={{gap:"15px"}}>
       <Link to={"/home/addexam"} className='btn btn-primary'>Add Exam</Link>
