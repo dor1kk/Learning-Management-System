@@ -5,6 +5,7 @@ import mysql from 'mysql';
 import session from 'express-session';
 import cookieParser from "cookie-parser";
 import bodyParser from 'body-parser';
+import { Password } from "@mui/icons-material";
 
 const app = express();
 app.use(cors({
@@ -80,7 +81,7 @@ app.post('/signup', (req, res) => {
 
 app.post('/signin', (req, res) => {
   const { username, password } = req.body;
-  db.query('SELECT * FROM users Inner join students on students.UserID=users.UserID WHERE users.Username = ? and users.Password = ?', [username, password], (error, results) => {
+  db.query('SELECT * FROM users where Username=? AND Password=?', [username, password], (error, results) => {
     if (error) {
       console.error('Error fetching user:', error);
       return res.status(500).json({ error: 'Internal server error' });
@@ -577,7 +578,6 @@ app.get('/tutors', (req, res) => {
   });
 });
 
-
 app.post('/becomeTutor', (req, res) => {
   const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
   const userId = req.session.userid;
@@ -596,12 +596,21 @@ app.post('/becomeTutor', (req, res) => {
     const tutorSql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(tutorSql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, userId], function(err, tutorInsertResult) {
       if (err) {
-        console.error('Error inserting into tutors table:', err);
-        return res.status(500).send('Internal Server Error');
+        console.error('Error inserting into tutor table:', err);
+        return res.status(500).send('Failed to insert into tutor table. Please try again.');
       }
 
-      console.log('Data saved successfully');
-      res.status(200).send('Data saved successfully');
+    
+      const deleteStudentSql = 'DELETE FROM students WHERE UserId = ?';
+      db.query(deleteStudentSql, [userId], function(err, deleteResult) {
+        if (err) {
+          console.error('Error deleting student from students table:', err);
+          return res.status(500).send('Internal Server Error');
+        }
+      
+        console.log('User role updated to Tutor, and deleted from students table');
+        res.status(200).send('User role updated to Tutor, and deleted from students table');
+      });
     });
   });
 });
@@ -624,7 +633,7 @@ app.get('/tutors/:id', (req, res) => {
 });
 
 
-app.get('/users', (req, res) => {
+app.get('/userss', (req, res) => {
   db.query('SELECT * FROM users', (error, results) => {
     if (error) {
       console.error('Error fetching users:', error);
@@ -634,7 +643,59 @@ app.get('/users', (req, res) => {
   });
 });
 
-app.delete('/users/:id', (req, res) => {
+app.get('/users', (req, res) => {
+  if (!req.session.userid) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const sql = 'SELECT * FROM users  WHERE UserID = ?';
+  const userId = req.session.userid;
+
+  db.query(sql, userId, (err, result) => {
+      if (err) {
+          console.error('Error retrieving tutor from database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      
+      console.log('Tutor retrieved from database:', result);
+      res.status(200).json(result);
+  });
+});
+
+
+app.post("/useri", (req, res) => {
+  const { Password } = req.body; 
+  const userId = req.session.userid;
+
+  if (!userId) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const updateSql = 'UPDATE users SET Password = ? WHERE UserID = ?';
+  db.query(updateSql, [Password, userId], function(err, updateResult) {
+    if (err) {
+      console.error('Error updating user password:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+    if (updateResult && updateResult.affectedRows === 0) {
+      const insertSql = 'INSERT INTO users (UserID, Password) VALUES (?, ?)';
+      db.query(insertSql, [userId, Password], function(err, insertResult) {
+        if (err) {
+          console.error('Error inserting new password:', err);
+          return res.status(500).send('Failed to insert new password. Please try again.');
+        }
+        
+        console.log('New user inserted.');
+        res.status(200).send('New user inserted.');
+      });
+    } else {
+      console.log('Password updated successfully.');
+      res.status(200).send('Password updated successfully.');
+    }
+  });
+});
+
+/*app.delete('/users/:id', (req, res) => {
   const userId = req.params.id;
   console.log("Deleting user with ID:", userId);
 
@@ -644,14 +705,51 @@ app.delete('/users/:id', (req, res) => {
       console.error("Error occurred during delete:", err);
       return res.status(500).json({ error: "An error occurred during delete" });
     }
-    console.log("User deleted successfully"); 
+
+    if (result.affectedRows === 0) {
+      console.log("User not found");
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("User deleted successfully");
     return res.json({ success: true, message: "User deleted successfully" });
+  });
+});*/
+
+
+
+app.delete('/user/:id', (req, res) => {
+  const userId = req.params.id;
+
+  const sql = 'DELETE FROM users WHERE UserID=?';
+  db.query(sql, [userId], (error, results) => {
+    if (error) {
+      console.error('Error deleting user:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.status(200).json({ message: 'User deleted successfully' });
   });
 });
 
-app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const { Username, Password, Role, Email } = req.body; 
+
+
+app.delete('/users/:id', (req, res) => {
+  const { userId} = req.body;
+
+  const sql = 'DELETE FROM users WHERE UserID=?';
+  db.query(sql, [userId], (error, results) => {
+    if (error) {
+      console.error('Error creating users:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.status(201).json({ message: 'User deleted successfully' });
+  });
+});
+
+
+
+app.put('/editusers/:id', (req, res) => {
+  const { Username, Password, Role, Email, UserID } = req.body; 
   const sql = `UPDATE Users 
                SET Username = ?,
                    Password = ?,
@@ -659,19 +757,17 @@ app.put('/users/:id', (req, res) => {
                    Email = ?
                WHERE UserID = ?`;
 
-  db.query(sql, [Username, Password, Role, Email, id], (err, result) => {
+  db.query(sql, [Username, Password, Role, Email, UserID], (err, result) => {
     if (err) {
-      console.error("Error executing SQL query:", err);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-    if (result.affectedRows === 1) {
-      res.status(200).send("User updated successfully");
+      console.error(err); 
+      res.status(500).json({ success: false, message: 'Failed to update user' });
     } else {
-      res.status(404).send('User not found');
+      console.log(result); 
+      res.status(200).json({ success: true, message: 'User updated successfully' });
     }
   });
 });
+
 
 
 
@@ -681,7 +777,7 @@ app.get('/tutoria', (req, res) => {
       return res.status(401).send('Unauthorized');
   }
 
-  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserId = tutor.UserId WHERE users.UserId = ?';
+  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserID = tutor.UserID WHERE users.UserID = ?';
   const userId = req.session.userid;
 
   db.query(sql, userId, (err, result) => {
@@ -700,7 +796,7 @@ app.get('/studentsa', (req, res) => {
       return res.status(401).send('Unauthorized');
   }
 
-  const sql = 'SELECT * FROM students INNER JOIN users ON users.UserId = students.UserId WHERE users.UserId = ?';
+  const sql = 'SELECT * FROM students INNER JOIN users ON users.UserID = students.UserId WHERE users.UserID = ?';
   const userId = req.session.userid;
 
   db.query(sql, userId, (err, result) => {
@@ -716,6 +812,143 @@ app.get('/studentsa', (req, res) => {
 
 
 
+app.delete('/tutors/:id', (req, res) => {
+  const { id } = req.params;
+
+  const deleteUserSQL = 'DELETE FROM users WHERE UserID = ?';
+  db.query(deleteUserSQL, [id], (error, results) => {
+    if (error) {
+      console.error('Error deleting user:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    const deleteTutorSQL = 'DELETE FROM tutor WHERE TutorID = ?';
+    db.query(deleteTutorSQL, [id], (error2, results2) => {
+      if (error2) {
+        console.error('Error deleting tutor:', error2);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      res.status(200).json({ message: 'Tutor and corresponding user deleted successfully' });
+    });
+  });
+});
+
+
+
+
+app.delete('/students/:id', (req, res) => {
+  const { id } = req.params;
+
+  const deleteStudentSQL = 'DELETE FROM students WHERE ID = ?';
+  db.query(deleteStudentSQL, [id], (error1, results1) => {
+    if (error1) {
+      console.error('Error deleting student:', error1);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  
+    const deleteUserSQL = 'DELETE FROM users WHERE UserID = ?';
+    db.query(deleteUserSQL, [id], (error2, results2) => {
+      if (error2) {
+        console.error('Error deleting user:', error2);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      
+      res.status(200).json({ message: 'Student and corresponding user deleted successfully' });
+    });
+  });
+});
+
+
+app.put('/students/:id', (req, res) => {
+  const { id } = req.params;
+  const { Name, Grade } = req.body; 
+
+  const sqlUpdate = `
+    UPDATE students AS s
+    JOIN users AS u ON s.UserId = u.UserID
+    SET s.Name = ?,
+        s.Grade = ?,
+        u.Username = ?
+    WHERE s.ID = ?`;
+
+  db.query(sqlUpdate, [Name, Grade, Name, id], (err, result) => {
+    if (err) {
+      console.error("Error updating student and user:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    if (result.affectedRows === 1) {
+      res.status(200).send("Student and user updated successfully");
+    } else {
+      res.status(404).send('Student not found');
+    }
+  });
+});
+
+
+app.put('/students/:id', (req, res) => {
+  const { id } = req.params;
+  const { Name, Grade } = req.body; 
+
+  const sqlUpdate = `
+    UPDATE students AS s
+    JOIN users AS u ON s.UserId = u.UserID
+    SET s.Name = ?,
+        s.Grade = ?,
+        u.Username = ?
+    WHERE s.ID = ?`;
+
+  db.query(sqlUpdate, [Name, Grade, Name, id], (err, result) => {
+    if (err) {
+      console.error("Error updating student and user:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    if (result.affectedRows === 1) {
+      res.status(200).send("Student and user updated successfully");
+    } else {
+      res.status(404).send('Student not found');
+    }
+  });
+});
+
+app.put('/tutors/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email, expertise, bio, courses, experience, education, location, contact, availability } = req.body; 
+
+  const sqlUpdate = `
+    UPDATE tutor AS t
+    JOIN users AS u ON t.UserID = u.UserID
+    SET t.name = ?,
+        t.email = ?,
+        t.expertise = ?,
+        t.bio = ?,
+        t.courses = ?,
+        t.experience = ?,
+        t.education = ?,
+        t.location = ?,
+        t.contact = ?,
+        t.availability = ?,
+        u.Username = ?
+    WHERE t.TutorID = ?`;
+
+  db.query(sqlUpdate, [name, email, expertise, bio, courses, experience, education, location, contact, availability, name, id], (err, result) => {
+    if (err) {
+      console.error("Error updating tutor and user:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    if (result.affectedRows === 1) {
+      res.status(200).send("Tutor and user updated successfully");
+    } else {
+      res.status(404).send('Tutor not found');
+    }
+  });
+});
 
 
 
