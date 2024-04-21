@@ -156,34 +156,7 @@ const handleLogout = () => {
 
 
             
-      {role === "Admin" ? (
-          <MenuItem
-        component={<Link to="/Home/UserManagement" className="link" />}
-        icon={<FaUser />}
-       className={`menu-item ${location.pathname === "/UserManagement" ? "active" : ""}`}
-     >
-    User Management
-  </MenuItem>):null}
-
-  {role === "Admin" ? (
-          <MenuItem
-        component={<Link to="/Home/EnrollManagement" className="link" />}
-        icon={<FaUserPlus />}
-       className={`menu-item ${location.pathname === "/EnrollManagment" ? "active" : ""}`}
-     >
-    Enroll Management
-  </MenuItem>): role==="Tutor"?(
-    <MenuItem
-    component={<Link to="/Home/T-EnrollManagement" className="link" />}
-    icon={<FaUserPlus />}
-   className={`menu-item ${location.pathname === "/EnrollManagment" ? "active" : ""}`}
- >
-My Enroll Management
-</MenuItem>
-
-  ) :null}
-            
-            
+     
 
             {role === "Tutor" ? (
             <MenuItem

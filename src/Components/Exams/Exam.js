@@ -54,20 +54,27 @@ const Exam = () => {
   return (
     <div className="test-container p-4">
       <Link to="/home/exams" className="go-back-link" style={{marginBottom:"35px"}}><FaArrowLeft /> Go Back</Link>
-      <div className="test-card-container mt-5">
-        <h3 className='text-success'><FaPencilAlt /> Passed Exams</h3>
-        {passedExams.map((exam) => (
-          <div key={exam.exam_id} className="test-card mb-2 bg-light">
-            <div className="test-card-body">
-              <h5 className="test-card-title p-2"><IoMdSchool /> Exam Score: {exam.score}</h5>
-              <p className="test-card-text text-info p-2">
-                <FaCalendarAlt /> Date Completed: {formatDate(exam.date_completed)}
-              </p>
+      {passedExams.length > 0 && (
+        <div className="test-card-container mt-5">
+          <h3 className='text-success'><FaPencilAlt /> Passed Exams</h3>
+          {passedExams.map((exam) => (
+            <div key={exam.exam_id} className="test-card mb-2 bg-light">
+              <div className="test-card-body">
+                <h5 className="test-card-title p-2"><IoMdSchool /> Exam Score: {exam.score}</h5>
+                <p className="test-card-text text-info p-2">
+                  <FaCalendarAlt /> Date Completed: {formatDate(exam.date_completed)}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-      <div className="test-card-container">
+          ))}
+        </div>
+      )}
+      {passedExams.length === 0 && (
+        <div className="test-card-container mt-5">
+          <h3 className='text-success'>You haven't passed any exams yet.</h3>
+        </div>
+      )}
+      <div className="test-card-container mt-5">
         <h3 className='text-primary'><FaInfoCircle /> Available Exams</h3>
         {availableExams.map((exam) => (
           <div key={exam.examId} className="test-card mb-2 bg-light">

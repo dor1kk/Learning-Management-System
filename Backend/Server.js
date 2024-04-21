@@ -80,36 +80,60 @@ app.post('/signup', (req, res) => {
 
 app.post('/signin', (req, res) => {
   const { username, password } = req.body;
-  db.query('SELECT * FROM users  WHERE Username = ? and Password = ?', [username, password], (error, results) => {
+  db.query('SELECT * FROM users WHERE Username = ? AND Password = ?', [username, password], (error, results) => {
     if (error) {
       console.error('Error fetching user:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
 
-    console.log('Results:', results); 
+    console.log('Results:', results);
 
     if (results.length > 0) {
-      req.session.username = results[0].Username; 
-      req.session.role = results[0].Role; 
-      req.session.userid = results[0].UserID; 
-      req.session.password=results[0].Password;
-      req.session.Email=results[0].Email;
-      req.session.image=results[0].Image;
+      const user = results[0];
+      req.session.username = user.Username;
+      req.session.role = user.Role;
+      req.session.userid = user.UserID;
+      req.session.password = user.Password;
+      req.session.Email = user.Email;
+
+      let imageQuery;
+      if (user.Role === 'Student') {
+        imageQuery = 'SELECT Image FROM students WHERE UserID = ?';
+      } else if (user.Role === 'Tutor') {
+        imageQuery = 'SELECT image_url AS Image FROM tutor WHERE UserID = ?'; // Adjusted table name and column name
+      }
+
+      if (imageQuery) {
+        db.query(imageQuery, [user.UserID], (imageError, imageResults) => {
+          if (imageError) {
+            console.error('Error fetching image:', imageError);
+            return res.status(500).json({ error: 'Internal server error' });
+          }
+          if (imageResults.length > 0) {
+            req.session.image = imageResults[0].Image;
+          } else {
+            req.session.image = null; 
+          }
 
 
-      console.log('image', req.session.image)
+          console.log("image", req.session.image);
 
+          console.log('Session:', req.session);
+          console.log('Stored username:', req.session.username);
+          console.log('Stored TutorID:', req.session.userid);
 
-      console.log('Session:', req.session); 
-      console.log('Stored username:', req.session.username); 
-      console.log('Stored TutorID:', req.session.userid); 
-
-      return res.json({ Login: true });
+          return res.json({ Login: true });
+        });
+      } else {
+        console.error('Invalid user role:', user.Role);
+        return res.status(400).json({ error: 'Invalid user role' });
+      }
     } else {
       return res.json({ Login: false });
     }
   });
 });
+
 
 
 app.get('/userid', (req,res)=>{
@@ -131,8 +155,6 @@ app.get('/', (req, res) => {
 
 
 
-
-
 app.get('/image', (req,res)=>{
   if(req.session.image){
     return res.json({valid: true, image: req.session.image});
@@ -151,18 +173,6 @@ app.get('/role', (req,res)=>{
 
 
 
-app.get('/studentImage', (req, res) => {
-  const userId=req.session.userid;
-  const sql = "SELECT Image from students  WHERE UserId=?";
-  db.query(sql,[userId], (err, result) => {
-    if (err) {
-      console.error("Error occurred during query:", err); 
-      return res.json({ error: "Error occurred" });
-    }
-    console.log("Query result:", result); 
-    return res.json(result);
-  });
-});
 
 
 
@@ -1193,6 +1203,25 @@ app.post('/completedcourses', (req, res) => {
 });
 
 
+
+app.get('/completedcourses/graded', (req, res) => {
+  const { courseId, userId } = req.query;
+  const sql = 'SELECT * FROM CompletedCourse WHERE CourseID = ? AND StudentID = ?';
+
+  db.query(sql, [courseId, userId], (err, result) => {
+    if (err) {
+      console.error('Error fetching completed course:', err);
+      res.status(500).send('Error checking if user has been graded');
+      return;
+    }
+
+    if (result.length === 0) {
+      res.json({ graded: false });
+    } else {
+      res.json({ graded: true });
+    }
+  });
+});
 
 
 app.get('/logout', (req, res) => {

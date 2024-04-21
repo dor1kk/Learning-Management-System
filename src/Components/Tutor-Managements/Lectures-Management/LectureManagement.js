@@ -98,7 +98,7 @@ function LectureManagement() {
   
 
   return (
-    <Container style={{ backgroundColor: '#f9f9f9', height:"100vh", padding: '20px' }}>
+    <Container className='exam-container' style={{ backgroundColor: '#f9f9f9', height:"100vh", padding: '20px' }}>
       <h4 className="text-center mt-5 mb-3" style={{ color: '#333' }}>Select the Course You Want to Add Lecture!</h4>
       <List className="d-flex flex-row">
         {courses.map(course => (

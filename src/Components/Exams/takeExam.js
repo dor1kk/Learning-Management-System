@@ -79,7 +79,6 @@ function TakeExam() {
 
   return (
     <div className="exam-container">
-            <Link to="/home/exam" className="go-back-link" style={{marginBottom:"35px"}}> Go Back</Link>
       <h4 className="text-center mt-5 mb-3">Take Exam</h4>
       {questions.map((question) => (
         <div key={question.questionId} className="take-card p-4 mb-3" style={{ backgroundColor: '#f8f9fa' }}>
