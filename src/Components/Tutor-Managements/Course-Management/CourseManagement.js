@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Link,Routes,Route } from 'react-router-dom';
 import EditCourse from './EditCourse';
+import "./CourseManagement.css";
 
 const CourseManagement = () => {
     const [courses, setCourses] = useState([]);
@@ -63,7 +64,7 @@ const CourseManagement = () => {
     });
   
     return (
-      <Container maxWidth="lg" className='course-management' >
+      <Container maxWidth="lg" className='exam-container' >
         <Grid container spacing={2} alignItems="center" style={{ marginBottom: '20px', marginTop:"30px" }}>
           <Grid item xs={12} sm={6} md={4}>
             <TextField
@@ -116,7 +117,7 @@ const CourseManagement = () => {
         <Typography variant="body1" style={{ marginBottom: '10px', marginTop:"30px" }}>Total Courses: {courses.length}</Typography>
         <List>
   {filteredCourses.map(course => (
-    <ListItem key={course.CourseID} className="course-item" style={{backgroundColor:"#f0f8ff",marginBottom:"6px"}}>
+    <ListItem key={course.CourseID} className="course-item" style={{backgroundColor:"white",marginBottom:"6px"}}>
       <ListItemIcon>
         <img src={course.Image} className='img-fluid' style={{width:"70px",marginRight:"25px", height:"70px", borderRadius:"50%"}}></img>
       </ListItemIcon>

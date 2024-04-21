@@ -105,7 +105,7 @@ function Lectures() {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    startIcon={<Done />}
+                                    startIcon={<Donez />}
                                     onClick={() => handleCompleteLecture(lecture.LectureID)}
                                     disabled={isLectureCompleted(lecture.LectureID)}
                                 >

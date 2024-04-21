@@ -1,8 +1,9 @@
 .exam-container{
     background-image: url("../course-container.png");
     background-size: contain;
+    background-repeat: repeat;
 
-    height: 100vh;
+    min-height: 100vh;
 
     
 }
