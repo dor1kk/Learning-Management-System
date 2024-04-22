@@ -31,6 +31,8 @@ import Topbar from "./Components/Topbar/Topbar";
 import Footer from "./Components/Footer/Footer";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { AiOutlineSetting } from 'react-icons/ai';
+
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -203,13 +205,22 @@ const Sidebaar = ({ children }) => {
               <Link to="/Home/Courseslecture" className="link" style={{color:"white", textDecoration:"none"}}>Lectures</Link>
             </Menu.Item>
           ) : null}
-          {(role === "Tutor" || role === "Student") && (
-            <SubMenu key="sub3" style={{color:"white"}} icon={<SettingOutlined />} title="Settings">
-              <Menu.Item key="17"><Link to="/Home/Account" style={{color:"white", textDecoration:"none"}}>Account</Link></Menu.Item>
-              <Menu.Item key="18"><Link to="/Home/Chat"style={{color:"white", textDecoration:"none"}}>Chat</Link></Menu.Item>
-              <Menu.Item key="19"><Link to="/Home/Notifications" style={{color:"white", textDecoration:"none"}}>Notifications</Link></Menu.Item>
-            </SubMenu>
-          )}
+        {role === "Tutor" ? (
+  <SubMenu key="sub3" style={{ color: "white" }} icon={<AiOutlineSetting />} title="Settings">
+    <Menu.Item key="17"><Link to="/Home/Account" style={{ color: "white", textDecoration: "none" }}>Account</Link></Menu.Item>
+    <Menu.Item key="18"><Link to="/Home/Chat" style={{ color: "white", textDecoration: "none" }}>Chat</Link></Menu.Item>
+    <Menu.Item key="19"><Link to="/Home/Notifications" style={{ color: "white", textDecoration: "none" }}>Notifications</Link></Menu.Item>
+  </SubMenu>
+  ):
+
+role === "Student" ? (
+  <SubMenu key="sub3" style={{ color: "white" }} icon={<AiOutlineSetting />} title="Settings">
+    <Menu.Item key="17"><Link to="/Home/Accounttt" style={{ color: "white", textDecoration: "none" }}>Account</Link></Menu.Item>
+    <Menu.Item key="18"><Link to="/Home/Chat" style={{ color: "white", textDecoration: "none" }}>Chat</Link></Menu.Item>
+    <Menu.Item key="19"><Link to="/Home/Notifications" style={{ color: "white", textDecoration: "none" }}>Notifications</Link></Menu.Item>
+  </SubMenu>
+
+): null}
           <Menu.Item key="20" style={{color:"white", textDecoration:"none"}} icon={<LogoutOutlined />} onClick={handleLogout}>
             Logout
           </Menu.Item>

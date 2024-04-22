@@ -22,7 +22,6 @@ import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
 import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
-import Lectures from "./Components/Lectures/Lectures";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
 import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";

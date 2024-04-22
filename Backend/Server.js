@@ -9,11 +9,11 @@ import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } 
 import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
 import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture } from "./Routes/Lectures.js";
 import { EnrollStudent, GetEnrolledCourses ,DeleteEnrollment } from "./Routes/Enroll.js";
-import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor  } from "./Routes/Tutors.js";
+import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt , DeleteProfilt  } from "./Routes/Tutors.js";
 import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
 import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
-import { getStudentByPassedExam, getLogggedInStudentInfo } from "./Routes/Students.js";
+import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, DeleteProfilS } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus } from "./Routes/CompletedCourses.js";
 import { getTotalStudents } from "./Routes/Dashboard.js";
@@ -227,8 +227,7 @@ app.put('/users/:id', (req, res) => {
   UpdateUsers(req,res,db);
 });
 
-
-
+// Accountet 
 
 app.get('/tutoria', (req, res) => {
   getLoggedInTutorInfo(req,res,db);
@@ -238,14 +237,38 @@ app.get('/studentsa', (req, res) => {
  getLogggedInStudentInfo(req,res,db);
 });
 
+app.get('/users', (req, res) => {
+  PasswordUsers(req,res,db);
+ });
 
+ app.post('/useri', (req, res) => {
+  UpdatedPasswordUser(req,res,db);
+ });
 
+ 
+ app.put('/students/:id', (req, res) => {
+UpdatestudentA(req,res,db);
+});
 
+app.put('/tutorss/:id', (req, res) => {
+  UpdatedData(req,res,db);
+  });
+  
+  app.delete('/tuturii/:id', (req, res) => {
+    DeletePhotoProfilt(req,res,db);
+  });
 
+  app.delete('/studentii/:id', (req, res) => {        
+    DeletePhotoProfilS(req,res,db);
+  });
 
+  app.delete('/tutors/:id', (req, res) => {
+    DeleteProfilt(req,res,db);
+  });
 
-
-
+  app.delete('/students/:id', (req, res) => {
+    DeleteProfilS(req,res,db);
+  });
 
 
 

@@ -14,6 +14,7 @@ function Account() {
     const [updatedexperience, setUpdatedexperience] = useState('');
     const [updatededucation, setUpdatededucation] = useState('');
     const [updatedlocation, setUpdatedlocation] = useState('');
+    const [updatedimage_url, setUpdatedimage_url] = useState(''); 
     const [updatedcontact, setUpdatedcontact] = useState('');
     const [updatedavailability, setUpdatedavailability] = useState('');
     const [updatedPlaceholdername, setUpdatedPlaceholdername] = useState('');
@@ -26,6 +27,7 @@ function Account() {
     const [updatedPlaceholderlocation, setUpdatedPlaceholderlocation] = useState('');
     const [updatedPlaceholdercontact, setUpdatedPlaceholdercontact] = useState('');
     const [updatedPlaceholderavailability, setUpdatedPlaceholderavailability] = useState('');
+    const [updatedPlaceholderimage_url, setUpdatedPlaceholderimage_url] = useState('');
      const [user, setUser] = useState([]);
     const [Password, setPassword] = useState('');
     const navigate=useNavigate()
@@ -76,6 +78,15 @@ function Account() {
             .catch(error => console.error('Error deleting profile:', error));
     };
 
+    const deleteeProfile = () => {
+        axios.delete(`http://localhost:8080/tuturii/${tutor.TutorID}`, { withCredentials: true })
+            .then(response => {
+                console.log(response.data);
+                setTutor({});
+            })
+            .catch(error => console.error('Error deleting profile:', error));
+    };
+
 
     useEffect(() => {
         fetchTutorData();
@@ -97,6 +108,8 @@ function Account() {
                     setUpdatedlocation(fetchedTutor.location);
                     setUpdatedcontact(fetchedTutor.contact);
                     setUpdatedavailability(fetchedTutor.availability);
+                    setUpdatedimage_url(fetchedTutor.image_url);
+
                 }
             })
             .catch(error => console.error('Error fetching tutor data:', error));
@@ -141,6 +154,10 @@ function Account() {
     const handleavailabilityChange = (event) => {
         setUpdatedavailability(event.target.value);
     };
+ 
+    const handleimage_urlChange = (event) => {
+        setUpdatedimage_url(event.target.value);
+    };
 
     const updateProfileee = () => {
         const updatedData = {};
@@ -175,7 +192,11 @@ function Account() {
         if (updatedavailability !== '') {
             updatedData.availability = updatedavailability;
         }
-        axios.put(`http://localhost:8080/tutors/${tutor.TutorID}`, updatedData, { withCredentials: true })
+
+        if (updatedimage_url !== '') {
+            updatedData.image_url = updatedimage_url;
+        }
+        axios.put(`http://localhost:8080/tutorss/${tutor.TutorID}`, updatedData, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 alert("Profile updated successfully!");
@@ -250,9 +271,13 @@ function Account() {
                                             <div className="square position-relative display-2 mb-3">
                                             <img src={tutor.image_url} alt="Profile" className="img-fluid position-absolute top-0 start-0 w-100 h-100" />
                                             </div>
-                                            <input type="file" id="customFile" name="file" hidden />
-                                            <label className="btn btn-success btn-block" htmlFor="customFile">Upload</label>
-                                            <button type="button" className="btn btn-danger">Remove</button>
+                                            <div className="col-md-12">
+                                          
+                                            <input type="text" className="form-control" placeholder="Your image_url" onChange={ handleimage_urlChange} />
+                                        </div>
+                                           
+                                            <label  className="btn btn-success btn-block mt-3" htmlFor="customFile" onClick={updateProfileee}>Upload</label>
+                                            <button type="button" className="btn btn-danger" onClick={deleteeProfile}>Remove</button>
                                             <p className="text-muted mt-3 mb-0"><span className="me-1">Note:</span>Minimum size 300px x 300px</p>
                                         </div>
                                     </div>
@@ -268,7 +293,7 @@ function Account() {
                                         {/* Old password */}
                                         <div className="col-md-6">
                                         <label className="form-label">Old Password *</label>
-                                        <input type="name" className="form-control" placeholder="" aria-label="Old password"   value={user.Password}  />
+                                        <input type="name" className="form-control" aria-label="Old password"  value={user.Password}  />
 
                                         </div>
                                         {/* New password */}
@@ -282,7 +307,7 @@ function Account() {
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="custom-button">Confirm</button>
+                            <button type="custom-button" class="custom-button">Confirm</button>
                             </form>
                  
                   
