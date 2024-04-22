@@ -15,7 +15,7 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/users');
+      const response = await axios.get('http://localhost:8080/userss');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -24,7 +24,7 @@ function UserManagement() {
 
   const deleteUser = async (userId) => {
     try {
-      await axios.delete(`http://localhost:8080/users/${userId}`);
+      await axios.delete(`http://localhost:8080/user/${userId}`);
       fetchUsers(); 
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -56,12 +56,12 @@ function UserManagement() {
                 <IconButton
   aria-label="edit"
   component={Link}
-  to={`/Home/EditUser/${user.UserID}`} 
+  to={`/home/EditUser/${user.UserID}`} 
   style={{ color: '#2196f3' }}
 >
-  <EditIcon />
+  <EditIcon />  
 </IconButton>
-                  <IconButton aria-label="delete" onClick={() => deleteUser(user.UserID)} style={{ color: '#f44336' }}>
+<IconButton aria-label="delete" onClick={() => deleteUser(user.userId)} style={{ color: '#f44336' }}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>

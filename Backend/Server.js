@@ -4,6 +4,7 @@ import mysql from 'mysql';
 import session from 'express-session';
 import cookieParser from "cookie-parser";
 import bodyParser from 'body-parser';
+import { Password } from "@mui/icons-material";
 import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } from './Routes/Signin.js'; 
 import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
 import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture } from "./Routes/Lectures.js";
@@ -58,13 +59,62 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-  signInUser(req, res, db); 
+  const { username, password } = req.body;
+  db.query('SELECT * FROM users WHERE Username = ? AND Password = ?', [username, password], (error, results) => {
+    if (error) {
+      console.error('Error fetching user:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    console.log('Results:', results);
+
+    if (results.length > 0) {
+      const user = results[0];
+      req.session.username = user.Username;
+      req.session.role = user.Role;
+      req.session.userid = user.UserID;
+      req.session.password = user.Password;
+      req.session.Email = user.Email;
+
+      let imageQuery;
+      if (user.Role === 'Student') {
+        imageQuery = 'SELECT Image FROM students WHERE UserID = ?';
+      } else if (user.Role === 'Tutor') {
+        imageQuery = 'SELECT image_url AS Image FROM tutor WHERE UserID = ?'; // Adjusted table name and column name
+      }
+
+      if (imageQuery) {
+        db.query(imageQuery, [user.UserID], (imageError, imageResults) => {
+          if (imageError) {
+            console.error('Error fetching image:', imageError);
+            return res.status(500).json({ error: 'Internal server error' });
+          }
+          if (imageResults.length > 0) {
+            req.session.image = imageResults[0].Image;
+          } else {
+            req.session.image = null; 
+          }
+
+
+          console.log("image", req.session.image);
+
+          console.log('Session:', req.session);
+          console.log('Stored username:', req.session.username);
+          console.log('Stored TutorID:', req.session.userid);
+
+          return res.json({ Login: true });
+        });
+      } else {
+        console.error('Invalid user role:', user.Role);
+        return res.status(400).json({ error: 'Invalid user role' });
+      }
+    } else {
+      return res.json({ Login: false });
+    }
+  });
 });
 
-app.get('/logout', (req, res) => {
-  Logout(req,res,db);
 
-});
 
 app.get('/userid', (req, res) => {
   checkUserId(req, res); 
@@ -195,9 +245,9 @@ app.get('/tutors', (req, res) => {
 
 });
 
-
 app.post('/becomeTutor', (req, res) => {
-    AddTutor(req,res,db);
+  AddTutor(req,res,db);
+  
 });
 
 app.get('/tutors/:id', (req, res) => {
@@ -213,15 +263,87 @@ app.get('/tutoria', (req, res) => {
 //Users info and Management
 
 app.get('/users', (req, res) => {
-    getAllUsers(req,res,db);
+  getAllUsers(req,res,db);
 });
 
 app.delete('/users/:id', (req, res) => {
-    DeleteUsers(req,res,db)
+  const userId = req.params.id;
+  console.log("Deleting user with ID:", userId);
+
+  const sql = "DELETE FROM users WHERE UserID = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error occurred during delete:", err);
+      return res.status(500).json({ error: "An error occurred during delete" });
+    }
+    console.log("User deleted successfully"); 
+    return res.json({ success: true, message: "User deleted successfully" });
+  });
 });
 
 app.put('/users/:id', (req, res) => {
-  UpdateUsers(req,res,db);
+  const { id } = req.params;
+  const { Username, Password, Role, Email } = req.body; 
+  const sql = `UPDATE Users 
+               SET Username = ?,
+                   Password = ?,
+                   Role = ?,
+                   Email = ?
+               WHERE UserID = ?`;
+
+  db.query(sql, [Username, Password, Role, Email, id], (err, result) => {
+    if (err) {
+      console.error("Error executing SQL query:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+    if (result.affectedRows === 1) {
+      res.status(200).send("User updated successfully");
+    } else {
+      res.status(404).send('User not found');
+    }
+  });
+});
+
+
+
+
+app.get('/tutoria', (req, res) => {
+  if (!req.session.userid) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserId = tutor.UserId WHERE users.UserId = ?';
+  const userId = req.session.userid;
+
+  db.query(sql, userId, (err, result) => {
+      if (err) {
+          console.error('Error retrieving tutor from database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      
+      console.log('Tutor retrieved from database:', result);
+      res.status(200).json(result);
+  });
+});
+
+app.get('/studentsa', (req, res) => {
+  if (!req.session.userid) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const sql = 'SELECT * FROM students INNER JOIN users ON users.UserId = students.UserId WHERE users.UserId = ?';
+  const userId = req.session.userid;
+
+  db.query(sql, userId, (err, result) => {
+      if (err) {
+          console.error('Error retrieving student from database:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      
+      console.log('Student retrieved from database:', result);
+      res.status(200).json(result);
+  });
 });
 
 
@@ -231,7 +353,11 @@ app.put('/users/:id', (req, res) => {
 
 
 
-//Friends info and management
+
+
+
+
+
 
 
 app.get('/friends', (req, res) => {

@@ -22,6 +22,7 @@ import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
 import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
+import Lectures from "./Components/Lectures/Lectures";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
 import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
@@ -103,6 +104,7 @@ const PrivateRoute = () => {
         <Route path="/Friends" element={<Friends />}></Route>
         <Route path="/addexam" element={<AddExam />}></Route>
         <Route path="/editexam/:id" element={<EditExam />}></Route>
+        <Route path="/EditUser/:id" element={<EditUser />}></Route>
         <Route path="/manageQuestions" element={<ManageQuestions />}></Route>
         <Route path="/exams" element={<Exams />}></Route>
         <Route path="/exam" element={<Exam />} />
