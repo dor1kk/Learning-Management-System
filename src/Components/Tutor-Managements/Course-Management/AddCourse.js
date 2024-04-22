@@ -44,8 +44,9 @@ const AddCourse = () => {
   };
 
   return (
-    <Container maxWidth="md" style={{ marginTop: '20px' }}>
-      <Typography variant="h4" gutterBottom>
+    <div className='c-container p-5'>
+    <Container  maxWidth="md" style={{ marginTop: '20px' }}>
+      <Typography variant="h4" gutterBottom className='text-primary'>
         Add New Course
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -144,6 +145,7 @@ const AddCourse = () => {
         </Grid>
       </form>
     </Container>
+    </div>
   );
 };
 

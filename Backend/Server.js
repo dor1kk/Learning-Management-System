@@ -1,10 +1,21 @@
-
 import express from "express";
 import cors from 'cors';
 import mysql from 'mysql';
 import session from 'express-session';
 import cookieParser from "cookie-parser";
 import bodyParser from 'body-parser';
+import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } from './Routes/Signin.js'; 
+import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
+import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture } from "./Routes/Lectures.js";
+import { EnrollStudent, GetEnrolledCourses ,DeleteEnrollment } from "./Routes/Enroll.js";
+import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor  } from "./Routes/Tutors.js";
+import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
+import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
+import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
+import { getStudentByPassedExam, getLogggedInStudentInfo } from "./Routes/Students.js";
+import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
+import { AddCompletedCourse, checkGradeStatus } from "./Routes/CompletedCourses.js";
+import { getTotalStudents } from "./Routes/Dashboard.js";
 
 const app = express();
 app.use(cors({
@@ -39,136 +50,32 @@ const db = mysql.createConnection({
 
 
 
-
+//Register- Signin- Logout
 
 
 app.post('/signup', (req, res) => {
-  const { username, password, email, name, image } = req.body;
-  console.log('Received data:', { username, password, email });
-
-  db.query('INSERT INTO users (Username, Password, Email) VALUES (?, ?, ?)', [username, password, email], (error, userResults) => {
-    if (error) {
-      console.error('Error registering user:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    db.query('SELECT UserID FROM users WHERE Username = ?', [username], (error, idResults) => {
-      if (error) {
-        console.error('Error retrieving UserID:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-
-      if (idResults.length === 0) {
-        console.error('No UserID found for username:', username);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-
-      const userId = idResults[0].UserID;
-
-      db.query('INSERT INTO students (Name, Grade, Image, UserId) VALUES (?, ?, ?, ?)', [name, '', image, userId], (error) => {
-        if (error) {
-          console.error('Error adding user to students table:', error);
-          return res.status(500).json({ error: 'Internal server error' });
-        }
-
-        res.status(201).json({ message: 'User registered successfully' });
-      });
-    });
-  });
+  signUpUser(req, res, db); 
 });
-
 
 app.post('/signin', (req, res) => {
-  const { username, password } = req.body;
-  db.query('SELECT * FROM users WHERE Username = ? AND Password = ?', [username, password], (error, results) => {
-    if (error) {
-      console.error('Error fetching user:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    console.log('Results:', results);
-
-    if (results.length > 0) {
-      const user = results[0];
-      req.session.username = user.Username;
-      req.session.role = user.Role;
-      req.session.userid = user.UserID;
-      req.session.password = user.Password;
-      req.session.Email = user.Email;
-
-      let imageQuery;
-      if (user.Role === 'Student') {
-        imageQuery = 'SELECT Image FROM students WHERE UserID = ?';
-      } else if (user.Role === 'Tutor') {
-        imageQuery = 'SELECT image_url AS Image FROM tutor WHERE UserID = ?'; // Adjusted table name and column name
-      }
-
-      if (imageQuery) {
-        db.query(imageQuery, [user.UserID], (imageError, imageResults) => {
-          if (imageError) {
-            console.error('Error fetching image:', imageError);
-            return res.status(500).json({ error: 'Internal server error' });
-          }
-          if (imageResults.length > 0) {
-            req.session.image = imageResults[0].Image;
-          } else {
-            req.session.image = null; 
-          }
-
-
-          console.log("image", req.session.image);
-
-          console.log('Session:', req.session);
-          console.log('Stored username:', req.session.username);
-          console.log('Stored TutorID:', req.session.userid);
-
-          return res.json({ Login: true });
-        });
-      } else {
-        console.error('Invalid user role:', user.Role);
-        return res.status(400).json({ error: 'Invalid user role' });
-      }
-    } else {
-      return res.json({ Login: false });
-    }
-  });
+  signInUser(req, res, db); 
 });
 
+app.get('/logout', (req, res) => {
+  Logout(req,res,db);
 
-
-app.get('/userid', (req,res)=>{
-  if(req.session.userid){
-    return res.json({valid: true, userid: req.session.userid});
-  } else {
-    return res.json({valid: false});
-  }
 });
 
+app.get('/userid', (req, res) => {
+  checkUserId(req, res); 
+});
 
 app.get('/', (req, res) => {
-  if (req.session && req.session.username) {
-    return res.json({ valid: true, username: req.session.username });
-  } else {
-    return res.json({ valid: false });
-  }
+  checkUsername(req, res); 
 });
 
-
-
-app.get('/image', (req,res)=>{
-  if(req.session.image){
-    return res.json({valid: true, image: req.session.image});
-  } else {
-    return res.json({valid: false});
-  }
-});
-
-app.get('/role', (req,res)=>{
-  if(req.session.role){
-    return res.json({valid: true, role: req.session.role});
-  } else {
-    return res.json({valid: false});
-  }
+app.get('/role', (req, res) => {
+  checkRole(req, res); 
 });
 
 
@@ -176,623 +83,145 @@ app.get('/role', (req,res)=>{
 
 
 
+//CoursesInfo And Management
 
-
-
-
-
-
-app.get('/student', (req, res) => {
-  const sql = 'SELECT st.*, courses.Title FROM Users us INNER JOIN Students st ON st.UserID = us.UserID INNER JOIN Courses courses ON courses.CourseID = st.CourseId WHERE us.Role = "Student"';
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-    } else {
-      res.json(result);
-    }
-  });
-});
 
 app.get('/courses', (req, res) => {
-  const sql = "SELECT * FROM courses";
-  db.query(sql, (err, result) => {
-      if (err) {
-          return res.json({ error: "Error occurred" });
-      }
-      return res.json(result);
-  });
+  getCourses(req,res,db);
+
 });
 
 
 app.get('/coursestutorinfo', (req, res) => {
-  const sql = "SELECT * FROM courses INNER JOIN tutor on courses.TutorID=tutor.UserID";
-  console.log("SQL Query:", sql); 
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error occurred during query:", err); 
-      return res.json({ error: "Error occurred" });
-    }
-    console.log("Query result:", result); 
-    return res.json(result);
-  });
+    getCoursesTutorInfo(req,res,db)
 });
 
 
 app.get('/tutorcourses', (req, res) => {
-  const tutorId = req.session.userid;
-
-  const sql = "SELECT * FROM courses WHERE TutorID = ?";
-
-  db.query(sql, [tutorId], (err, result) => {
-    if (err) {
-      console.error('Error fetching tutor courses:', err);
-      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
-    }
-    return res.json(result);
-  });
-});
-
-app.get('/lectures/:id', (req, res) => {
-  let course_id = req.params.id;
-  const sql = "SELECT * FROM lectures WHERE CourseID = ?";
-
-  db.query(sql, [course_id], (err, result) => {
-    if (err) {
-      console.error('Error fetching tutor courses:', err);
-      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
-    }
-    return res.json(result);
-  });
-});
-
-
-app.get('/lecturescourse/:id', (req, res) => {
-  let course_id = req.params.id;
-  const sql = "SELECT * FROM courses INNER JOIN lectures on courses.CourseID=lectures.CourseID WHERE courses.CourseID = ?";
-
-  db.query(sql, [course_id], (err, result) => {
-    if (err) {
-      console.error('Error fetching lectures:', err);
-      return res.status(500).json({ error: "Error occurred while fetching lectures" });
-    }
-    return res.json(result);
-  });
-});
-
-
-
-
-app.get('/lectures', (req, res) => {
-  const sql = "SELECT * FROM lectures";
-
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error fetching tutor courses:', err);
-      return res.status(500).json({ error: "Error occurred while fetching tutor courses" });
-    }
-    return res.json(result);
-  });
-});
-
-app.get('/specificlecture/:id', (req, res) => {
-  let lecture_id = req.params.id;
-  const sql = "SELECT * FROM lectures WHERE LectureID = ?";
-
-  db.query(sql, [lecture_id], (err, result) => {
-    if (err) {
-      console.error('Error fetching lecture:', err);
-      return res.status(500).json({ error: "Error occurred while fetching lecture" });
-    }
-    return res.json(result[0]); 
-  });
-});
-
-
-
-
-
-
-app.post("/addlecture", (req, res) => {
-  const { CourseID, LectureTitle, LectureImageUrl, LectureDescription, LectureIndex } = req.body;
-
-  db.query(
-    "INSERT INTO lectures (CourseID, LectureTitle, Image, LectureContent, LectureIndex) VALUES (?, ?, ?, ?, ?)",
-    [CourseID, LectureTitle, LectureImageUrl, LectureDescription, LectureIndex],
-    (error, result) => {
-      if (error) {
-        console.error("Adding Lecture error:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-      res.status(201).json({ message: "Lecture added successfully" });
-    }
-  );
-});
-
-app.get('/completed-lectures/:userId/:courseId', (req, res) => {
-  const { userId, courseId } = req.params;
-
-  const fetchCompletedLecturesSql = 'SELECT lectureId FROM completed_lectures WHERE userId = ? AND CourseId = ?';
-  db.query(fetchCompletedLecturesSql, [userId, courseId], (error, results) => {
-    if (error) {
-      console.error('Error fetching completed lectures:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    const completedLectures = results.map(result => result.lectureId);
-    res.status(200).json(completedLectures);
-  });
-});
-
-
-
-app.get('/lecturess/:courseId', (req, res) => {
-  const courseId = req.params.courseId; 
-  const userId = req.session.userid;
-
-  console.log("Received request to fetch lectures for course:", courseId);
-  console.log("User ID:", userId);
-
-  const fetchLecturesSql = `
-    SELECT 
-      l.LectureID,
-      l.LectureTitle AS Title,
-      cl.completionDate,
-      CASE 
-        WHEN cl.lectureid IS NOT NULL THEN 1 
-        ELSE 0 
-      END AS isCompleted
-    FROM 
-      lectures l
-    LEFT JOIN 
-      completed_lectures cl ON l.LectureID = cl.lectureId AND cl.userId = ?
-    WHERE
-      l.CourseID = ?
-    ORDER BY
-      l.LectureID
-  `;
-
-  console.log("Executing SQL query to fetch lectures...");
-
-  db.query(fetchLecturesSql, [userId, courseId], (error, results) => {
-    if (error) {
-      console.error('Error fetching lectures:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    console.log("Lectures fetched successfully:", results);
-
-    const lectures = results.map((lecture, index) => ({
-      LectureID: lecture.LectureID,
-      Title: lecture.Title,
-      isCompleted: lecture.isCompleted,
-      completionDate: lecture.completionDate,
-      isUnlocked: lecture.isCompleted === 1 || index === 0 || (index > 0 && results[index - 1].isCompleted === 1)
-    }));
-
-    console.log("Sending lectures data in response:", lectures);
-
-    res.status(200).json(lectures);
-  });
-});
-
-
-
- 
-
-
-
-app.get('/completed-lectures-info/:userId/:courseId', (req, res) => {
-  const { userId, courseId } = req.params;
-
-  const fetchCompletedLecturesSql = 'SELECT * FROM completed_lectures LEFT JOIN lectures On completed_lectures.lectureId=lectures.LectureID WHERE completed_lectures.userId = ? AND completed_lectures.CourseId = ?';
-  db.query(fetchCompletedLecturesSql, [userId, courseId], (error, results) => {
-    if (error) {
-      console.error('Error fetching completed lectures:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    const completedLectures = results.map(result => ({
-      lectureId: result.lectureId,
-      completionDate: result.completionDate,
-      Title:result.LectureTitle,
-      Image:result.Image,
-      CourseId:result.CourseID
-    }));
-    res.status(200).json(completedLectures);
-  });
-});
-
-
-
-
-app.post('/completed-lectures', (req, res) => {
-  const { lectureId, courseId } = req.body; 
-  const userId = req.session.userid;
-
-  const checkCompletedSql = 'SELECT * FROM completed_lectures WHERE userId = ? AND lectureId = ? AND courseId = ?'; 
-  db.query(checkCompletedSql, [userId, lectureId, courseId], (checkErr, checkResult) => {
-    if (checkErr) {
-      console.error('Error checking completed lectures:', checkErr);
-      res.status(500).send('Error checking completed lectures');
-      return;
-    }
-
-    if (checkResult.length > 0) {
-      res.status(400).send('Lecture already completed');
-      return;
-    }
-
-    const insertSql = 'INSERT INTO completed_lectures (userId, lectureId, courseId) VALUES (?, ?, ?)'; 
-    db.query(insertSql, [userId, lectureId, courseId], (insertErr, insertResult) => {
-      if (insertErr) {
-        console.error('Error marking lecture as completed:', insertErr);
-        res.status(500).send('Error marking lecture as completed');
-        return;
-      }
-      console.log('Lecture marked as completed');
-      res.status(200).send('Lecture marked as completed');
-    });
-  });
-});
-
-
-
-
-app.get('/completed-lectures/:userId', (req, res) => {
-  const userId = req.params.userId;
-
-  const sql = 'SELECT * FROM completed_lectures WHERE userId = ?';
-  
-  db.query(sql, [userId], (err, result) => {
-      if (err) {
-          console.error('Error fetching completed lectures:', err);
-          res.status(500).send('Error fetching completed lectures');
-          return;
-      }
-      res.json(result);
-  });
-});
-
-
-
-app.get('/completed-lectures-count', async (req, res) => {
-  const { userId, courseId } = req.query;
-
-  try {
-      const result = await db.query('SELECT COUNT(*) AS completedLecturesCount FROM completed_lectures WHERE userId = ? AND courseId = ?', [userId, courseId]);
-      const completedLecturesCount = result[0].completedLecturesCount;
-
-      res.json({ completedLecturesCount });
-  } catch (error) {
-      console.error('Error fetching completed lectures count:', error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.get('/total-lectures-count', async (req, res) => {
-  const { courseId } = req.query;
-
-  try {
-      const result = await db.query('SELECT COUNT(*) AS totalLecturesCount FROM lectures WHERE courseId = ?', [courseId]);
-      const totalLecturesCount = result[0].totalLecturesCount;
-
-      res.json({ totalLecturesCount });
-  } catch (error) {
-      console.error('Error fetching total lectures count:', error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+  getCoursesByTutor(req,res,db)
 });
 
 app.post("/courses", (req, res) => {
-  const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
+  InsertCourse(req,res,db);
 
-  db.query(
-    "INSERT INTO courses (Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, TutorID) VALUES (?,?,?,?,?,?,?,?,?)",
-    [title, description, category, image, prerequisites, duration, lectures, assignments, tutorid],
-    (error, result) => {
-      if (error) {
-        console.error("Adding Course error:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-      res.status(201).json({ message: "Course added successfully" });
-    }
-  );
 });
 
 app.get('/courses/:id', (req, res) => {
-  const courseId = req.params.id;
-
-  const sql = "SELECT * FROM courses WHERE CourseID = ?";
-
-  db.query(sql, [courseId], (err, result) => {
-    if (err) {
-      console.error('Error fetching course:', err);
-      return res.status(500).json({ error: "Error occurred while fetching course" });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ error: "Course not found" });
-    }
-    return res.json(result[0]);
-  });
+    getCoursesById(req,res,db);
 });
 
 
 app.delete('/courses/:id', (req, res) => {
-  const courseId = req.params.id;
-  console.log("Deleting course with ID:", courseId); 
-  const sql = "DELETE FROM courses WHERE CourseID = ?";
-  db.query(sql, [courseId], (err, result) => {
-    if (err) {
-      console.error("Error occurred during delete:", err);
-      return res.status(500).json({ error: "An error occurred during delete" });
-    }
-    console.log("Record deleted successfully"); 
-    return res.json({ success: true, message: "Record deleted successfully" });
-  });
+    DeleteCourse(req,res,db);
 });
 
 app.put('/courses/:id', (req, res) => {
-  const { id } = req.params;
-  const { Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments } = req.body; 
-  const sql = `UPDATE Courses 
-             SET Title = ?,
-                 Description = ?,
-                 Category = ?,
-                 Image = ?,
-                 Prerequisites = ?,
-                 Duration = ?,
-                 Lectures = ?,
-                 Assignments = ?
-             WHERE CourseID = ?`;
-
-db.query(sql, [Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, id], (err, result) => {
-  if (err) {
-    console.error("Error executing SQL query:", err);
-    res.status(500).send("Internal Server Error");
-    return;
-  }
-  if (result.affectedRows === 1) {
-    res.status(200).send("Course updated successfully");
-  } else {
-    res.status(404).send('Course not found');
-  }
-});
-
+  UpdateCourse(req,res,db);
 });
 
 
+
+
+//Lectures Info and Management
+
+
+
+app.get('/lectures/:id', (req, res) => {
+  getLecturesById(req,res,db);
+ 
+});
+
+
+app.get('/lecturescourse/:id', (req, res) => {
+    getLecturesByCourse(req,res,db);
+});
+
+
+app.get('/lectures', (req, res) => {
+    getAllLectures(req,res,db);
+});
+
+app.get('/specificlecture/:id', (req, res) => {
+  getSpecificLecture(req,res,db);
+});
+
+
+app.post("/addlecture", (req, res) => {
+    AddLecture(req,res,db);
+});
+
+app.get('/completed-lectures/:userId/:courseId', (req, res) => {
+    getLectureByUserIdAndCourseId(req,res,db);
+});
+
+
+app.get('/lecturess/:courseId', (req, res) => {
+  checkLectureCompletionStatus(req,res,db);
+  
+});
+
+
+app.post('/completed-lectures', (req, res) => {
+    CompleteALecture(req,res,db);
+});
+
+
+
+
+//Enrollement info and Management
 
 
 app.post("/enroll", (req, res) => {
-  const { courseId } = req.body;
-  const studentId = req.session.userid;
-
-  db.query(
-    "SELECT * FROM enrollments WHERE CourseId = ? AND StudentID = ?",
-    [courseId, studentId],
-    (error, results) => {
-      if (error) {
-        console.error("Error checking enrollment:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      if (results.length > 0) {
-        return res.status(400).json({ error: "Student already enrolled in the course" });
-      }
-
-      db.query(
-        "INSERT INTO enrollments (CourseId, StudentID) VALUES (?, ?)",
-        [courseId, studentId],
-        (error, result) => {
-          if (error) {
-            console.error("Error enrolling student:", error);
-            return res.status(500).json({ error: "Internal server error" });
-          }
-          res.status(201).json({ message: "Enrolled successfully" });
-        }
-      );
-    }
-  );
+  EnrollStudent(req,res,db);
+ 
 });
 
 
 app.delete('/enroll/:courseId/:userId', (req, res) => {
-  const courseId = req.params.courseId;
-  const userId = req.params.userId;
-
-  console.log("Deleting course with ID:", courseId, "for user ID:", userId); 
-
-  const sql = "DELETE FROM enrollments WHERE CourseID = ? AND StudentID = ?";
-  db.query(sql, [courseId, userId], (err, result) => {
-    if (err) {
-      console.error("Error occurred during delete:", err);
-      return res.status(500).json({ error: "An error occurred during delete" });
-    }
-    console.log("Record deleted successfully"); 
-    return res.json({ success: true, message: "Record deleted successfully" });
-  });
+    DeleteEnrollment(req,res,db);
 });
-
 
 
 app.get("/enrolledcourses", (req, res) => {
-  const studentId = req.session.userid;
-  db.query(
-    "SELECT * FROM courses INNER JOIN enrollments ON courses.CourseID = enrollments.CourseID WHERE enrollments.StudentID = ?",
-    [studentId],
-    (error, result) => {
-      if (error) {
-        console.log("Error Fetching enrolled courses ", error);
-        return res.status(500).json({ error: "Internal error" });
-      }
-      res.status(200).json({ message: "Fetched successfully", enrolledCourses: result });
-    }
-  );
-});
-
-app.get('/totalStudents', (req, res) => {
-  db.query(`
-    SELECT COUNT(enrollments.StudentID) AS TotalStudents
-    FROM courses
-    LEFT JOIN enrollments ON courses.CourseID = enrollments.CourseID;
-  `, (error, results) => {
-    if (error) {
-      console.error('Error fetching total number of students:', error);
-      return res.status(500).json({ error: 'Internal error' });
-    }
-    res.status(200).json({ message: 'Fetched successfully', totalStudents: results[0].TotalStudents });
-  });
+    GetEnrolledCourses(req,res,db);
 });
 
 
+
+//Tutor info and Management
 
 app.get('/tutors', (req, res) => {
-  const sql = 'SELECT * FROM tutor';
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error retrieving tutors from database:', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    console.log('Tutors retrieved from database:', result);
-    res.status(200).json(result);
-  });
+  GetAllTutors(req,res,db);
+
 });
 
 
 app.post('/becomeTutor', (req, res) => {
-  const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
-  const userId = req.session.userid;
-
-  if (!userId) {
-    return res.status(401).send('Unauthorized');
-  }
-
-  const updateSql = 'UPDATE users SET role = "Tutor", username = ?, email = ? WHERE UserID = ?';
-  db.query(updateSql, [name, email, userId], function(err, updateResult) {
-    if (err) {
-      console.error('Error updating user role:', err);
-      return res.status(500).send('Internal Server Error');
-    }
-
-    const tutorSql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(tutorSql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, userId], function(err, tutorInsertResult) {
-      if (err) {
-        console.error('Error inserting into tutors table:', err);
-        return res.status(500).send('Internal Server Error');
-      }
-
-      console.log('Data saved successfully');
-      res.status(200).send('Data saved successfully');
-    });
-  });
+    AddTutor(req,res,db);
 });
 
 app.get('/tutors/:id', (req, res) => {
-  const tutorId = req.params.id;
+    GetTutorById(req,res,db);
+});
 
-  const sql = "SELECT * FROM tutors WHERE TutorID = ?";
-
-  db.query(sql, [tutorId], (err, result) => {
-    if (err) {
-      console.error('Error fetching tutor:', err);
-      return res.status(500).json({ error: "Error occurred while fetching tutor" });
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ error: "Tutor not found" });
-    }
-    return res.json(result[0]);
-  });
+app.get('/tutoria', (req, res) => {
+  getLoggedInTutorInfo(req,res,db);
 });
 
 
+
+//Users info and Management
+
 app.get('/users', (req, res) => {
-  db.query('SELECT * FROM users', (error, results) => {
-    if (error) {
-      console.error('Error fetching users:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results); 
-  });
+    getAllUsers(req,res,db);
 });
 
 app.delete('/users/:id', (req, res) => {
-  const userId = req.params.id;
-  console.log("Deleting user with ID:", userId);
-
-  const sql = "DELETE FROM users WHERE UserID = ?";
-  db.query(sql, [userId], (err, result) => {
-    if (err) {
-      console.error("Error occurred during delete:", err);
-      return res.status(500).json({ error: "An error occurred during delete" });
-    }
-    console.log("User deleted successfully"); 
-    return res.json({ success: true, message: "User deleted successfully" });
-  });
+    DeleteUsers(req,res,db)
 });
 
 app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const { Username, Password, Role, Email } = req.body; 
-  const sql = `UPDATE Users 
-               SET Username = ?,
-                   Password = ?,
-                   Role = ?,
-                   Email = ?
-               WHERE UserID = ?`;
-
-  db.query(sql, [Username, Password, Role, Email, id], (err, result) => {
-    if (err) {
-      console.error("Error executing SQL query:", err);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-    if (result.affectedRows === 1) {
-      res.status(200).send("User updated successfully");
-    } else {
-      res.status(404).send('User not found');
-    }
-  });
-});
-
-
-
-
-app.get('/tutoria', (req, res) => {
-  if (!req.session.userid) {
-      return res.status(401).send('Unauthorized');
-  }
-
-  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserId = tutor.UserId WHERE users.UserId = ?';
-  const userId = req.session.userid;
-
-  db.query(sql, userId, (err, result) => {
-      if (err) {
-          console.error('Error retrieving tutor from database:', err);
-          return res.status(500).send('Internal Server Error');
-      }
-      
-      console.log('Tutor retrieved from database:', result);
-      res.status(200).json(result);
-  });
-});
-
-app.get('/studentsa', (req, res) => {
-  if (!req.session.userid) {
-      return res.status(401).send('Unauthorized');
-  }
-
-  const sql = 'SELECT * FROM students INNER JOIN users ON users.UserId = students.UserId WHERE users.UserId = ?';
-  const userId = req.session.userid;
-
-  db.query(sql, userId, (err, result) => {
-      if (err) {
-          console.error('Error retrieving student from database:', err);
-          return res.status(500).send('Internal Server Error');
-      }
-      
-      console.log('Student retrieved from database:', result);
-      res.status(200).json(result);
-  });
+  UpdateUsers(req,res,db);
 });
 
 
@@ -802,432 +231,147 @@ app.get('/studentsa', (req, res) => {
 
 
 
-
-
-
-
-
+//Friends info and management
 
 
 app.get('/friends', (req, res) => {
-  const loggedInUserId = req.session.userid; 
-  db.query('SELECT students.*, users.Email FROM students INNER JOIN users ON students.UserID = users.UserID WHERE students.UserID != ? LIMIT 3', [loggedInUserId], (error, results) => {
-    if (error) {
-      console.error('Error fetching users:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+    SuggestedFriends(req,res,db);
 });
-
-
-
-
-
 
 app.post('/send-friend-request', (req, res) => {
-  const { receiverId } = req.body;
-  const senderId = req.session.userid; 
-
-  try {
-    const existingRequest =  db.query(
-      'SELECT * FROM friend_requests WHERE sender_id = ? AND receiver_id = ? AND status = "accepted"',
-      [senderId, receiverId]
-    );
-
-    if (existingRequest.length > 0) {
-      return res.status(400).json({ error: 'Friend request already accepted' });
-    }
-
-     db.query(
-      'INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES (?, ?, "pending")',
-      [senderId, receiverId]
-    );
-
-    res.status(200).json({ message: 'Friend request sent successfully' });
-  } catch (error) {
-    console.error('Error sending friend request:', error);
-    res.status(500).json({ error: 'An error occurred while sending the friend request' });
-  }
+    SendFriendRequest(req,res,db);
 });
-
 
 
 app.get('/friend-requests', (req, res) => {
-  const userId = req.session.userid; 
-
-  const sql = `
-    SELECT DISTINCT friend_requests.id, friend_requests.sender_id, friend_requests.receiver_id, friend_requests.status, friend_requests.created_at, students.Name, students.Image
-    FROM friend_requests
-    INNER JOIN students ON friend_requests.sender_id = students.UserId
-    WHERE friend_requests.receiver_id = ? AND friend_requests.status = 'pending';
-  `;
-  
-  db.query(sql, [userId], (error, results) => {
-    if (error) {
-      console.error('Error fetching friend requests:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+    FriendRequests(req,res,db);
 });
 
 
 app.get('/myfriends', (req, res) => {
-  const userId = req.session.userid;
-  db.query(
-    `SELECT s.UserId AS ID, s.Name, s.Image
-     FROM (
-         SELECT CASE
-                    WHEN sender_id = ? THEN receiver_id
-                    ELSE sender_id
-                END AS friend_id
-         FROM friend_requests
-         WHERE (sender_id = ? OR receiver_id = ?) AND status = 'accepted'
-     ) AS friend_ids
-     INNER JOIN students AS s ON friend_ids.friend_id = s.UserId;`,
-    [userId, userId, userId],
-    (error, results) => {
-      if (error) {
-        console.error('Error fetching users:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-      res.json(results); 
-    }
-  );
+    MyFriends(req,res,db);
 });
 
 app.post('/accept-friend-request',(req, res) => {
-  const requestId = req.body.requestId;
-
-  try {
-    db.query('UPDATE friend_requests SET status = "accepted" WHERE id = ?', [requestId]);
-    
-    res.status(200).json({ message: 'Friend request accepted successfully' });
-  } catch (error) {
-    console.error('Error accepting friend request:', error);
-    res.status(500).json({ error: 'An error occurred while accepting friend request' });
-  }
+      AcceptFriendRequest(req,res,db);
 });
 
 app.post('/reject-friend-request',(req, res) => {
-  const requestId = req.body.requestId;
-
-  try {
-    db.query('UPDATE friend_requests SET status = "rejected" WHERE id = ?', [requestId]);
-    
-    res.status(200).json({ message: 'Friend request rejected successfully' });
-  } catch (error) {
-    console.error('Error rejecting friend request:', error);
-    res.status(500).json({ error: 'An error occurred while rejecting friend request' });
-  }
+    RejectFriendRequest(req,res,db);
 });
 
 app.post('/remove-friend', (req, res) => {
-  const { friendId } = req.body; 
-  const userId = req.session.userid; 
-  try {
-    db.query(
-      'DELETE FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) AND status = "accepted"',
-      [userId, friendId, friendId, userId]
-    );
-
-    res.status(200).json({ message: 'Friend removed successfully' });
-  } catch (error) {
-    console.error('Error removing friend:', error);
-    res.status(500).json({ error: 'An error occurred while removing friend' });
-  }
+    DeleteFriend(req,res,db);
 });
+
+
+
+
+//Exam Info and Management
 
 
 app.post('/exams', (req, res) => {
-  const { courseId, examName, startTime, endTime } = req.body;
-  const tutorid=req.session.userid;
+  addNewExam(req,res,db);
 
-  const sql = 'INSERT INTO exam (courseId, examName, startTime, endTime, tutorId) VALUES (?, ?, ?, ?,?)';
-  db.query(sql, [courseId, examName, startTime, endTime, tutorid], (error, results) => {
-    if (error) {
-      console.error('Error creating exam:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.status(201).json({ message: 'Exam created successfully' });
-  });
 });
 
 app.delete('/exams/:id', (req, res) => {
-  const { examId} = req.body;
-
-  const sql = 'DELETE FROM exam WHERE examId=?';
-  db.query(sql, [examId], (error, results) => {
-    if (error) {
-      console.error('Error creating exam:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.status(201).json({ message: 'Exam deleted successfully' });
-  });
+    DeleteExam(req,res,db);
 });
 
 
 app.put('/exams/:id', (req, res) => {
-  const { examId, examName, startTime, endTime } = req.body;
-  console.log('Received Request Body:', req.body); // Log the request body
-  const sql = 'UPDATE exam SET examName=?, startTime=?, endTime=? WHERE examId=?';
-  db.query(sql, [examName, startTime, endTime, examId], (error, results) => {
-    if (error) {
-      console.error('Error editing exam:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.status(201).json({ message: 'Exam edited successfully' });
-  });
+  UpdateExam(req,res,db);
 });
-
-
-
-app.post('/exam-question', (req, res) => {
-
-
-  const sql = 'INSERT INTO exam (courseId, examName, startTime, endTime, tutorId) VALUES (?, ?, ?, ?,?)';
-  db.query(sql, [courseId, examName, startTime, endTime, tutorid], (error, results) => {
-    if (error) {
-      console.error('Error creating exam:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.status(201).json({ message: 'Exam created successfully' });
-  });
-});
-
-
-
-app.post('/addQuestion', (req, res) => {
-  const { Question, Option1, Option2, Option3, Option4, correctOption, exam } = req.body;
-  console.log('Received data:', req.body); 
-
-  const sql = 'INSERT INTO exam_questions (questionText, Option1, Option2, Option3, Option4, correctOption, examId) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  db.query(sql, [Question, Option1, Option2, Option3, Option4, correctOption, exam], (error, results) => {
-    if (error) {
-      console.error('Error creating exam question:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    console.log('Question created successfully.');
-    res.status(201).json({ message: 'Question created successfully' });
-  });
-});
-
 
 app.post("/passExam", async (req, res) => {
-  const { examId,score } = req.body;
-  const userId = req.session.userid;
-
-
-  const sql = "INSERT INTO passed_exams (exam_id, user_id, score) VALUES (?, ?, ?)";
-  db.query(sql, [examId, userId, score], (error, results) => {
-    if (error) {
-      console.error("Error inserting passed exam data:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-    console.log("Passed exam data inserted successfully.");
-    res.status(201).json({ message: "Passed exam data inserted successfully" });
-  });
+  AddPassedExam(req,res,db);
 });
 
 app.get('/passedexams', (req, res) => {
-  const userID = req.session.userid;
-  const courseId = req.query.courseId; 
-  const sql = `
-    SELECT * FROM passed_exams pe inner join exam e on pe.exam_id=e.examId inner join courses c on e.courseId=c.CourseID WHERE user_id = ? AND e.courseId=?
-  `;
-  db.query(sql, [userID, courseId], (error, results) => {
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+  getPassedExams(req,res,db);
 });
 
-
-app.get('/passedexams-s', (req, res) => {
-  const userID = req.session.userid;
-  const sql = `
-    SELECT * FROM passed_exams pe inner join exam e on pe.exam_id=e.examId WHERE pe.user_id = ? 
-  `;
-  db.query(sql, [userID], (error, results) => {
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+app.get('/available-exams', (req, res) => {
+  getAvailableExams(req,res,db);
 });
-
-
-
-
-app.get('/available-exams/:courseId', (req, res) => {
-  const { courseId } = req.params;
-  const userId = req.session.userid;
-
-  const sql = `
-    SELECT * FROM exam
-    WHERE examId NOT IN (
-      SELECT exam_id FROM passed_exams WHERE user_id = ?
-    )
-    AND courseId = ?
-  `;
-
-  db.query(sql, [userId, courseId], (error, results) => {
-    if (error) {
-      console.error('Error fetching available exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
-});
-
-
-
 
 
 app.get('/exams', (req, res) => {
-  const userID = req.session.userid;
-  const sql = `
-  SELECT * FROM exam WHERE tutorId=?
-  `;
-  db.query(sql, [userID], (error, results) => {
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+    getExamsByTutor(req,res,db);
 });
 
 app.get('/exams-course/:courseId', (req, res) => {
-  const courseId = req.params.courseId; 
-  console.log('Received courseId:', courseId); 
-  const sql = `
-    SELECT * FROM exam WHERE courseId=?
-  `;
-  db.query(sql, [courseId], (error, results) => { 
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
+    getExamsByCourse(req,res,db);
+});
+
+app.get('/passedexam', (req, res) => {
+  getPassedExamInfo(req,res,db);
+});
+
+app.get('/enrolledcoursesexams',(req,res)=>{
+  getExamsByEnrolledCourses(req,res,db);
+})
+
+
+//Questions Info and Management
+
+app.post('/addQuestion', (req, res) => {
+    addQuestion(req,res,db);
 });
 
 app.get('/examsquestions/:examId', (req, res) => {
-  const { examId } = req.params;
-  const sql = 'SELECT * FROM exam_questions WHERE examId=?';
-  db.query(sql, [examId], (error, results) => {
-    if (error) {
-      console.error('Error fetching questions:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
-});
-
-
-
-
-
-app.get('/passedexam-student', (req, res) => {
-  const userID = req.session.userid;
-  const sql = `
-  SELECT * FROM passed_exams pe
-  INNER JOIN users u ON pe.user_id = u.UserID
-  INNER JOIN students s ON u.UserID = s.userId
-  WHERE s.userId = ?
+  getQuestionsByExam(req,res,db);
   
-  `;
-  db.query(sql, [userID], (error, results) => {
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
 });
-
-
-
-
-app.get('/passedexam', (req, res) => {
-  const tutorid=req.session.userid;
-
-  console.log("user id", req.session.userid);
-  const sql = `
-  SELECT * FROM passed_exams inner join exam on exam.examId = passed_exams.exam_id inner join students s on s.UserId=passed_exams.user_id Where exam.tutorId=?
-  
-  `;
-  db.query(sql,[tutorid], (error, results) => {
-    if (error) {
-      console.error('Error fetching exams:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.json(results);
-  });
-});
-
 
 app.delete('/question/:id', (req, res) => {
-  const { questionId} = req.body;
-
-  const sql = 'DELETE FROM exam_questions WHERE questionId=?';
-  db.query(sql, [questionId], (error, results) => {
-    if (error) {
-      console.error('Error creating exam:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    res.status(201).json({ message: 'Exam deleted successfully' });
-  });
+  DeleteQuestion(req,res,db);
 });
 
 
+//Completed Courses
 
 app.post('/completedcourses', (req, res) => {
-  const { courseId, userId, grade} = req.body; 
-  const tutorId=req.session.userid;
+  AddCompletedCourse(req,res,db);
 
-  const sql = 'INSERT INTO completedcourse (StudentID, CourseID, Grade, TutorID) VALUES (?, ?, ?, ?)';
-  db.query(sql, [userId, courseId,grade, tutorId ], (error, results) => {
-    if (error) {
-      console.error('Error creating exam question:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-    console.log('Question created successfully.');
-    res.status(201).json({ message: 'Question created successfully' });
-  });
 });
 
 
 
 app.get('/completedcourses/graded', (req, res) => {
-  const { courseId, userId } = req.query;
-  const sql = 'SELECT * FROM CompletedCourse WHERE CourseID = ? AND StudentID = ?';
-
-  db.query(sql, [courseId, userId], (err, result) => {
-    if (err) {
-      console.error('Error fetching completed course:', err);
-      res.status(500).send('Error checking if user has been graded');
-      return;
-    }
-
-    if (result.length === 0) {
-      res.json({ graded: false });
-    } else {
-      res.json({ graded: true });
-    }
-  });
+    checkGradeStatus(req,res,db);
 });
 
 
-app.get('/logout', (req, res) => {
-  res.clearCookie('token');
-  return res.json({ Status: "Success" });
+
+//Students Management and Info
+
+app.get('/passedexam-student', (req, res) => {
+getStudentByPassedExam(req,res,db);
 });
+
+
+app.get('/studentsa', (req, res) => {
+  getLogggedInStudentInfo(req,res,db);
+});
+
+
+
+
+//Dashboard Info and Management
+
+app.get('/totalStudents', (req, res) => {
+  getTotalStudents(req,res,db);
+});
+
+
+
+
+
+
+
+
 
 
 

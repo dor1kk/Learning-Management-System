@@ -42,11 +42,8 @@ const Signin = () => {
             console.log('Login state:', res.data.Login); 
             
             if (res.data.Login) {
-                if(role==="Student"){
                 window.location.href='/Home/YourCourses';
-                } else{
-                  window.location.href='Home/TutorDashboard';
-                }
+                
             } else {
                 setErr('Invalid username or password');
             }

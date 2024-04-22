@@ -4,6 +4,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import { Link } from "react-router-dom";
 
 function Topbar({ toggleDarkMode, colors }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -13,7 +14,6 @@ function Topbar({ toggleDarkMode, colors }) {
         const courses = [
             { id: 1, title: 'Course 1', image: 'course1.jpg' },
             { id: 2, title: 'Course 2', image: 'course2.jpg' },
-            // Add more course data as needed
         ];
 
     const handleSearchChange = (event) => {
@@ -33,7 +33,7 @@ function Topbar({ toggleDarkMode, colors }) {
     
 
     return (
-        <AppBar position="static" elevation={0} style={{ backgroundColor: colors.backgroundColor, color: colors.textColor }}>
+        <AppBar position="static" elevation={0} style={{ backgroundColor: "white", color:"black" }}>
             <Toolbar>
                 <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                     Education.
@@ -49,7 +49,7 @@ function Topbar({ toggleDarkMode, colors }) {
                             style={{ marginRight: "10px" }}
                         />
                         <IconButton type="submit">
-                            <SearchIcon style={{ color: colors.textColor }} />
+                            <SearchIcon style={{ color: "black"}} />
                         </IconButton>
                     </form>
                     {searchResults.length > 0 && (
@@ -76,10 +76,10 @@ function Topbar({ toggleDarkMode, colors }) {
                         <MenuIcon />
                     </IconButton>
                     <IconButton>
-                        <AccountCircleIcon style={{ color: colors.textColor }} />
+                        <AccountCircleIcon style={{ color:"black"}} />
                     </IconButton>
                     <IconButton onClick={toggleDarkMode} >
-                        <WbSunnyIcon style={{ color: colors.textColor }} />
+                        <WbSunnyIcon style={{ color: "black" }} />
                     </IconButton>
                 </div>
             </Toolbar>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation , Link} from 'react-router-dom';
+import {notification} from 'antd';
 
 function TakeExam() {
   const [questions, setQuestions] = useState([]);
@@ -62,9 +63,17 @@ function TakeExam() {
             examId: examId,
             score: percentageCorrect,
           });
+          notification.success({
+            message: 'Exam Passed',
+            description: 'Congratulations! You have passed the exam.',
+          });
           console.log("Exam passed data sent to the server.");
         } catch (error) {
           console.error("Error posting exam passed data:", error);
+          notification.error({
+            message: 'Error',
+            description: 'An error occurred while submitting the exam.',
+          });
         }
       }
     } else {
@@ -78,10 +87,10 @@ function TakeExam() {
   
 
   return (
-    <div className="exam-container">
-      <h4 className="text-center mt-5 mb-3">Take Exam</h4>
+    <div className="c-container p-5">
+      <h4 className="text-center mt-5 mb-3 text-primary">Take Exam</h4>
       {questions.map((question) => (
-        <div key={question.questionId} className="take-card p-4 mb-3" style={{ backgroundColor: '#f8f9fa' }}>
+        <div key={question.questionId} className="take-card p-4 mb-3 bg-white" style={{boxShadow:"0 2px 6px rgba(0,0,0,0.1)"}} >
           <div className="card-body">
             <h5 className="card-title">{question.questionText}</h5>
             <div className="d-flex flex-column">
@@ -118,7 +127,8 @@ function TakeExam() {
       ))}
       <div className="d-flex justify-content-center">
         <button
-          className="btn btn-success mt-3"
+          className="btn mt-3"
+          style={{backgroundColor:"#00538C", color:"white"}}
           onClick={handleTakeExam}
         >
           Submit Exam

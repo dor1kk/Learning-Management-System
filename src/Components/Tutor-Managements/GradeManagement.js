@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { List, Avatar, Select, Button, notification } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
+
+
+const { Option } = Select;
 
 function GradeManagement() {
     const [exams, setExams] = useState([]);
@@ -27,14 +32,11 @@ function GradeManagement() {
         setGrades(gradesArray);
     }, []);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleChange = (value) => {
+        setFormData({ ...formData, grade: value });
     }
 
-    const handleSubmit = async (event, courseId, userId) => {
-        event.preventDefault();
-
+    const handleSubmit = async (courseId, userId) => {
         try {
             const response = await axios.get(`http://localhost:8080/completedcourses/graded`, {
                 params: {
@@ -44,7 +46,9 @@ function GradeManagement() {
             });
 
             if (response.data.graded) {
-                alert('Student has already been graded!');
+                notification.warning({
+                    message: 'Student has already been graded!',
+                });
             } else {
                 await axios.post('http://localhost:8080/completedcourses', {
                     courseId: courseId,
@@ -52,7 +56,9 @@ function GradeManagement() {
                     grade: formData.grade
                 });
 
-                alert('Student has been graded!');
+                notification.success({
+                    message: 'Student has been graded!',
+                });
             }
         } catch (error) {
             console.error('Error adding new passed exam:', error);
@@ -60,27 +66,44 @@ function GradeManagement() {
     };
 
     return (
-        <div className="exam-container" style={{ textAlign: "center" }}>
+        <div className="c-container p-5" style={{ textAlign: "center" }}>
             <h2 className='text-primary' style={{ fontWeight: "bold" }}>Grades</h2>
 
             <div className="row">
                 <div className="col">
-                    <ul className="list-group mt-3">
-                        {exams.map((exam, index) => (
-                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center mt-2">
-                                <img src={exam.Image} style={{ width: "70px", height: "70px", borderRadius: "50%" }} alt="student" />
-                                {exam.Name} - {exam.examName} - Score: {exam.score}
-                                <div className='d-flex align-items-center'>
-                                    <select onChange={handleChange} className="form-select" style={{ width: "65px", marginRight: "20px" }} name="grade">
+                    <List
+                        dataSource={exams}
+                        renderItem={exam => (
+                            <List.Item
+                            style={{ background: "white", padding: "10px", marginBottom: "10px", borderRadius: "8px", boxShadow:"0 2px 6px rgba(0,0,0,0.1)" }}
+
+                                key={exam.id}
+                                actions={[
+                                    <Select
+                                        defaultValue=""
+                                        onChange={handleChange}
+                                        style={{ width: 100 }}
+                                    >
                                         {grades.map((grade, index) => (
-                                            <option key={index} value={grade}>{grade}</option>
+                                            <Option key={index} value={grade}>{grade}</Option>
                                         ))}
-                                    </select>
-                                    <button className='btn btn-primary' onClick={(event) => handleSubmit(event, exam.courseId, exam.ID)}>Add Grade</button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                                    </Select>,
+                                    <Button
+                                        type="primary"
+                                        onClick={() => handleSubmit(exam.courseId, exam.ID)}
+                                    >
+                                        Add Grade
+                                    </Button>
+                                ]}
+                            >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={exam.Image} />}
+                                    title={`${exam.Name} - ${exam.examName}`}
+                                    description={`Score: ${exam.score}`}
+                                />
+                            </List.Item>
+                        )}
+                    />
                 </div>
             </div>
         </div>

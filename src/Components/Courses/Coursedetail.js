@@ -7,6 +7,7 @@ import ReviewContainer from "./Review";
 import Progress from "./Progress";
 import courses from "./Coursedata";
 import axios from 'axios'
+import {notification} from 'antd'
 
 
 
@@ -17,12 +18,19 @@ function CourseDetail() {
   const handleEnrollNow = async () => {
     try {
       await axios.post("http://localhost:8080/enroll", { courseId: id });
-      alert("Enrolled successfully!"); 
+      notification.success({
+        message: 'Enrolled Successfully!',
+        description: 'You have successfully enrolled in this course.',
+      });
     } catch (error) {
       console.error("Error enrolling:", error);
-      alert("You have already enrolled to this course!");
+      notification.error({
+        message: 'Enrollment Error',
+        description: 'You have already enrolled in this course.',
+      });
     }
   };
+  
   const { id } = useParams();
   const course = courses.find((course) => course.id === id);
   const [selectedVideo, setSelectedVideo] = useState(course ? course.videos[0] : null);

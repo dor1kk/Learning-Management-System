@@ -61,7 +61,7 @@ function TutorDashboard() {
      
 
   return (
-    <main className='exam-container'>
+    <main className='c-container p-5'>
     
         <div className='main-cards'>
             <div className='card'>

@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, List, ListItem, ListItemText, Collapse, ListItemIcon, Button, TextField } from '@mui/material';
-import { ExpandLess, ExpandMore, Add, School } from '@mui/icons-material';
-import "./Lecture.css"
+import { List, Button, Input, Collapse, Select, Form, Modal } from 'antd';
+import { CaretUpOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
+import './Lecture.css';
+
+const { Option } = Select;
 
 function LectureManagement() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedLecture, setSelectedLecture] = useState(null);
-  const [newLectureTitle, setNewLectureTitle] = useState("");
-  const [newLectureImageUrl, setNewLectureImageUrl] = useState("");
-  const [newLectureDescription, setNewLectureDescription] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [newLectureTitle, setNewLectureTitle] = useState('');
+  const [newLectureImageUrl, setNewLectureImageUrl] = useState('');
+  const [newLectureDescription, setNewLectureDescription] = useState('');
   const [lectureCount, setLectureCount] = useState(0);
-  const [lectures, setLectures] = useState([]); 
+  const [lectures, setLectures] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -45,11 +47,12 @@ function LectureManagement() {
       setLectures(lectures);
       setLectureCount(lectures.length);
     } catch (error) {
-      console.error("Error fetching and displaying lectures:", error);
+      console.error('Error fetching and displaying lectures:', error);
     }
   };
 
-  const handleCourseClick = (course) => {
+  const handleCourseChange = (value) => {
+    const course = courses.find((c) => c.CourseID === value);
     setSelectedCourse(course);
     setOpen(true);
     fetchAndDisplayLectures(course.CourseID);
@@ -57,21 +60,20 @@ function LectureManagement() {
 
   const handleCollapse = () => {
     setOpen(!open);
-    setSelectedLecture(null); 
+    setSelectedLecture(null);
   };
+
   const handleLectureClick = (index) => {
     if (selectedLecture === index) {
-      setSelectedLecture(null); 
+      setSelectedLecture(null);
     } else {
-      setSelectedLecture(index); 
+      setSelectedLecture(index);
     }
-    setShowAddForm(false); 
+    setShowAddForm(false);
   };
-  
 
   const handleAddLecture = () => {
-    setShowAddForm(true); 
- 
+    setShowAddForm(true);
   };
 
   const handleFormSubmit = async () => {
@@ -81,126 +83,115 @@ function LectureManagement() {
         LectureTitle: newLectureTitle,
         LectureImageUrl: newLectureImageUrl,
         LectureDescription: newLectureDescription,
-        LectureIndex: lectureCount
+        LectureIndex: lectureCount,
       });
-      
+
       await fetchAndDisplayLectures(selectedCourse.CourseID);
-  
-      setNewLectureTitle("");
-      setNewLectureImageUrl("");
-      setNewLectureDescription("");
-  
+
+      setNewLectureTitle('');
+      setNewLectureImageUrl('');
+      setNewLectureDescription('');
+
       console.log('New lecture added:', newLectureTitle);
+      setShowAddForm(false); 
     } catch (error) {
       console.error('Error adding new lecture:', error);
     }
   };
-  
 
   return (
-    <Container className='exam-container' style={{ backgroundColor: '#f9f9f9', height:"100vh", padding: '20px' }}>
-      <h4 className="text-center mt-5 mb-3" style={{ color: '#333' }}>Select the Course You Want to Add Lecture!</h4>
-      <List className="d-flex flex-row">
-        {courses.map(course => (
-          <ListItem
-            key={course.CourseID}
-            className="listitem d-flex align-items-center mb-3"
-            style={{ marginRight: "15px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", backgroundColor: '#fff', color: '#333' }}
-            onClick={() => handleCourseClick(course)}
-            selected={selectedCourse === course}
-            button
-          >
-         
-            <img src={course.Image} style={{width:"60px", height:"60px", borderRadius:"50%", marginRight:"20px"}}></img>
-            <ListItemText className="text-uppercase font-weight-bold" primary={course.Title} />
-          </ListItem>
-        ))}
-      </List>
+    <div className="c-container p-5" style={{ backgroundColor: '#f9f9f9', height: '100vh', padding: '20px' }}>
+      <h4 className="text-center mt-5 mb-3" style={{ color: '#333' }}>
+        Select the course you want to add lecture
+      </h4>
+      <Form layout="vertical">
+        <Form.Item label="Select Course">
+          <Select onChange={handleCourseChange} placeholder="Select a course">
+            {courses.map((course) => (
+              <Option key={course.CourseID} value={course.CourseID}>
+                {course.Title}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Form>
 
       {selectedCourse && (
         <List>
-          <ListItem button onClick={handleCollapse} style={{ backgroundColor: '#fff', color: '#333' }}>
-            <ListItemText primary={`Number of Lectures: ${lectureCount}`} />
-            {open ? <ExpandLess style={{ color: '#4caf50' }} /> : <ExpandMore style={{ color: '#f44336' }} />}
-          </ListItem>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
+          <List.Item button onClick={handleCollapse} style={{ backgroundColor: '#fff', color: '#333' }}>
+            <span style={{marginLeft:"25px"}}>{`Number of Lectures: ${lectureCount}`}</span>
+            {open ? <CaretUpOutlined style={{ color: '#4caf50' }} /> : <CaretDownOutlined style={{ color: '#f44336' }} />}
+          </List.Item>
+          {open && (
+            <List component={Collapse} unmountOnExit>
               {lectures.map((lecture, index) => (
                 <div key={index}>
-                  <ListItem
+                  <List.Item
                     button
                     style={{ paddingLeft: '40px', backgroundColor: '#f9f9f9', color: '#333' }}
                     selected={selectedLecture === index}
                     onClick={() => handleLectureClick(index)}
                   >
-                    <ListItemIcon>
-                      <ExpandMore style={{ color: '#2196f3' }} />
-                    </ListItemIcon>
-                    <ListItemText primary={`Lecture ${index + 1}: ${lecture.LectureTitle}`} />
-                  </ListItem>
+                    <CaretDownOutlined style={{ color: '#2196f3' }} />
+                    <span style={{marginRight:"500px"}}>{`Lecture ${index + 1}: ${lecture.LectureTitle}`}</span>
+                  </List.Item>
                   {selectedLecture === index && (
-                    <Collapse in={selectedLecture === index} timeout="auto" unmountOnExit>
-                      <List component="div" disablePadding>
-                        <ListItem>
-                          <ListItemText primary={`Description: ${lecture.LectureContent}`} />
-                        </ListItem>
-                        <ListItem>
-                          <img src={lecture.Image}></img>
-                        </ListItem>
-                      </List>
-                    </Collapse>
+                    <div>
+                      <List.Item>
+                        <span>{`Description: ${lecture.LectureContent}`}</span>
+                      </List.Item>
+                      <List.Item>
+                        <img src={lecture.Image} alt="Lecture" />
+                      </List.Item>
+                    </div>
                   )}
                 </div>
               ))}
             </List>
-          </Collapse>
+          )}
           <Button
-            variant="contained"
-            color="primary"
+            type="primary"
             onClick={handleAddLecture}
             style={{ marginTop: '10px', backgroundColor: 'darkblue', color: '#fff' }}
+            icon={<PlusOutlined />}
           >
-            <Add style={{ marginRight: '5px' }} /> Add Lecture
+            Add Lecture
           </Button>
-          {showAddForm && (
-            <div>
-              <TextField
-                label="Lecture Title"
-                value={newLectureTitle}
-                onChange={(e) => setNewLectureTitle(e.target.value)}
-                variant="outlined"
-                fullWidth
-                style={{ marginTop: '10px' }}
-              />
-              <TextField
-                label="Image URL"
-                value={newLectureImageUrl}
-                onChange={(e) => setNewLectureImageUrl(e.target.value)}
-                variant="outlined"
-                fullWidth
-                style={{ marginTop: '10px' }}
-              />
-              <TextField
-                label="Description"
-                value={newLectureDescription}
-                onChange={(e) => setNewLectureDescription(e.target.value)}
-                variant="outlined"
-                fullWidth
-                style={{ marginTop: '10px' }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleFormSubmit}
-                style={{ marginTop: '10px', backgroundColor: '#ffc107', color: '#333' }}
-              >
+          <Modal
+            visible={showAddForm}
+            title="Add Lecture"
+            onCancel={() => setShowAddForm(false)}
+            footer={[
+              <Button key="cancel" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>,
+              <Button key="submit" type="primary" onClick={handleFormSubmit}>
                 Submit
-              </Button>
-            </div>
-          )}
+              </Button>,
+            ]}
+          >
+            <Input
+              placeholder="Lecture Title"
+              value={newLectureTitle}
+              onChange={(e) => setNewLectureTitle(e.target.value)}
+              style={{ marginTop: '10px' }}
+            />
+            <Input
+              placeholder="Image URL"
+              value={newLectureImageUrl}
+              onChange={(e) => setNewLectureImageUrl(e.target.value)}
+              style={{ marginTop: '10px' }}
+            />
+            <Input.TextArea
+              placeholder="Description"
+              value={newLectureDescription}
+              onChange={(e) => setNewLectureDescription(e.target.value)}
+              style={{ marginTop: '10px' }}
+            />
+          </Modal>
         </List>
       )}
-    </Container>
+    </div>
   );
 }
 

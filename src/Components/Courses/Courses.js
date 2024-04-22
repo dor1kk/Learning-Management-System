@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link, Route, Routes } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import { Select } from "antd";
+import { FaHtml5, FaNodeJs, FaDatabase, FaCalculator } from 'react-icons/fa';
+import { BiNetworkChart } from 'react-icons/bi';
+import { FaArrowDown } from "react-icons/fa";
 import "./Courses.css";
 import CourseDetail from "./Coursedetail";
-import { FaArrowDown } from "react-icons/fa";
-import { FaReact, FaHtml5, FaCss3 } from 'react-icons/fa';
-import { FaNodeJs, FaDatabase } from 'react-icons/fa'; 
-import { BiNetworkChart } from 'react-icons/bi';
-import { FaCalculator } from 'react-icons/fa';
+
+const { Option } = Select;
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -26,8 +27,6 @@ function Courses() {
       console.error('Error fetching courses:', error);
     }
   };
-
-
 
   if (courses.length === 0) {
     return <div>Loading...</div>;
@@ -51,7 +50,7 @@ function Courses() {
   });
 
   return (
-    <main className="container-kursi">
+    <main className="c-container p-5">
       <section className="controls d-flex justify-content-between align-items-center">
         <div className="categories">
           <ul>
@@ -64,15 +63,15 @@ function Courses() {
           </ul>
         </div>
         <div className="sort-by">
-          <select
+          <Select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="form-control"
+            onChange={(value) => setSortBy(value)}
+            style={{ width: 150 }}
           >
-            <option value="default">Sort by: </option>
-            <option value="title">Sort by Title</option>
-            <option value="rating">Sort by Rating</option>
-          </select>
+            <Option value="default">Sort by: </Option>
+            <Option value="title">Sort by Title</Option>
+            <Option value="rating">Sort by Rating</Option>
+          </Select>
         </div>
       </section>
       <section className="course-cards  d-flex flex-row flex-wrap">
@@ -94,7 +93,6 @@ function Courses() {
           </div>
         ))}
       </section>
-     
     </main>
   );
 }

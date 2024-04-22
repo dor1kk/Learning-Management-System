@@ -1,77 +1,86 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-import { AiOutlineMenu, AiOutlineSetting, AiOutlineUser, AiOutlineLock, AiOutlineNotification, AiOutlineLogout, AiOutlineProfile, AiFillProfile, AiOutlineDashboard } from 'react-icons/ai';
-import { BsGrid3X3Gap } from 'react-icons/bs';
-import { IoReceiptOutline, IoSchoolOutline } from 'react-icons/io5';
+import { Layout, Menu, Avatar } from 'antd';
+
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  BellOutlined,
+  MessageOutlined,
+  PieChartOutlined,
+  UserSwitchOutlined,
+  EditOutlined,
+  ReadOutlined,
+  TeamOutlined,
+  BookOutlined,
+  CheckSquareOutlined,
+  VideoCameraOutlined,
+  ContainerOutlined,
+  DashboardOutlined,
+  UserAddOutlined,
+  UsergroupAddOutlined,
+  LaptopOutlined,
+  ProfileOutlined,
+  FormOutlined,
+} from '@ant-design/icons';
 import Topbar from "./Components/Topbar/Topbar";
-import { Link } from "react-router-dom";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Footer from "./Components/Footer/Footer";
-
-import { FaChalkboard, FaPencilAlt, FaUserAstronaut, FaUserFriends } from "react-icons/fa";
-import { IoBookOutline } from 'react-icons/io5';
-import { MdGrade, MdSchool } from 'react-icons/md';
-import { FaChartLine, FaClipboardCheck, FaCode, FaGraduationCap, FaUserPlus } from 'react-icons/fa';
-import { AiOutlineMessage } from 'react-icons/ai';
-import { FaChalkboardTeacher, FaHome } from 'react-icons/fa';
-
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
-import { FaUser } from "react-icons/fa6";
 
+const { Header, Sider, Content } = Layout;
+const { SubMenu } = Menu;
 
 const Sidebaar = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [name, setName] = useState('');
-  const [role, setRole]=useState('');
-  const [image,setImage]=useState('');
+  const [role, setRole] = useState('');
+  const [image, setImage] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const [auth, setAuth] = useState(false);
- 
 
-  
-axios.defaults.withCredentials= true;
+  axios.defaults.withCredentials = true;
 
-useEffect(() => {
-  axios.get('http://localhost:8080')
-    .then(res => {
-      if (res.data.Status === "Success") {
-        setAuth(true);
-        setName(res.data.name);
-      } else {
-        setAuth(false);
-      }
-    })
-    .catch(err => console.log(err));
-}, []);
+  useEffect(() => {
+    axios.get('http://localhost:8080')
+      .then(res => {
+        if (res.data.Status === "Success") {
+          setAuth(true);
+          setName(res.data.name);
+        } else {
+          setAuth(false);
+        }
+      })
+      .catch(err => console.log(err));
+  }, []);
 
-const handleLogout = () => {
-  axios.get('http://localhost:8080/logout')
-    .then(res => {
-      if (res.data.Status === "Success") {
-      
-        setAuth(false);
-        setName('');
-        setRole('');
-      
-        navigate('/');
-      } else {
-        alert("Error");
-      }
-    })
-    .catch(err => console.log(err));
-};
+  const handleLogout = () => {
+    axios.get('http://localhost:8080/logout')
+      .then(res => {
+        if (res.data.Status === "Success") {
+          setAuth(false);
+          setName('');
+          setRole('');
+          navigate('/');
+        } else {
+          alert("Error");
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
   useEffect(() => {
     axios.get('http://localhost:8080/')
       .then(res => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data.valid) {
           setName(res.data.username);
-        } 
+        }
       })
       .catch(err => console.log(err));
   }, [location.pathname, navigate]);
@@ -79,301 +88,151 @@ const handleLogout = () => {
   useEffect(() => {
     axios.get('http://localhost:8080/role')
       .then(res => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data.valid) {
           setRole(res.data.role);
-        } 
+        }
       })
       .catch(err => console.log(err));
   }, [location.pathname, navigate]);
-
 
   useEffect(() => {
     axios.get('http://localhost:8080/image')
       .then(res => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data.valid) {
           setImage(res.data.image);
-        } 
+        }
       })
       .catch(err => console.log(err));
   }, [location.pathname, navigate]);
 
-
-
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  const toggle = () => {
+    setCollapsed(!collapsed);
   };
 
-  const lightModeColors = {
-    backgroundColor: "#ffffff",
-    textColor: "#333333",
-    footerBackgroundColor: "#f0f0f0",
-    footerTextColor: "#333333",
-    sidebarColor:"#a8d5e5"
-  };
-
-  const darkModeColors = {
-    backgroundColor: "#333333",
-    textColor: "#ffffff",
-    footerBackgroundColor: "#222222",
-    footerTextColor: "#ffffff",
-    sidebarColor:"black",
-    searchColor:"gray"
-  };
-
-  const colors = darkMode ? darkModeColors : lightModeColors;
+  const menu = (
+    <Menu>
+      <Menu.Item onClick={handleLogout} key="logout" icon={<LogoutOutlined />}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "0px",height:"99vh", backgroundColor: colors.backgroundColor }}>
-      <div style={{ display: "flex", height: "100%" }}>
-        <Sidebar className="app" style={{height:"99vh", backgroundColor: colors.sidebarColor, color: colors.textColor }}>
-          <Menu>
-            <MenuItem
-              className={`menu-item-1 ${location.pathname === "/Profile" ? "active" : ""}`}
-              icon={<img src={image} style={{width:"40px", height:"40px", borderRadius:"50%"}}></img>}
-            >
-            <h6>{name}</h6>
-            </MenuItem>
-            {role === "Admin" ? (
-          <MenuItem
-        component={<Link to="/Home/Dashboard" className="link" />}
-        icon={<AiOutlineDashboard />}
-       className={`menu-item ${location.pathname === "/Dashboard" ? "active" : ""}`}
-     >
-    Dashboard
-  </MenuItem>
+    <Layout style={{Height: '100vh' }}>
+      <Sider trigger={null} collapsible collapsed={collapsed}  style={{ background: '#00538C' }} 
+>
+        <div className="logo" />
+        <Menu theme="darkblue" mode="inline" defaultSelectedKeys={['1']}>
+          <Menu.Item key="1" style={{color:"white"}} className="mb-5" icon={<UserOutlined />}>
+            
+            <span style={{color:"white"}}>{name}</span>
+          </Menu.Item>
+          {role === "Admin" ? (
+  <SubMenu key="sub1" icon={<DashboardOutlined />} style={{color:"white"}} title="Dashboard">
+    <Menu.Item key="2"><Link to="/Home/Dashboard" className="link" style={{ color: 'white' }}>Dashboard</Link></Menu.Item>
+  </SubMenu>
 ) : role === "Tutor" ? (
-    <MenuItem
-    component={<Link to="/Home/TutorDashboard" className="link" />}
-    icon={<BsGrid3X3Gap />}
-    className={`menu-item ${location.pathname === "/TutorDashboard" ? "active" : ""}`}
-  >
-    Dashboard
-  </MenuItem>
+  <SubMenu key="sub1" icon={<DashboardOutlined />} style={{color:"white"}} title="Dashboard">
+    <Menu.Item key="3"><Link to="/Home/TutorDashboard" className="link" style={{ color: 'white' }}>Dashboard</Link></Menu.Item>
+  </SubMenu>
 ) : null}
-
-
-            
-     
-
-            {role === "Tutor" ? (
-            <MenuItem
-             component={<Link to="/Home/T-CoursesManagement" className="link" />}
-            icon={<FaCode />}
-            className={`menu-item ${location.pathname === "/Tutor-Courses" ? "active" : ""}` }
-            >
-           My Course Management
-          </MenuItem>
-              ) :role=== "Admin" ? (
-                <MenuItem
-                component={<Link to="/Home/" className="link" />}
-               icon={<FaCode />}
-               className={`menu-item ${location.pathname === "/Tutor-Courses" ? "active" : ""}` }
-               >Course Management
-             </MenuItem>
-              ):null}
-
-
+          {role === "Admin" ? (
+            <Menu.Item key="4" icon={<UserSwitchOutlined />}>
+              <Link to="/Home/UserManagement" className="link" style={{color:"white"}}>User Management</Link>
+            </Menu.Item>
+          ) : null}
           {role === "Tutor" ? (
-            <MenuItem
-             component={<Link to="/Home/Students" className="link" />}
-            icon={<IoReceiptOutline />}
-            className={`menu-item ${location.pathname === "/Students" ? "active" : ""}` }
-            >
-            My Student Management
-          </MenuItem>
-              ) : null}
-
-            
-          {role === "Tutor" ? (
-            <MenuItem
-             component={<Link to="/Home/T-ExamsManagement" className="link" />}
-            icon={<FaClipboardCheck />}
-            className={`menu-item ${location.pathname === "/ExamManagement" ? "active" : ""}` }
-            >
-            Exams Management
-          </MenuItem>
-              ) : null}
-
-{role === "Tutor" ? (
-            <MenuItem
-             component={<Link to="/Home/T-GradesManagement" className="link" />}
-            icon={<MdGrade />}
-            className={`menu-item ${location.pathname === "/GradeManagement" ? "active" : ""}` }
-            >
-            Grades Management
-          </MenuItem>
-              ) : null}
-
-{role === "Tutor" ? (
-            <MenuItem
-             component={<Link to="/Home/T-LecturesManagement" className="link" />}
-            icon={<IoSchoolOutline  />}
-            className={`menu-item ${location.pathname === "/LectureManagement" ? "active" : ""}` }
-            >
-            Lectures Management
-          </MenuItem>
-              ) : null}
-
-
-
-
-
-
-           {role === "Admin" ? (
-          <MenuItem
-        component={<Link to="/Home/Analytics" className="link" />}
-        icon={<FaChartLine />}
-       className={`menu-item ${location.pathname === "/Analytics" ? "active" : ""}`}
-     >
-    Analytics
-  </MenuItem>):null}
-
-        
-
-           {role === "Student" ? (
-          
-              <MenuItem
-                component={<Link to="/Home/YourCourses" className="link" />} 
-                icon={<FaGraduationCap />}
-                className={`menu-item ${location.pathname === "/YourCourses" ? "active" : ""}` }
-              >
-                My Courses
-              </MenuItem>):null }
-              {role === "Student" ? (
-              <MenuItem
-                component={<Link to="/Home/Courses" className="link" />}
-                icon={<FaCode/>}
-                className={`menu-item ${location.pathname === "/Courses" ? "active" : ""}` }
-              >
-                Explore Courses
-              </MenuItem>
-         ):null }
-
-
-            {role === "Student" ? (
-            <MenuItem
-            component={<Link to="/Home/Tutors" className="link" />}
-            icon={<FaChalkboardTeacher />}
-            className={`menu-item ${location.pathname === "/Tutors" ? "active" : ""}`}
-            >
-            Tutors
-            </MenuItem>
-                ) : null}
-
-{role === "Student" ? (
-            <MenuItem
-            component={<Link to="/Home/exams" className="link" />}
-            icon={<FaPencilAlt />}
-            className={`menu-item ${location.pathname === "/exams" ? "active" : ""}`}
-            >
-            Exams
-            </MenuItem>
-                ) : null}
-
-
-{role === "Student" ? (
-            <MenuItem
-            component={<Link to="/Home/Friends" className="link" />}
-            icon={<FaUserFriends />}
-            className={`menu-item ${location.pathname === "/Friends" ? "active" : ""}`}
-            >
-            Friends
-            </MenuItem>
-                ) : null}
-
-{role === "Student" ? (
-            <MenuItem
-            component={<Link to="/Home/Courseslecture" className="link" />}
-            icon={<FaChalkboard />}
-            className={`menu-item ${location.pathname === "/Lectures" ? "active" : ""}`}
-            >
-            Lectures
-            </MenuItem>
-                ) : null}
-
-                
-              {role === "Tutor" ? (
-<SubMenu label="Settings" icon={<AiOutlineSetting />}>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Account" className="link" />}
-                icon={<AiOutlineUser />}
-                className={`menu-item ${location.pathname === "/Account" ? "active" : ""}` }
-              >
-                Account
-              </MenuItem>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Chat" className="link" />}
-                icon={<AiOutlineMessage />}
-                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
-                Chat
-              </MenuItem>
-              <MenuItem
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Notifications" className="link" />}
-                icon={<AiOutlineNotification />}
-                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
-                Notifications
-              </MenuItem>
+            <SubMenu key="sub2" icon={<EditOutlined />} style={{color:"white"}} title="My Course Management">
+              <Menu.Item key="5"><Link to="/Home/T-CoursesManagement" style={{color:"white"}} className="link">Courses Management</Link></Menu.Item>
             </SubMenu>
-             ) : role=== "Student" ? (
-              <SubMenu label="Settings" icon={<AiOutlineSetting />}>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Accounttt" className="link" />}
-                icon={<AiOutlineUser />}
-                className={`menu-item ${location.pathname === "/Accounttt" ? "active" : ""}` }
-              >
-                Account
-              </MenuItem>
-              <MenuItem 
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Chat" className="link" />}
-                icon={<AiOutlineMessage />}
-                className={`menu-item ${location.pathname === "/Chat" ? "active" : ""}` }              >
-                Chat
-              </MenuItem>
-              <MenuItem
-                style={{backgroundColor:colors.backgroundColor}}
-                component={<Link to="/Home/Notifications" className="link" />}
-                icon={<AiOutlineNotification />}
-                className={`menu-item ${location.pathname === "/Notifications" ? "active" : ""}` }              >
-                Notifications
-              </MenuItem>
-            </SubMenu>):null}
-
-
-            
-            
-
-          
-
-
-            <MenuItem
-            onClick={handleLogout}
-            
-            icon={<AiOutlineLogout />}
-            className={`menu-item ${location.pathname === "/Friends" ? "active" : ""}`}
-            >
+          ) : null}
+          {role === "Tutor" ? (
+            <Menu.Item key="6" style={{color:"white"}} icon={<ReadOutlined />}>
+              <Link to="/Home/Students" className="link" style={{color:"white", textDecoration:"none"}}>My Student Management</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Tutor" ? (
+            <Menu.Item key="7" style={{color:"white"}} icon={<CheckSquareOutlined />}>
+              <Link to="/Home/T-ExamsManagement"  style={{color:"white", textDecoration:"none"}}>Exams Management</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Tutor" ? (
+            <Menu.Item key="8" style={{color:"white"}} icon={<BookOutlined />}>
+              <Link to="/Home/T-GradesManagement"  style={{color:"white", textDecoration:"none"}}>Grades Management</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Tutor" ? (
+            <Menu.Item key="9" style={{color:"white"}} icon={<ContainerOutlined />}>
+              <Link to="/Home/T-LecturesManagement"  style={{color:"white", textDecoration:"none"}}>Lectures Management</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Admin" ? (
+            <Menu.Item key="10" style={{color:"white"}} icon={<PieChartOutlined />}>
+              <Link to="/Home/Analytics" style={{color:"white", textDecoration:"none"}}>Analytics</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="11" style={{color:"white"}} icon={<LaptopOutlined />}>
+              <Link to="/Home/YourCourses" style={{color:"white", textDecoration:"none"}}>My Courses</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="12" style={{color:"white"}} icon={<FormOutlined />}>
+              <Link to="/Home/Courses" style={{color:"white", textDecoration:"none"}}>Explore Courses</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="13" style={{color:"white"}} icon={<TeamOutlined />}>
+              <Link to="/Home/Tutors" style={{color:"white", textDecoration:"none"}}>Tutors</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="14" style={{color:"white"}} icon={<EditOutlined />}>
+              <Link to="/Home/exams"  style={{color:"white", textDecoration:"none"}}>Exams</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="15" style={{color:"white"}} icon={<UsergroupAddOutlined />}>
+              <Link to="/Home/Friends"  style={{color:"white", textDecoration:"none"}}>Friends</Link>
+            </Menu.Item>
+          ) : null}
+          {role === "Student" ? (
+            <Menu.Item key="16" style={{color:"white"}} icon={<ContainerOutlined />}>
+              <Link to="/Home/Courseslecture" className="link" style={{color:"white", textDecoration:"none"}}>Lectures</Link>
+            </Menu.Item>
+          ) : null}
+          {(role === "Tutor" || role === "Student") && (
+            <SubMenu key="sub3" style={{color:"white"}} icon={<SettingOutlined />} title="Settings">
+              <Menu.Item key="17"><Link to="/Home/Account" style={{color:"white", textDecoration:"none"}}>Account</Link></Menu.Item>
+              <Menu.Item key="18"><Link to="/Home/Chat"style={{color:"white", textDecoration:"none"}}>Chat</Link></Menu.Item>
+              <Menu.Item key="19"><Link to="/Home/Notifications" style={{color:"white", textDecoration:"none"}}>Notifications</Link></Menu.Item>
+            </SubMenu>
+          )}
+          <Menu.Item key="20" style={{color:"white", textDecoration:"none"}} icon={<LogoutOutlined />} onClick={handleLogout}>
             Logout
-            </MenuItem>
-           
-      
-          </Menu>
-        </Sidebar>
-        <section className="flex-grow-1 d-flex flex-column">
-          <Topbar toggleDarkMode={toggleDarkMode} colors={colors} />
-          <div className="flex-grow-1" style={{ height: "70vh", overflow: "auto" }}>
-            {children}
-          </div>
-          <Footer colors={colors} />
-        </section>
-      </div>
-    </div>
+          </Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout className="site-layout">
+        <Header className="site-layout-background" style={{ background: '#1890ff', padding: 0 }}>
+          <Topbar />
+          {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+            className: 'trigger',
+            onClick: toggle,
+            style: { color: '#fff' },
+          })}
+        </Header>
+        <Content
+          className="site-layout-background"
+          style={{ background: '#fff', height:"80vh", overflow:"scroll" }}
+        >
+          {children}
+        </Content>
+        <Footer />
+      </Layout>
+    </Layout>
   );
 };
 

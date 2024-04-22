@@ -6,26 +6,38 @@ import axios from 'axios';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import ImageIcon from '@mui/icons-material/Image'
-import NameIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import "./Signin.css"
-import { FaImage } from 'react-icons/fa';
-import { FaTextHeight } from 'react-icons/fa6';
+import Select from 'react-select';
+import countryList from 'react-select-country-list';
+import { ReactCountryFlag } from 'react-country-flag'; // Import ReactCountryFlag
+import "./Signin.css";
 
 const Signup = () => {
   axios.defaults.withCredentials=true;
+
+  const customCountries = [
+    { label: 'Kosova', value: 'KS' },
+  ];
+
+  const combinedCountries = [...customCountries,...countryList().getData()];
 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    name:'',
-    image:''
+    name:"",
+    image:'',
+    country: '', 
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleCountryChange = (selectedOption) => {
+    setFormData({ ...formData, country: selectedOption.label });
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,102 +53,116 @@ const Signup = () => {
     <div className='signup-container' style={{  minHeight: '100vh', padding: '2rem 0' }}>
       <Container className=' d-flex flex-row justify-content-center align-items-center' style={{width:"900px"}}>
         <Row className="justify-content-md-center">
-          <Col md="8">
-            <div style={{  background: '#ffffff', padding: '2rem', borderRadius: '8px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
+          <Col md="12">
+            <div style={{marginTop:"50px", marginLeft:"240px",  background: 'transparent', padding: '2rem', borderRadius: '8px' }}>
               <Typography variant="h4" component="h2" align="center" gutterBottom style={{color:"#1e4589"}}>
                 Sign Up for free
               </Typography>
               <Form onSubmit={handleSubmit}>
                 <div className='d-flex flex-row' style={{gap:"20px"}}>
-                <TextField
-                
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="username"
-                  label="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  value={formData.username}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <AccountCircleIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                    ),
-                  }}
-                />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Name"
+                    name="name"
+                    autoComplete="name"
+                    autoFocus
+                    value={formData.name}
+                    onChange={handleChange}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircleIcon color="primary" style={{ marginRight: '0.5rem' }} />
+                      ),
+                    }}
+                  />
 
-<TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="name"
-                  label="name"
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <NameIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                    ),
-                  }}
-                />
-
-                </div>
-                <div className='d-flex flex-row' style={{gap:"20px"}}>
-              <TextField
-  variant="outlined"
-  margin="normal"
-  required
-  fullWidth
-  id="email"
-  label="Email Address"
-  name="email"
-  autoComplete="email"
-  value={formData.email}
-  onChange={handleChange}
-  InputProps={{
-    startAdornment: (
-      <EmailIcon color="primary" style={{ marginRight: '0.5rem' }} />
-    ),
+<Select
+  className="country-select w-100 mt-3 p-2"
+  options={combinedCountries} 
+  value={formData.country}
+  onChange={handleCountryChange}
+  placeholder="Select Country"
+  styles={{
+    control: (provided) => ({
+      ...provided,
+      backgroundColor: 'transparent', 
+      zIndex:"1000"
+    }),
   }}
 />
+               
 
+               
+                </div>
+                
+                <div className='d-flex flex-row' style={{gap:"20px"}}>
                 <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <LockIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                    ),
-                  }}
-                />
-
-                  </div>
-
-         <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    autoComplete="username"
+                    autoFocus
+                    value={formData.username}
+                    onChange={handleChange}
+                    InputProps={{
+                      startAdornment: (
+                        <AccountCircleIcon color="primary" style={{ marginRight: '0.5rem' }} />
+                      ),
+                    }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    InputProps={{
+                      startAdornment: (
+                        <EmailIcon color="primary" style={{ marginRight: '0.5rem' }} />
+                      ),
+                    }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    InputProps={{
+                      startAdornment: (
+                        <LockIcon color="primary" style={{ marginRight: '0.5rem' }} />
+                      ),
+                    }}
+                  />
+                </div>
+                <div className='d-flex flex-row'>
+                <TextField
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
                   name="image"
-                  label="image"
+                  label="Image"
                   type="url"
                   id="image"
-                  
                   value={formData.image}
                   onChange={handleChange}
                   InputProps={{
@@ -145,6 +171,10 @@ const Signup = () => {
                     ),
                   }}
                 />
+
+
+
+</div>
 
                 <div className="form-group form-check">
                   <input type="checkbox" className="form-check-input" id="exampleCheck" />

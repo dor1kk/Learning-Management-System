@@ -1,16 +1,16 @@
-import React from "react";
-import { Container, Typography, Link } from '@mui/material';
 
-function Footer({ colors }) {
-    return (
-        <footer style={{ background: colors.footerBackgroundColor, color: colors.footerTextColor, padding: "20px", marginTop: "auto" }}>
-            <Container maxWidth="lg">
-                <Typography variant="body2" align="center">
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Footer = () => {
+
+
+  return (
+    <footer className='d-flex flex-row justify-content-center align-items-center' style={{ backgroundColor:"white",gap:"7px", color:"black",boxShadow:"0 2px 6px rgba(0,0,0,0.4)",  height:"10vh" }}>
                     &copy; {new Date().getFullYear()} by <Link color="inherit" href="#">Grupi Lab 1 Ubt</Link> | all rights reserved!
-                </Typography>
-            </Container>
-        </footer>
-    );
-}
+    </footer>
+  );
+};
 
 export default Footer;
+

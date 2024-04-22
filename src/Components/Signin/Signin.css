@@ -8,9 +8,8 @@
 
 
 .signup-container{
-    background-image: url("../course-container.png");
+    background-image: url("../Untitled\ design.png");
     background-size: cover;
-    background-repeat: no-repeat;
-    height: 100vh;
+    min-height: 180vh;
 
 }

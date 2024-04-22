@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Edit, Delete } from '@mui/icons-material';
-import "./Exam.css";
+import { Button, Modal } from 'antd';
+import { EditFilled, DeleteFilled } from '@ant-design/icons';
 
 const ExamManagement = () => {
   const [exams, setExams] = useState([]);
@@ -10,6 +10,8 @@ const ExamManagement = () => {
   const [selectedExamId, setSelectedExamId] = useState(null);
   const [questionText, setQuestionText] = useState('');
   const [answerText, setAnswerText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [examToDelete, setExamToDelete] = useState(null);
 
   useEffect(() => {
     fetchExams();
@@ -24,12 +26,15 @@ const ExamManagement = () => {
     }
   };
 
-  const handleDelete = async (examId) => {
-    try {
-      await axios.delete(`http://localhost:8080/exams/${examId}`, { data: { examId } });
-      fetchExams();
-    } catch (error) {
-      console.error('Error deleting exam:', error);
+  const handleDelete = async () => {
+    if (examToDelete) {
+      try {
+        await axios.delete(`http://localhost:8080/exams/${examToDelete}`, { data: { examId: examToDelete } });
+        fetchExams();
+        setModalVisible(false);
+      } catch (error) {
+        console.error('Error deleting exam:', error);
+      }
     }
   };
 
@@ -61,31 +66,40 @@ const ExamManagement = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  return (
-    <div className="exam-container ">
-      <h2>Exam Management</h2>
-      <div className='d-flex flex-row ' style={{gap:"15px"}}>
-      <Link to={"/home/addexam"} className='btn btn-primary'>Add Exam</Link>
-      <Link to={"/home/manageQuestions"} className='btn btn-primary'>Manage Questions</Link>
+  const handleDeleteConfirmation = (examId) => {
+    setModalVisible(true);
+    setExamToDelete(examId); // Set the examId to be deleted
+  };
 
+  return (
+    <div className="c-container p-5 ">
+      <h2>Exam Management</h2>
+      <div className='d-flex flex-row ' style={{ gap: "15px" }}>
+        <Link to={"/home/addexam"} className='btn btn-primary'>Add Exam</Link>
+        <Link to={"/home/manageQuestions"} className='btn btn-primary'>Manage Questions</Link>
       </div>
       <ul className="mt-4">
         {exams.map((exam) => (
-          <li key={exam.examId} className="mb-2 p-2 d-flex flex-row list-group-item bg-light w-100" style={{ backgroundColor: "lightgray" }}>
+          <li key={exam.examId} className="mb-2 p-2 d-flex flex-row list-group-item bg-white w-100" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
             <span onClick={() => handleExamClick(exam.examId)} style={{ cursor: 'pointer' }}>
               {exam.examName} - {formatDate(exam.startTime)} to {formatDate(exam.endTime)}
             </span>
             <div className='d-flex flex-row' style={{ marginLeft: 'auto' }}>
-              <Link to={`/home/editexam/${exam.examId}`} className="btn btn-secondary ms-2"> <Edit /> Edit</Link>
-              <button onClick={() => handleDelete(exam.examId)} className="btn btn-danger ms-2"> <Delete /> Delete</button>
+              <Link to={`/home/editexam/${exam.examId}`} className="mt-2" style={{ backgroundColor: "white", color: "#53a8b6", borderRadius: "50%" }}><EditFilled /></Link>
+              <Button onClick={() => handleDeleteConfirmation(exam.examId)} className=" ms-2 " style={{ border: "none", backgroundColor: "white", color: "red", borderRadius: "50%" }}><DeleteFilled /></Button>
             </div>
           </li>
         ))}
       </ul>
 
-      
-       
-   
+      <Modal
+        title="Delete Exam"
+        visible={modalVisible}
+        onOk={handleDelete}
+        onCancel={() => setModalVisible(false)}
+      >
+        <p>Are you sure you want to delete this exam?</p>
+      </Modal>
     </div>
   );
 };

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import "./Friends.css"
-import {FaTrash, FaComment} from 'react-icons/fa'
+import { Button, Input, Card, Avatar, Space } from 'antd';
+import { UserOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import './Friends.css';
+import { FaTrash, FaComment } from 'react-icons/fa';
+
+const { Search } = Input;
 
 const Friends = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,8 +13,8 @@ const Friends = () => {
   const [suggestedStudents, setSuggestedStudents] = useState([]);
   const [requests, setRequests] = useState([]);
   const [showRequestsDropdown, setShowRequestsDropdown] = useState(false);
-  const [friends, setFriends]=useState([]);
-  const [userId,setUserId]=useState(null);
+  const [friends, setFriends] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     console.log("Fetching students...");
@@ -69,10 +73,9 @@ const Friends = () => {
       .catch(err => console.log(err));
   }, []);
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
   };
-
 
   const acceptFriendRequest = (requestId) => {
     const existingRequest = requests.find(request => request.id === requestId);
@@ -147,10 +150,6 @@ const Friends = () => {
       });
   };
   
-  
-  
-
-  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -172,74 +171,69 @@ const Friends = () => {
   };
 
   return (
-    <div className="friend-container">
+    <div className="c-container p-5">
       <div className="row">
         <div className="friend-requests-container">
-          <button className="friend-requests-button btn btn-light p-1" style={{margin:"25px"}} onClick={() => setShowRequestsDropdown(!showRequestsDropdown)}>
+          <Button className="friend-requests-button mb-5" onClick={() => setShowRequestsDropdown(!showRequestsDropdown)}>
             <span >Friend Requests</span>
             {requests.length > 0 && (
               <span className="friend-requests-count">{requests.length}</span>
             )}
-          </button>
+          </Button>
           {showRequestsDropdown && (
             <div className="friend-requests-dropdown">
               {requests.map(request => (
-  <div key={request.id}>
-    <div className='d-flex flex-row bg-light'>
-      <img src={request.Image} style={{ width: "40px", height: "40px", borderRadius: "50%", marginLeft: "25px", marginRight: "15px" }}></img>
-      <h4 style={{ marginTop: "8px" }}>{request.Name}</h4>
-      <p style={{ marginLeft: "30px", marginTop: "8px" }}>Sent on:{formatDate(request.created_at)}</p>
-      <button className='btn btn-success' style={{ height: "35px", margin: "5px 10px 0 10px" }} onClick={() => acceptFriendRequest(request.id)}>ACCEPT</button>
-      <button className='btn btn-danger' style={{ height: "35px", marginTop: "5px" }} onClick={() => rejectFriendRequest(request.id)}>REJECT</button>
-    </div>
-  </div>
-))}
+                <div key={request.id} className="friend-request-item">
+                  <Avatar size="small" icon={<UserOutlined />} />
+                  <div>
+                    <p>{request.Name}</p>
+                    <p>Sent on: {formatDate(request.created_at)}</p>
+                  </div>
+                  <Space>
+                    <Button type="primary" icon={<CheckOutlined />} onClick={() => acceptFriendRequest(request.id)} />
+                    <Button type="danger" icon={<CloseOutlined />} onClick={() => rejectFriendRequest(request.id)} />
+                  </Space>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
 
       <div className="row">
-        <h4 className="mb-3" style={{marginLeft:"25px"}}>Suggested Students</h4>
-        <div className="d-flex flex-row" style={{ gap: "25px", padding: "0 40px" }}>
-          {suggestedStudents.map((student) => (
-            <div key={student.id} className="friend-card mb-3 bg-light " style={{ backgroundColor: "lightgrey", width: "270px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
-              <div className="friend-card-body">
-                <div className='d-flex flex-row'>
-                  <img src={student.Image} style={{ width: "60px", height: "60px", borderRadius: "50%", margin: "15px" }} alt="Student" />
-                  <div className='d-flex flex-column'>
-                    <h5 className="friend-card-title" style={{ marginTop: "20px" }}>{student.Name}</h5>
-                    <h6>{student.Email}</h6>
-                  </div>
-                </div>
-                <button
-                  className="btn btn-primary"
-                  style={{ marginLeft: "120px", marginBottom: "10px" }}
-                  onClick={() => sendFriendRequest(student.UserId)}
-                >
-                  ADD FRIEND
-                </button>
-              </div>
-            </div>
+        <h4 className="mb-3 text-primary " style={{fontSize:"20px"}}>Suggested Students</h4>
+        <div className="d-flex flex-wrap">
+          {suggestedStudents.map(student => (
+            <Card key={student.id} className="friend-card" style={{ width: 300, marginBottom: 16 }}>
+              <Card.Meta
+                avatar={<Avatar src={student.Image} />}
+                title={student.Name}
+                description={student.Email}
+              />
+              <Button type="primary" block onClick={() => sendFriendRequest(student.UserId)}>Add Friend</Button>
+            </Card>
           ))}
         </div>
-        <div className="friends-list">
-  <h4 style={{marginLeft:"25px"}}>My Friends</h4>
-  <div className="friends-container">
-    {friends.map((friend) => (
-      <div key={friend.ID} className="friend-card bg-light" style={{backgroundColor: "lightgrey", marginLeft:"25px", width:"240px"}}>
-        <img src={friend.Image} alt={friend.Name} />
-        <h4>{friend.Name}</h4>
-        <div className='d-flex flex-row' style={{gap:"5px"}}>
-        <button className='btn btn-danger text-white' style={{ cursor: "pointer" }} onClick={() => removeFriend(friend.ID)}><FaTrash /> Remove</button>
-        <button className='btn btn-success text-white' style={{cursor:"pointer"}}><FaComment /> Chat</button>
-        </div>
       </div>
-    ))}
-  </div>
-</div>
 
-
+      <div className="row">
+        <h4 className="mb-3 text-primary" style={{ fontSize: "20px" }}>My Friends</h4>
+        <div className="d-flex flex-wrap">
+          {friends.map(friend => (
+            <Card key={friend.ID} className="friend-card w-100 d-flex justify-content-between align-items-center" style={{ marginBottom: 16 }}>
+              <div className="d-flex align-items-center">
+                <Avatar src={friend.Image} />
+                <div className="ml-3">
+                  <h5 className="mb-0">{friend.Name}</h5>
+                </div>
+              </div>
+              <Space>
+                <Button type="danger" icon={<FaTrash />} onClick={() => removeFriend(friend.ID)}>Remove</Button>
+                <Button type="primary" icon={<FaComment />}>Chat</Button>
+              </Space>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

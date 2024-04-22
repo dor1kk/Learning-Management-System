@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Select, Input, Button, DatePicker , notification} from 'antd';
+
+const { Option } = Select;
 
 const AddExam = ({ fetchExams }) => {
-  const [formData, setFormData] = useState({
-    courseId: '',
-    examName: '',
-    startTime: '',
-    endTime: ''
-  });
+  const [form] = Form.useForm();
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
@@ -23,54 +21,69 @@ const AddExam = ({ fetchExams }) => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
     try {
-      await axios.post('http://localhost:8080/exams', formData);
-      fetchExams();
-      setFormData({
-        courseId: '',
-        examName: '',
-        startTime: '',
-        endTime: ''
+      await axios.post('http://localhost:8080/exams', values);
+      notification.success({
+        message: 'Exam Added',
+        description: 'The exam has been successfully added.',
       });
     } catch (error) {
       console.error('Error creating exam:', error);
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while creating the exam. Please try again later.',
+      });
     }
   };
+  
 
   return (
-    <div className="container mt-4">
-      <h2>Add Exam</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="courseId" className="form-label">Select Course:</label>
-          <select className="form-select" id="courseId" name="courseId" value={formData.courseId} onChange={handleChange}>
-            <option value="">Select Course</option>
+    <div className="c-container p-5">
+      <h2 className='text-primary'>Add Exam</h2>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+      >
+        <Form.Item
+          label="Select Course"
+          name="courseId"
+          rules={[{ required: true, message: 'Please select a course' }]}
+        >
+          <Select placeholder="Select Course">
             {courses.map(course => (
-              <option key={course.CourseID} value={course.CourseID}>{course.Title}</option>
+              <Option key={course.CourseID} value={course.CourseID}>{course.Title}</Option>
             ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="examName" className="form-label">Exam Name:</label>
-          <input type="text" className="form-control" id="examName" name="examName" value={formData.examName} onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="startTime" className="form-label">Start Time:</label>
-          <input type="datetime-local" className="form-control" id="startTime" name="startTime" value={formData.startTime} onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="endTime" className="form-label">End Time:</label>
-          <input type="datetime-local" className="form-control" id="endTime" name="endTime" value={formData.endTime} onChange={handleChange} />
-        </div>
-        <button type="submit" className="btn btn-primary">Add Exam</button>
-      </form>
+          </Select>
+        </Form.Item>
+        <Form.Item
+          label="Exam Name"
+          name="examName"
+          rules={[{ required: true, message: 'Please enter exam name' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Start Time"
+          name="startTime"
+          rules={[{ required: true, message: 'Please select start time' }]}
+        >
+          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+        </Form.Item>
+        <Form.Item
+          label="End Time"
+          name="endTime"
+          rules={[{ required: true, message: 'Please select end time' }]}
+        >
+          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Exam
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

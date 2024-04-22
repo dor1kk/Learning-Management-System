@@ -73,7 +73,7 @@ function ManageQuestions() {
   };
 
   return (
-    <div className="exam-container p-5">
+    <div className="c-container p-5">
       <div className="row">
         <div className="col-md-11">
           <form onSubmit={handleSubmit}>

@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Button, Grid } from '@mui/material';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
+import {notification} from 'antd'
 
-const EditCourse = ({ courseId }) => {
+const EditCourse = () => {
+  const location = useLocation();
+  const courseId = location.pathname.split('/')[3];
+
   const [courseData, setCourseData] = useState({
+    CourseId:courseId,
     Title: '',
     Description: '',
     Category: '',
@@ -32,14 +38,23 @@ const EditCourse = ({ courseId }) => {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:8080/courses/${courseId}`, courseData);
-    } catch (error) {
+      notification.success({
+        message: 'Updated Succesfully',
+        description: 'You have updated the course succesfully',
+      });
+      window.location.href="/Home/T-CoursesManagement"
+      }catch (error) {
       console.error('Error updating course:', error);
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while updating the course. Please try again later.',
+      });
     }
   };
 
   return (
-    <Container maxWidth="md" style={{ marginTop: '20px' }}>
-      <Typography variant="h4" gutterBottom>
+    <Container className='c-container p-5' maxWidth="md" style={{ marginTop: '20px' }}>
+      <Typography variant="h4" gutterBottom className='text-primary'> 
         Edit Course
       </Typography>
       <form onSubmit={handleSubmit}>

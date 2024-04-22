@@ -22,7 +22,6 @@ import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
 import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
-import Lectures from "./Components/Lectures/Lectures";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
 import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
@@ -33,6 +32,7 @@ import Exams from "./Components/Exams/Exams";
 import Exam from "./Components/Exams/Exam";
 import TakeExam from "./Components/Exams/takeExam";
 import axios from "axios";
+import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCourse";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -97,7 +97,6 @@ const PrivateRoute = () => {
         <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
         <Route path="/UserManagement" element={<UserManagment />}></Route>
-        <Route path="/lectures" element={<Lectures />} />
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
@@ -108,6 +107,8 @@ const PrivateRoute = () => {
         <Route path="/exams" element={<Exams />}></Route>
         <Route path="/exam" element={<Exam />} />
         <Route path="/takeExam" element={<TakeExam />}></Route>
+        <Route path="/AddCourse" element={<AddCourse />}></Route>
+        <Route path="/EditCourse/:id" element={<EditCourse />}></Route>
       </Routes>
     </Sidebaar>
   );
