@@ -97,14 +97,13 @@ const PrivateRoute = () => {
         <Route path="/T-LecturesManagement" element={<LectureManagement />} />
         <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
-        <Route path="/UserManagement" element={<UserManagment />}></Route>
+        <Route path="/UserManagement" element={<UserManagment />}></Route>        
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
         <Route path="/Friends" element={<Friends />}></Route>
         <Route path="/addexam" element={<AddExam />}></Route>
         <Route path="/editexam/:id" element={<EditExam />}></Route>
-        <Route path="/EditUser/:id" element={<EditUser />}></Route>
         <Route path="/manageQuestions" element={<ManageQuestions />}></Route>
         <Route path="/exams" element={<Exams />}></Route>
         <Route path="/exam" element={<Exam />} />

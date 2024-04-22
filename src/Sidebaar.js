@@ -139,8 +139,8 @@ const Sidebaar = ({ children }) => {
   </SubMenu>
 ) : null}
           {role === "Admin" ? (
-            <Menu.Item key="4" icon={<UserSwitchOutlined />}>
-              <Link to="/Home/UserManagement" className="link" style={{color:"white"}}>User Management</Link>
+            <Menu.Item key="4" style={{color:"white"}} icon={<UserSwitchOutlined />}>
+              <Link to="/Home/UserManagement" className="link" style={{color:"white", textDecoration:"none"}}>User Management</Link>
             </Menu.Item>
           ) : null}
           {role === "Tutor" ? (
