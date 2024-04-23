@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./YourCourses.css";
 import axios from "axios";
-import { Button, Progress, notification, Modal } from "antd";
+import { Button, Progress, notification, Modal, Input } from "antd";
 import { FaChalkboard } from "react-icons/fa";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 function YourCourses() {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userId, setUserId] = useState('');
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
   const [courseIdToDelete, setCourseIdToDelete] = useState(null); // State to store the courseId to delete
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchCourses();
@@ -47,8 +49,8 @@ function YourCourses() {
 
   const handleDelete = async (courseId) => {
     try {
-      setModalVisible(true); // Show the modal
-      setCourseIdToDelete(courseId); // Store the courseId to delete
+      setModalVisible(true); 
+      setCourseIdToDelete(courseId); 
     } catch (error) {
       console.error('Error deleting course:', error);
       notification.error({
@@ -80,7 +82,7 @@ function YourCourses() {
         description: 'An error occurred while unenrolling the course. Please try again later.',
       });
     } finally {
-      setModalVisible(false); // Hide the modal regardless of success or failure
+      setModalVisible(false); 
     }
   };
 
@@ -88,10 +90,26 @@ function YourCourses() {
     return (completedLectures / totalLectures) * 100;
   };
 
+  const filteredCourses = enrolledCourses.filter(course =>
+    course.Title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="c-container p-5">
+      <div className="course-filters d-flex flex-row">
+        <Input
+          placeholder="Search courses..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <Button type="primary" className="completed-courses-button mt-1">
+          <Link to={'/Home/CompletedCourses'} style={{textDecoration:"none"}}>          Completed Courses
+</Link>
+        </Button>
+      </div>
       <section className="course-cardsi">
-        {enrolledCourses.map((course) => (
+        {filteredCourses.map((course) => (
           <div key={course.EnrollmentID} className="kard">
             <img src={course.Image} alt="Course" className="card-imgage" />
             <div className="card-bodi d-flex flex-row justify-content-between">
@@ -112,7 +130,7 @@ function YourCourses() {
           </div>
         ))}
       </section>
-      
+
       <Modal
         title="Confirmation"
         visible={modalVisible}

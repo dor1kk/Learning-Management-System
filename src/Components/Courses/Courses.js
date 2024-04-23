@@ -50,7 +50,7 @@ function Courses() {
   });
 
   return (
-    <main className="c-container p-5">
+    <main className="container-kursi p-5">
       <section className="controls d-flex justify-content-between align-items-center">
         <div className="categories">
           <ul>

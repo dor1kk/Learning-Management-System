@@ -34,6 +34,7 @@ import Exam from "./Components/Exams/Exam";
 import TakeExam from "./Components/Exams/takeExam";
 import axios from "axios";
 import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCourse";
+import CompletedCourses from "./Components/YourCourses/CompletedCourses";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -110,6 +111,7 @@ const PrivateRoute = () => {
         <Route path="/takeExam" element={<TakeExam />}></Route>
         <Route path="/AddCourse" element={<AddCourse />}></Route>
         <Route path="/EditCourse/:id" element={<EditCourse />}></Route>
+        <Route path="/CompletedCourses" element={<CompletedCourses />}></Route>
       </Routes>
     </Sidebaar>
   );

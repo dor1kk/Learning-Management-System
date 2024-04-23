@@ -35,7 +35,7 @@ function BecomeTutor() {
       
     return (
         
-            <div className='become-container d-flex vh-300 justify-content-center align-items-center' style={{ backgroundColor: '#ADD8E6' }}>
+            <div className='c-container d-flex vh-300 justify-content-center align-items-center' style={{ backgroundColor: '#ADD8E6' }}>
             <div className='w-50 bg-white rounded p-3'>
                 <form onSubmit={Submit}>
                 <h2 style={{ color: '#007BFF', textAlign: 'center', marginBottom: '2rem', textTransform: 'uppercase' }}>Become a Tutor</h2>

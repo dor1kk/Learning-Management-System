@@ -15,7 +15,7 @@ import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, De
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
 import { getStudentByPassedExam, getLogggedInStudentInfo } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
-import { AddCompletedCourse, checkGradeStatus } from "./Routes/CompletedCourses.js";
+import { AddCompletedCourse, checkGradeStatus, getCompletedCourses } from "./Routes/CompletedCourses.js";
 import { getTotalStudents } from "./Routes/Dashboard.js";
 
 const app = express();
@@ -122,6 +122,9 @@ app.put('/courses/:id', (req, res) => {
   UpdateCourse(req,res,db);
 });
 
+app.get('/completedcourses', (req, res)=>{
+  getCompletedCourses(req,res,db);
+})
 
 
 
