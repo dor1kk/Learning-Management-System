@@ -8,6 +8,7 @@ function Account() {
     const [student, setStudent] = useState({});
     const [updatedName, setUpdatedName] = useState('');
     const [updatedGrade, setUpdatedGrade] = useState('');
+    const [updatedImage, setUpdatedImage] = useState('');
     const [updatedPlaceholderName, setUpdatedPlaceholderName] = useState('');
     const [updatedPlaceholderGrade, setUpdatedPlaceholderGrade] = useState('');
     const [user, setUser] = useState([]);
@@ -63,6 +64,16 @@ function Account() {
     };
     
 
+    const deleteeeProfile = () => {
+        axios.delete(`http://localhost:8080/studentii/${student.ID}`, { withCredentials: true })
+            .then(response => {
+                console.log(response.data);
+                setStudent({});
+            })
+            .catch(error => console.error('Error deleting profile:', error));
+    };
+
+
     useEffect(() => {
         fetchStudentData();
     }, []);
@@ -75,9 +86,10 @@ function Account() {
                     setStudent(fetchedStudent);
                     setUpdatedName(fetchedStudent.Name);
                     setUpdatedGrade(fetchedStudent.Grade);
+                    setUpdatedImage(fetchedStudent.Image);
                     setUpdatedPlaceholderName(fetchedStudent.Name);
                     setUpdatedPlaceholderGrade(fetchedStudent.Grade);
-                    
+                  
                     
                 }
             })
@@ -91,7 +103,10 @@ function Account() {
         setUpdatedGrade(event.target.value);
     };
     
-;
+    const handleImageChange = (event) => {
+        setUpdatedImage(event.target.value);
+    };
+
     
  
 
@@ -103,6 +118,10 @@ function Account() {
         if (updatedGrade !== '') {
             updatedData.Grade = updatedGrade;
         }
+        if (updatedImage !== '') {
+            updatedData.Image = updatedImage;
+        }
+
 
         axios.put(`http://localhost:8080/students/${student.ID}`, updatedData, { withCredentials: true })
             .then(response => {
@@ -145,14 +164,20 @@ function Account() {
                                         <div className="square position-relative display-2 mb-3">
                                             <img src={student.Image} alt="Profile" className="img-fluid position-absolute top-0 start-0 w-100 h-100" />
                                         </div>
-                                        <input type="file" id="customFile" name="file" hidden />
-                                        <label className="btn btn-success btn-block" htmlFor="customFile">Upload</label>
-                                        <button type="button" className="btn btn-danger">Remove</button>
-                                        <p className="text-muted mt-3 mb-0"><span className="me-1">Note:</span>Minimum size 300px x 300px</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    
+                                        <div className="col-md-12">
+                                          
+                                          <input type="text" className="form-control" placeholder="Your image_url" onChange={ handleImageChange} />
+                                      </div>
+                                         
+                                          <label  className="btn btn-success btn-block mt-3" htmlFor="customFile" onClick={updateProfile}>Upload</label>
+                                          <button type="button" className="btn btn-danger" onClick={deleteeeProfile} >Remove</button>
+                                          <p className="text-muted mt-3 mb-0"><span className="me-1">Note:</span>Minimum size 300px x 300px</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                   
                         </form>
                        <form onSubmit={Submit}>
                         <div  style={{ marginTop: '-310px' }} className="col-md-6 " >
@@ -176,7 +201,7 @@ function Account() {
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" variant="contained" color="primary">Confirm</button>
+                            <button type="submit" class="custom-button">Confirm</button>
                             </form>
                  
                                      
