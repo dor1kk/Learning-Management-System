@@ -14,35 +14,48 @@ db.query(sql, (err, result) => {
 
 }
 
-
-export function AddTutor(req, res,db) {// INSERTS A NEW TUTOR IN THE TUTORS TABLE , needed in the Become A Tutor page
-const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
-  const userId = req.session.userid;
-
-  if (!userId) {
-    return res.status(401).send('Unauthorized');
-  }
-
-  const updateSql = 'UPDATE users SET role = "Tutor", username = ?, email = ? WHERE UserID = ?';
-  db.query(updateSql, [name, email, userId], function(err, updateResult) {
-    if (err) {
-      console.error('Error updating user role:', err);
-      return res.status(500).send('Internal Server Error');
+export function AddTutor(req, res, db) {
+    const { name, email, expertise, bio, courses, experience, education, location, contact, availability } = req.body;
+    const userId = req.session.userid;
+  
+    if (!userId) {
+      return res.status(401).send('Unauthorized');
     }
-
-    const tutorSql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(tutorSql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, userId], function(err, tutorInsertResult) {
+  
+    const selectImageSql = 'SELECT Image FROM students WHERE UserID = ?';
+    db.query(selectImageSql, [userId], function(err, imageResult) {
       if (err) {
-        console.error('Error inserting into tutors table:', err);
+        console.error('Error retrieving image URL:', err);
         return res.status(500).send('Internal Server Error');
       }
-
-      console.log('Data saved successfully');
-      res.status(200).send('Data saved successfully');
+  
+      if (imageResult.length === 0) {
+        return res.status(404).send('Image not found for the current user');
+      }
+  
+      const imageUrl = imageResult[0].Image;
+  
+      const updateSql = 'UPDATE users SET role = "Tutor", username = ?, email = ? WHERE UserID = ?';
+      db.query(updateSql, [name, email, userId], function(err, updateResult) {
+        if (err) {
+          console.error('Error updating user role:', err);
+          return res.status(500).send('Internal Server Error');
+        }
+  
+        const tutorSql = 'INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        db.query(tutorSql, [name, email, expertise, bio, courses, experience, education, location, contact, availability, imageUrl, userId], function(err, tutorInsertResult) {
+          if (err) {
+            console.error('Error inserting into tutors table:', err);
+            return res.status(500).send('Internal Server Error');
+          }
+  
+          console.log('Data saved successfully');
+          res.status(200).send('Data saved successfully');
+        });
+      });
     });
-  });
-
-}
+  }
+  
 
 
 

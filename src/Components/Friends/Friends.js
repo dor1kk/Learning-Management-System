@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Input, Card, Avatar, Space } from 'antd';
+import { Button, Input, Table, Avatar, Space, Card} from 'antd';
 import { UserOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import './Friends.css';
 import { FaTrash, FaComment } from 'react-icons/fa';
@@ -34,17 +34,17 @@ const Friends = () => {
         console.error('Error fetching suggested students:', error);
       }
     };
-   
+
     fetchStudents();
-    
+
     const fetchFriends = async () => {
-        try {
-          const response = await axios.get(`http://localhost:8080/myfriends`);
-          setFriends(response.data);
-        } catch (error) {
-          console.error('Error fetching students:', error);
-        }
-      };
+      try {
+        const response = await axios.get(`http://localhost:8080/myfriends`);
+        setFriends(response.data);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      }
+    };
 
     const fetchRequests = async () => {
       try {
@@ -59,16 +59,16 @@ const Friends = () => {
 
     fetchRequests();
     fetchFriends();
-   
+
   }, [searchTerm, friends, requests]);
-  
+
   useEffect(() => {
     axios.get('http://localhost:8080/userid')
       .then(res => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data.valid) {
           setUserId(res.data.userid);
-        } 
+        }
       })
       .catch(err => console.log(err));
   }, []);
@@ -83,19 +83,19 @@ const Friends = () => {
       console.error('Invalid friend request ID.');
       return;
     }
-  
+
     if (existingRequest.status === 'accepted') {
       alert('You have already accepted this friend request.');
       return;
     }
-  
+
     const senderId = existingRequest.sender_id;
     const isAlreadyFriend = friends.some(friend => friend.ID === senderId);
     if (isAlreadyFriend) {
       alert('This user is already in your friends list.');
       return;
     }
-  
+
     axios.post("http://localhost:8080/accept-friend-request", { requestId })
       .then(response => {
         console.log('Friend request accepted successfully:', response.data);
@@ -104,7 +104,7 @@ const Friends = () => {
         console.error('Error accepting friend request:', error);
       });
   };
-  
+
 
   const rejectFriendRequest = (requestId) => {
     axios.post("http://localhost:8080/reject-friend-request", { requestId })
@@ -123,24 +123,24 @@ const Friends = () => {
       alert('You are already friends with this user.');
       return;
     }
-  
+
     if (receiverId === userId) {
       alert('You cannot send a friend request to yourself.');
       return;
     }
-  
+
     const existingRequest = requests.find(request =>
       (request.receiver_id === receiverId && request.sender_id === userId) ||
       (request.receiver_id === userId && request.sender_id === receiverId) &&
       request.status !== 'rejected'
     );
-    
-  
+
+
     if (existingRequest) {
       alert('You have already sent a friend request to this user.');
       return;
     }
-  
+
     axios.post("http://localhost:8080/send-friend-request", { receiverId })
       .then(response => {
         alert('Friend request sent successfully:', response.data);
@@ -149,7 +149,7 @@ const Friends = () => {
         alert('Error sending friend request:', error);
       });
   };
-  
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -169,6 +169,30 @@ const Friends = () => {
         console.error('Error removing friend:', error);
       });
   };
+
+  const columns = [
+    {
+      title: 'Avatar',
+      dataIndex: 'Image',
+      key: 'Image',
+      render: (text, record) => <Avatar src={record.Image} />,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'Name',
+      key: 'Name',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <Space size="middle">
+          <Button type="danger" icon={<FaTrash />} onClick={() => removeFriend(record.ID)}>Remove</Button>
+          <Button type="primary" icon={<FaComment />}>Chat</Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div className="c-container p-5">
@@ -201,7 +225,7 @@ const Friends = () => {
       </div>
 
       <div className="row">
-        <h4 className="mb-3 text-primary " style={{fontSize:"20px"}}>Suggested Students</h4>
+        <h4 className="mb-3 text-primary " style={{ fontSize: "20px" }}>Suggested Students</h4>
         <div className="d-flex flex-wrap">
           {suggestedStudents.map(student => (
             <Card key={student.id} className="friend-card" style={{ width: 300, marginBottom: 16 }}>
@@ -218,22 +242,7 @@ const Friends = () => {
 
       <div className="row">
         <h4 className="mb-3 text-primary" style={{ fontSize: "20px" }}>My Friends</h4>
-        <div className="d-flex flex-wrap">
-          {friends.map(friend => (
-            <Card key={friend.ID} className="friend-card w-100 d-flex justify-content-between align-items-center" style={{ marginBottom: 16 }}>
-              <div className="d-flex align-items-center">
-                <Avatar src={friend.Image} />
-                <div className="ml-3">
-                  <h5 className="mb-0">{friend.Name}</h5>
-                </div>
-              </div>
-              <Space>
-                <Button type="danger" icon={<FaTrash />} onClick={() => removeFriend(friend.ID)}>Remove</Button>
-                <Button type="primary" icon={<FaComment />}>Chat</Button>
-              </Space>
-            </Card>
-          ))}
-        </div>
+        <Table columns={columns} dataSource={friends} rowKey="ID" />
       </div>
     </div>
   );

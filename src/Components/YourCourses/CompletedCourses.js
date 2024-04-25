@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Card, Spin, Alert, Button } from "antd";
+import { Card, Spin, Alert, Button, Tag } from "antd";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 function CompletedCourses() {
     const [completedCourses, setCompletedCourses] = useState([]);
@@ -40,12 +41,12 @@ function CompletedCourses() {
             <h2 className="text-primary">Completed courses</h2>
             <div className="d-flex flex-row flex-wrap justify-content-evenly">
                 {completedCourses.map(course => (
-                    <Card key={course.CourseID} title={course.Title} className="mt-3" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)", height:"200px", width:"400px" }}>
+                    <Card key={course.CourseID} title={<Tag color="green">Completed</Tag>} className="mt-3" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)", height:"200px", width:"400px" }}>
                         <div className="d-flex flex-row align-items-center">
                             <img src={course.Image} alt={course.Title} style={{ height: "80px", marginRight: "20px", borderRadius:"30px 30px" }} />
                             <div>
-                                <p><strong>Completion Date:</strong> <br></br> {formatDate(course.CompletionDate)}</p>
-                                <Button className="text-primary">Get Certificate</Button>
+                                <p><strong>Completion Date:</strong> <br></br><Tag color="yellow">{formatDate(course.CompletionDate)}</Tag> </p>
+                                <Button className="text-primary"><Link to={`/Home/Certificate/${course.CompletedCourseID}`} style={{ textDecoration:'none' }}>Get Certificate </Link></Button>
                             </div>
                         </div>
                     </Card>

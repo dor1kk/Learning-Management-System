@@ -34,6 +34,13 @@ import TakeExam from "./Components/Exams/takeExam";
 import axios from "axios";
 import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCourse";
 import CompletedCourses from "./Components/YourCourses/CompletedCourses";
+import CertificatePage from "./Components/YourCourses/Certificate";
+import EditUser from "./Components/Admin-Managements/UserManagment/EditUser";
+import Progress from "./Components/YourCourses/Progress";
+import Progressi from "./Components/YourCourses/Progress";
+import Details from "./Components/Courses/Details";
+import ReviewContainer from "./Components/YourCourses/Review";
+import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -88,6 +95,7 @@ const PrivateRoute = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/YourCourses" element={<YourCourses />} />
         <Route path="/CourseDetail/:id" element={<CourseDetail />} />
+        <Route path="/CourseDetails/Details" element={<Details />}></Route>
         <Route path="/Chat" element={<Chat />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/TutorDashboard" element={<TutorDashboard />} />
@@ -97,7 +105,8 @@ const PrivateRoute = () => {
         <Route path="/T-LecturesManagement" element={<LectureManagement />} />
         <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
-        <Route path="/UserManagement" element={<UserManagment />}></Route>        
+        <Route path="/UserManagement" element={<UserManagment />}></Route>    
+        <Route path="/EditUser/:id" element={<EditUser />}></Route>    
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
@@ -111,6 +120,11 @@ const PrivateRoute = () => {
         <Route path="/AddCourse" element={<AddCourse />}></Route>
         <Route path="/EditCourse/:id" element={<EditCourse />}></Route>
         <Route path="/CompletedCourses" element={<CompletedCourses />}></Route>
+        <Route path="/Certificate/:id" element={<CertificatePage />}></Route>
+        <Route path="/Progress/:id" element={<Progressi />}></Route>
+        <Route path="/addrating/:id" element={<ReviewContainer />}></Route>
+        <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
+   
       </Routes>
     </Sidebaar>
   );

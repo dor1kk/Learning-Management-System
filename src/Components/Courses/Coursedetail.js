@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Paper, Tabs, Tab, Button, Typography } from "@mui/material";
 import { FaPlayCircle, FaStar, FaInfo, FaBell } from "react-icons/fa";
 import Details from "./Details";
-import ReviewContainer from "./Review";
-import Progress from "./Progress";
+import ReviewContainer from "../YourCourses/Review";
 import courses from "./Coursedata";
 import axios from 'axios'
 import {notification} from 'antd'
+import Progressi from "../YourCourses/Progress";
+import { Height } from "@mui/icons-material";
+import Reviews from "./Reviews";
+import Announcements from "./Announcements";
 
 
 
@@ -15,6 +18,11 @@ import {notification} from 'antd'
 
 
 function CourseDetail() {
+
+ 
+  
+
+
   const handleEnrollNow = async () => {
     try {
       await axios.post("http://localhost:8080/enroll", { courseId: id });
@@ -31,53 +39,81 @@ function CourseDetail() {
     }
   };
   
-  const { id } = useParams();
+  const location=useLocation();
+  const id=location.pathname.split('/').pop();
   const course = courses.find((course) => course.id === id);
   const [selectedVideo, setSelectedVideo] = useState(course ? course.videos[0] : null);
   const [activeTab, setActiveTab] = useState("courseInfo");
+  const [ratingsNumber,setRatingsNumber]=useState(null);
+  const [ratingsAverage,setRatingsAverage]=useState(null);
+
+
+  const fetchRatings = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getratingsnumber/${id}`);
+      setRatingsNumber(response.data.results[0]["COUNT(*)"]);
+    } catch (error) {
+      console.error("Error fetching ratings number:", error);
+    }
+  };
+  
+  const fetchRatingsAverage = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/getratingsaverage/${id}`);
+      setRatingsAverage(response.data.results[0]["AVG(Rating)"]);
+    } catch (error) {
+      console.error("Error fetching ratings average:", error);
+    }
+  };
+  
+
+  useEffect(()=>{
+    fetchRatings();
+    fetchRatingsAverage();
+  })
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const totalLessons = 7;
-  const targetProgress = Math.ceil(totalLessons * 0.25);
+
 
   return (
-    <div className="container mt-4">
+    <div className="c-container p-5">
       <div className="row">
         <div className="col-md-8">
           <Paper elevation={1} className="p-4" style={{width:"550px"}}>
             <div className="course-details" style={{ width: "100%" }}>
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <span className="rating">&#9733;&#9733;&#9733;&#9733;&#9733;<span className="rating-info">(5/5, 102 reviews)</span></span>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+  <span className="rating">
+    {Array.from({ length: 5 }, (_, index) => (
+      <span key={index} style={{ color: index < Math.floor(ratingsAverage) ? 'gold' : 'grey' }}>&#9733;</span>
+    ))}
+    <span className="rating-info">({ratingsAverage}, {ratingsNumber} reviews)</span>
+  </span>
+  <h3>{course?.title}</h3>
+</div>
                 <h3>{course?.title}</h3>
               </div>
-              <p className="category">Category: {course?.category}</p>
               <Tabs value={activeTab} onChange={(e, newValue) => handleTabClick(newValue)}>
                 <Tab label={<><FaInfo /> Course Info</>} value="courseInfo" />
                 <Tab label={<><FaStar /> Reviews</>} value="reviews" />
                 <Tab label={<><FaBell /> Announcements</>} value="announcements" />
               </Tabs>
               <div className="tab-content mt-3">
-                {activeTab === "reviews" && <ReviewContainer />}
-                {activeTab === "courseInfo" && <Details course={course} />}
-                {activeTab === "announcements" && <div>Announcements Component</div>}
+                {activeTab === "reviews" && <Reviews />}
+                {activeTab === "courseInfo" && <Details courseId={id} />}
+                {activeTab === "announcements" && <Announcements courseId={id} />}
               </div>
             </div>
           </Paper>
         </div>
         <div className="col-md-4">
           <Paper elevation={1} className="p-3" style={{marginLeft:"-60px"}}>
-            <Progress currentProgress={targetProgress} totalLessons={totalLessons} />
+            <Progressi />
             <div className="course-info-box mt-3">
-
-              <Typography  variant="h6">What You Will Learn</Typography>
-              <ul className="learn-list mt-4">
-                <li className="list-group-item">Understand the fundamentals of HTML Structures!</li>
-                <li className="list-group-item">Be able to do Styling with CSS</li>
-                <li className="list-group-item">Write scripts and add functionality after learning JavaScript Basics</li>
-              </ul>
+          
               <Button variant="contained" color="primary" onClick={handleEnrollNow}>Enroll Now...</Button>
             </div>
           </Paper>

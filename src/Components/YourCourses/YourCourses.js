@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./YourCourses.css";
 import axios from "axios";
-import { Button, Progress, notification, Modal, Input } from "antd";
-import { FaChalkboard } from "react-icons/fa";
+import { Button, Progress, notification, Modal, Input, Tag } from "antd";
+import { FaChalkboard, FaStar } from "react-icons/fa";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
 
 function YourCourses() {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userId, setUserId] = useState('');
-  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
-  const [courseIdToDelete, setCourseIdToDelete] = useState(null); // State to store the courseId to delete
+  const [modalVisible, setModalVisible] = useState(false);
+  const [courseIdToDelete, setCourseIdToDelete] = useState(null); 
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -115,16 +115,18 @@ function YourCourses() {
             <div className="card-bodi d-flex flex-row justify-content-between">
               <div className="spans d-flex flex-column">
                 <span style={{fontWeight:"bold"}}>{course.Title}</span>
+                <Link to={`/Home/addrating/${course.CourseID}`}><Tag color="orange"><FaStar />Give this Course A Rating!</Tag></Link>
+
               </div>
               <div className="progresi d-flex flex-column">
-                <Progress percent={calculateProgress(course.completedLectures, course.totalLectures)} style={{ width: "150px", marginTop: "10px", marginLeft:"25px" }} />
+              <Link to={`/Home/Progress/${course.CourseID}`}><Tag color="green">View Progress</Tag></Link>
                 <span style={{fontSize:"11px", color:"gray", marginRight:"20px"}}>
                   You have enrolled on this course on: <br />
                   {formatDate(course.EnrollmentDate)}
                 </span>
               </div>
               <div>
-                <Button onClick={()=>handleDelete(course.CourseID)} danger shape="circle" icon={<AiOutlineCloseCircle />} size="large" style={{marginRight:"20px"}} />
+                <Button onClick={()=>handleDelete(course.CourseID)} className="btn btn-danger" shape="circle" icon={<AiOutlineCloseCircle style={{color:"white"}} />} size="large" style={{marginRight:"20px"}} />
               </div>
             </div>
           </div>

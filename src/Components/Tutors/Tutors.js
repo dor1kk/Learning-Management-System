@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Card, Button, Typography, Avatar, List, Input, Select } from 'antd';
+import { Card, Button, Typography, Avatar, List, Input, Select, Tag } from 'antd';
 import { UserOutlined, InfoCircleOutlined, GraduationCapOutlined, UserTieOutlined, BriefcaseOutlined } from '@mui/material';
 import "./Tutors.css";
 import { Cases, LaptopOutlined, Person, VerifiedUser, VerifiedUserOutlined } from "@mui/icons-material";
@@ -57,7 +57,7 @@ function Tutors() {
           <div style={{ display: 'flex', flexDirection: 'row' }}>
               <Card className="p-4 d-flex flex-row" style={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)",height:"300px", borderRadius: "10px", marginTop: "16px", flex: 1, marginRight: "16px" }}>
                 <div>
-                  <Typography.Title level={3} type="primary">Become a tutor</Typography.Title>
+                  <Typography.Title level={3} type="primary"><Tag color="green" style={{fontSize:"16px"}}>Become a tutor</Tag></Typography.Title>
                   <Typography.Text type="secondary">Start your journey sharing your knowledge...</Typography.Text>
                   <Button type="primary" onClick={() => navigate("/Home/BecomeTutor")}>Get started</Button>
                 </div>
@@ -74,7 +74,7 @@ function Tutors() {
                   <Typography.Title level={3} type="primary">Top Tutors</Typography.Title>
                   <Typography.Text type="secondary">Here are our top tutors:</Typography.Text>
                   <List>
-                    {tutors.slice(0, 4).map((tutor, index) => (
+                    {tutors.slice(0, 3).map((tutor, index) => (
                       <List.Item key={tutor.id} style={{ marginBottom: '8px' }}>
                         <Avatar src={tutor.image_url} />
                         <Typography.Text>{index + 1}. {tutor.name}</Typography.Text>
@@ -99,11 +99,11 @@ function Tutors() {
                     </div>
                     <div className="d-flex flex-row">
                     <div style={{ display: 'flex', gap:"8px", justifyContent: 'space-between' }}>
-                      <Typography.Text><LaptopOutlined className="text-primary" /> Courses: {tutor.courses}</Typography.Text>
+                      <Typography.Text><Tag color="blue"> <LaptopOutlined className="text-primary" /> Courses:{tutor.courses}</Tag></Typography.Text>
                    
-                    <Typography.Text> <VerifiedUserOutlined className="text-primary" /> Expertise: {tutor.expertise}</Typography.Text>
-                    <Typography.Text> <Cases className="text-primary" /> Experience: {tutor.experience}</Typography.Text>
-                    <Typography.Text> <Person className="text-primary" /> Bio: {tutor.bio}</Typography.Text>
+                    <Typography.Text> <Tag color="orange"> <VerifiedUserOutlined className="text-primary" /> Expertise:{tutor.expertise}</Tag></Typography.Text>
+                    <Typography.Text> <Tag color="pink"> <Cases className="text-primary" /> Experience:{tutor.experience} </Tag></Typography.Text>
+                    <Typography.Text> <Tag color="green"> <Person className="text-primary" /> Bio:  {tutor.bio} </Tag></Typography.Text>
                     </div>
                     </div>
                     <Button type="primary" className="w-25" style={{ marginTop: "8px" }} onClick={() => navigate(`/Home/TutorProfile/${tutor.id}`)}>View profile!</Button>

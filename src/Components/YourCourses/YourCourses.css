@@ -8,6 +8,16 @@
     min-height: 100vh;
  
   }
+
+
+  .cert-container{
+    padding: 20px;
+    background-image: url("../Tutor-Managements/bluebg.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+
+  }
   
   .course-cardsi {
     display: flex;

@@ -15,8 +15,13 @@ import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, De
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
 import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, DeleteProfilS } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
-import { AddCompletedCourse, checkGradeStatus, getCompletedCourses } from "./Routes/CompletedCourses.js";
+import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
 import { getTotalStudents } from "./Routes/Dashboard.js";
+import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progress.js";
+import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
+import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
+import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
+
 
 const app = express();
 app.use(cors({
@@ -126,6 +131,11 @@ app.get('/completedcourses', (req, res)=>{
   getCompletedCourses(req,res,db);
 })
 
+app.get('/completedcoursesbyid', (req, res)=>{
+  getCompletedCoursesById(req,res,db);
+})
+
+
 
 
 //Lectures Info and Management
@@ -229,6 +239,19 @@ app.delete('/users/:id', (req, res) => {
 app.put('/users/:id', (req, res) => {
   UpdateUsers(req,res,db);
 });
+
+
+//Progresi
+
+app.get('/completed-lectures-number',(req,res)=>{
+  getCompletedLecturesNumber(req,res,db);
+})
+
+
+app.get('/lectures-number',(req,res)=>{
+  getAllLecturesNumber(req,res,db);
+})
+
 
 // Accountet 
 
@@ -411,9 +434,45 @@ app.get('/totalStudents', (req, res) => {
 
 
 
+//Ratings
+
+app.get('/ratings/:id',(req,res)=>{
+  getRatings(req,res,db);
+})
+
+app.post('/addrating',(req,res)=>{
+  addRating(req,res,db);
+})
+
+app.get('/getratingsnumber/:id',(req,res)=>{
+  getRatingsNumber(req,res,db);
+})
+
+app.get('/getratingsaverage/:id',(req,res)=>{
+  getRatingsAverage(req,res,db);
+})
 
 
+//Announcements
 
+app.post('/addannouncement',(req,res)=>{
+  addAnnouncement(req,res,db);
+})
+
+app.get("/announcements/:id",(req,res)=>{
+  getAnnouncements(req,res,db);
+})
+
+
+//Notifications
+
+app.get("/notifications",(req,res)=>{
+  getNotifications(req,res,db);
+})
+
+app.put("/notifications/:id",(req,res)=>{
+  markNotificationsAsRead(req,res,db);
+})
 
 
 

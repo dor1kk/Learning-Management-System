@@ -36,6 +36,31 @@ export function getCompletedCourses(req,res,db){
 }
 
 
+export function getCompletedCoursesById(req, res, db) {
+    const studentId = req.session.userid;
+    const courseId = req.query.courseId; 
+
+    console.log("course id", courseId);
+  
+    const sql = `
+      SELECT DISTINCT cc.*, s.*, u.*, c.*
+      FROM completedcourse cc
+      INNER JOIN students s ON s.ID = cc.StudentID
+      INNER JOIN users u ON u.UserID = s.UserID
+      INNER JOIN courses c ON cc.CourseID = c.CourseID
+      WHERE s.UserID = ? AND cc.CompletedCourseID = ?
+    `;
+  
+    db.query(sql, [studentId, courseId], (error, results) => {
+      if (error) {
+        console.error('Error retrieving completed courses:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.status(200).json({ message: 'Successfully retrieved completed courses', results });
+    });
+  }
+  
+
 
 export function checkGradeStatus(req,res,db){ // Used to check if a student has already been graded, if he is then an message displays 
     const { courseId, userId } = req.query;

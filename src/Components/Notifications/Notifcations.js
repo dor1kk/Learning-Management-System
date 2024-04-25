@@ -1,11 +1,90 @@
-import React from "react";
-import './Notifications.css'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { List, Badge, Avatar, Tag } from "antd";
+import { BellOutlined, CheckCircleOutlined, FileTextOutlined } from '@ant-design/icons';
+import "./Notifications.css";
 
-function Notifications(){
-    return(
-        <h1>Notifications</h1>
+function Notifications() {
+  const [notifications, setNotifications] = useState([]);
 
-    );
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/notifications");
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const getNotificationText = (notification) => {
+    switch (notification.NotificationType) {
+      case "course_upload":
+        return `A new course has been uploaded on the site. Check it out: ${notification.NotificationText}`;
+      case "announcement":
+        return `New announcement: ${notification.NotificationText}`;
+      case "grade":
+        return `You've been graded: ${notification.NotificationText}`;
+      default:
+        return "";
+    }
+  };
+
+  const getNotificationIcon = (notification) => {
+    switch (notification.NotificationType) {
+      case "course_upload":
+        return <FileTextOutlined />;
+      case "announcement":
+        return <BellOutlined />;
+      case "grade":
+        return <CheckCircleOutlined />;
+      default:
+        return null;
+    }
+  };
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      await axios.put(`http://localhost:8080/notifications/${notification.NotificationID}`)
+      fetchNotifications(); 
+    } catch (error) {
+      console.error("Error updating notification:", error);
+    }
+  };
+
+  return (
+    <div className="c-container p-5">
+      <h1 style={{color:"#2774AE"}}>Notifications</h1>
+      <List
+        itemLayout="vertical"
+        size="large"
+        dataSource={notifications}
+        renderItem={(notification) => (
+          <List.Item
+            key={notification.NotificationID}
+            extra={
+              <Badge count={1} style={{ backgroundColor: 'red' }}>
+                <Avatar 
+                  shape="circle" 
+                  style={{cursor:"pointer"}}
+                  icon={getNotificationIcon(notification)} 
+                  onClick={() => handleNotificationClick(notification)} 
+                />
+              </Badge>
+            }
+          >
+            <List.Item.Meta
+              title={<Tag color="red" style={{fontSize:"15px"}}><a style={{textDecoration:"none"}} href={`/course/${notification.CourseID}`}>{notification.NotificationText}</a></Tag>}
+              description={getNotificationText(notification)}
+            />
+          </List.Item>
+        )}
+      />
+    </div>
+  );
 }
 
 export default Notifications;

@@ -1,7 +1,7 @@
 
 
 export function getAllUsers(req,res,db){  // gets all the users in the database , needed in User Management page
-    db.query('SELECT * FROM userss', (error, results) => {
+    db.query('SELECT * FROM users', (error, results) => {
         if (error) {
           console.error('Error fetching users:', error);
           return res.status(500).json({ error: 'Internal server error' });

@@ -62,9 +62,9 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
 
 
     return (
-        <div className="container">
-            <h4 className="text-center">Lectures for Course: {courseTitle}</h4>
-            <div className="row">
+        <div className="c-container p-5">
+            <h4 className="text-center text-primary">Lectures for course: {courseTitle}</h4>
+            <div className="row mt-4">
             {completedLectures.map((lecture, index) => {
     console.log(`Lecture ${index + 1} - isCompleted: ${lecture.isCompleted}`);
     return (
@@ -96,7 +96,7 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
                                 View Details
                             </Link>
                         ) : (
-                            <Lock style={{ marginTop: "40px" }} />
+                            <Lock style={{ marginTop: "40px", color:"#00538C" }} />
                         )
                     )}
                 {lecture.isCompleted === 1 && (
@@ -115,7 +115,7 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
                         </Link>
                     )}
                      {lecture.isCompleted === 0 && (
-                       ( <p>Not completed yet</p>) )}
+                       ( <p className='text-primary'>Not completed yet</p>) )}
                 </div>
             </div>
         </div>

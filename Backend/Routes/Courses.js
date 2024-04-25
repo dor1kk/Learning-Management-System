@@ -12,19 +12,32 @@ export function getCourses(req, res, db) {  //gets all the courses that are in t
   }
 
 
-  export function getCoursesTutorInfo(req, res,db) {  //gets the courses and the info of the tutor needed in the Explore Courses page
-  const sql = "SELECT * FROM courses INNER JOIN tutor on courses.TutorID=tutor.UserID";
-  console.log("SQL Query:", sql); 
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error occurred during query:", err); 
-      return res.json({ error: "Error occurred" });
-    }
-    console.log("Query result:", result); 
-    return res.json(result);
-  });
-}
-
+  export function getCoursesTutorInfo(req, res, db) {
+    const sql = `
+      SELECT 
+        courses.*,
+        tutor.Name AS TutorName,
+        tutor.image_url AS TutorProfilePicture,
+        AVG(reviews.Rating) AS AverageRating,
+        COUNT(reviews.ReviewID) AS NumberOfReviews
+      FROM 
+        courses
+        INNER JOIN tutor ON courses.TutorID=tutor.UserID
+        LEFT JOIN reviews ON courses.CourseID = reviews.CourseID
+      GROUP BY 
+        courses.CourseID;
+    `;
+    console.log("SQL Query:", sql);
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.error("Error occurred during query:", err);
+        return res.json({ error: "Error occurred" });
+      }
+      console.log("Query result:", result);
+      return res.json(result);
+    });
+  }
+  
 
 
 
@@ -75,22 +88,41 @@ db.query(sql, [tutorId], (err, result) => {
 }
 
 
-export function InsertCourse(req, res,db) { // insert a new course, needed in Add Course page
+export function InsertCourse(req, res, db) {
+  const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
 
-const { title, description, category, image, prerequisites, duration, lectures, assignments, tutorid } = req.body;
+  db.query(
+    "INSERT INTO courses (Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, TutorID) VALUES (?,?,?,?,?,?,?,?,?)",
+    [title, description, category, image, prerequisites, duration, lectures, assignments, tutorid],
+    (error, result) => {
+      if (error) {
+        console.error("Adding Course error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      
+      const notificationSql = 'INSERT INTO notifications(UserID, NotificationType, NotificationText) VALUES (?,?,?)';
+      const studentIdsSql = 'SELECT UserID FROM users WHERE Role="Student"';
 
-db.query(
-  "INSERT INTO courses (Title, Description, Category, Image, Prerequisites, Duration, Lectures, Assignments, TutorID) VALUES (?,?,?,?,?,?,?,?,?)",
-  [title, description, category, image, prerequisites, duration, lectures, assignments, tutorid],
-  (error, result) => {
-    if (error) {
-      console.error("Adding Course error:", error);
-      return res.status(500).json({ error: "Internal server error" });
+      db.query(studentIdsSql, (error, studentIds) => {
+        if (error) {
+          console.error('Error fetching student IDs:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        studentIds.forEach(({ UserID }) => {
+          db.query(notificationSql, [UserID, 'course_upload', `${title}`], (error, notificationResult) => {
+            if (error) {
+              console.error('Error inserting notification:', error);
+            }
+          });
+        });
+
+        res.status(201).json({ message: 'Course added successfully' });
+      });
     }
-    res.status(201).json({ message: "Course added successfully" });
-  }
-);
+  );
 }
+
 
 
 export function DeleteCourse(req, res,db) { //Delete the course based on its id , needed in Course Management Page

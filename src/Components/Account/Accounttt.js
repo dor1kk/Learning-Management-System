@@ -132,9 +132,9 @@ function Account() {
     
   
     return (
-        <div className="container mt-1"> 
+        <div className="c-container p-5"> 
             <div className="row">
-                <div className="col-12">
+                <div className="col-10">
                     <div className="my-5">
                         <Typography variant="h3" gutterBottom fontWeight="bold" color="primary">My Profile</Typography>
                     </div>

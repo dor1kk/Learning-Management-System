@@ -98,16 +98,7 @@ const Sidebaar = ({ children }) => {
       .catch(err => console.log(err));
   }, [location.pathname, navigate]);
 
-  useEffect(() => {
-    axios.get('http://localhost:8080/image')
-      .then(res => {
-        console.log(res.data);
-        if (res.data.valid) {
-          setImage(res.data.image);
-        }
-      })
-      .catch(err => console.log(err));
-  }, [location.pathname, navigate]);
+ 
 
   const toggle = () => {
     setCollapsed(!collapsed);
@@ -123,7 +114,7 @@ const Sidebaar = ({ children }) => {
 
   return (
     <Layout style={{Height: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}  style={{ background: '#00538C' }} 
+      <Sider trigger={null} collapsible collapsed={collapsed}  style={{ background: '#2774AE' }} 
 >
         <div className="logo" />
         <Menu theme="darkblue" mode="inline" defaultSelectedKeys={['1']}>
@@ -170,6 +161,11 @@ const Sidebaar = ({ children }) => {
               <Link to="/Home/T-LecturesManagement"  style={{color:"white", textDecoration:"none"}}>Lectures Management</Link>
             </Menu.Item>
           ) : null}
+          {role === "Tutor" ? (
+            <Menu.Item key="9" style={{color:"white"}} icon={<ContainerOutlined />}>
+              <Link to="/Home/T-AnnouncementsManagement"  style={{color:"white", textDecoration:"none"}}>Announcements Management</Link>
+            </Menu.Item>
+          ) : null}
           {role === "Admin" ? (
             <Menu.Item key="10" style={{color:"white"}} icon={<PieChartOutlined />}>
               <Link to="/Home/Analytics" style={{color:"white", textDecoration:"none"}}>Analytics</Link>
@@ -205,6 +201,9 @@ const Sidebaar = ({ children }) => {
               <Link to="/Home/Courseslecture" className="link" style={{color:"white", textDecoration:"none"}}>Lectures</Link>
             </Menu.Item>
           ) : null}
+   
+        
+      
         {role === "Tutor" ? (
   <SubMenu key="sub3" style={{ color: "white" }} icon={<AiOutlineSetting />} title="Settings">
     <Menu.Item key="17"><Link to="/Home/Account" style={{ color: "white", textDecoration: "none" }}>Account</Link></Menu.Item>
