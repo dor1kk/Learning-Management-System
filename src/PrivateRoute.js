@@ -41,6 +41,9 @@ import Progressi from "./Components/YourCourses/Progress";
 import Details from "./Components/Courses/Details";
 import ReviewContainer from "./Components/YourCourses/Review";
 import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
+import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
+import Messages from "./Components/Messages/Messages";
+import AnalyticsPage from "./Components/Admin-Managements/UserManagment/Analytics/Analytics";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -89,7 +92,7 @@ const PrivateRoute = () => {
         <Route path="/Accounttt" element={<Accounttt />} />
         <Route path="/Tutors" element={<Tutors />} />
         <Route path="/BecomeTutor" element={<BecomeTutor />} />
-        <Route path="/TutorProfile" element={<TutorProfile />} />
+        <Route path="/TutorProfile/:id" element={<TutorProfile />} />
         <Route path="/Students" element={<StudentList />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/" element={<Dashboard />} />
@@ -124,6 +127,9 @@ const PrivateRoute = () => {
         <Route path="/Progress/:id" element={<Progressi />}></Route>
         <Route path="/addrating/:id" element={<ReviewContainer />}></Route>
         <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
+        <Route path="/Mailbox" element={<Mailbox />}></Route>
+        <Route path="/Messages" element={<Messages />}></Route>
+        <Route path="/Analytics" element={<AnalyticsPage />}></Route>
    
       </Routes>
     </Sidebaar>

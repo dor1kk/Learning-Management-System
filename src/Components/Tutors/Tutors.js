@@ -4,7 +4,7 @@ import axios from "axios";
 import { Card, Button, Typography, Avatar, List, Input, Select, Tag } from 'antd';
 import { UserOutlined, InfoCircleOutlined, GraduationCapOutlined, UserTieOutlined, BriefcaseOutlined } from '@mui/material';
 import "./Tutors.css";
-import { Cases, LaptopOutlined, Person, VerifiedUser, VerifiedUserOutlined } from "@mui/icons-material";
+import { Cases, Email, LaptopOutlined, Person, VerifiedUser, VerifiedUserOutlined } from "@mui/icons-material";
 
 function Tutors() {
   const navigate = useNavigate();
@@ -18,14 +18,7 @@ function Tutors() {
 
   const fetchTutors = async () => {
     try {
-      let url = "http://localhost:8080/tutors";
-      if (searchQuery) {
-        url += `?search=${searchQuery}`;
-      }
-      if (filter) {
-        url += `&filter=${filter}`;
-      }
-      const response = await axios.get(url);
+           const response = await axios.get("http://localhost:8080/tutors");
       setTutors(response.data);
     } catch (error) {
       console.error("Error fetching tutors:", error);
@@ -94,7 +87,7 @@ function Tutors() {
                   <Avatar src={tutor.image_url} style={{ width: 80, height: 80, margin:3 }} />
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", marginLeft:"30px" }}>
-                    <div>
+                    <div className="d-flex flex-row justify-content-between">
                     <Typography.Title level={5}>{tutor.name}</Typography.Title>
                     </div>
                     <div className="d-flex flex-row">
@@ -106,7 +99,9 @@ function Tutors() {
                     <Typography.Text> <Tag color="green"> <Person className="text-primary" /> Bio:  {tutor.bio} </Tag></Typography.Text>
                     </div>
                     </div>
-                    <Button type="primary" className="w-25" style={{ marginTop: "8px" }} onClick={() => navigate(`/Home/TutorProfile/${tutor.id}`)}>View profile!</Button>
+                    <div className="d-flex">
+                    <Button type="primary" className="w-25" style={{ marginTop: "8px" }} onClick={() => navigate(`/Home/TutorProfile/${tutor.TutorID}`)}>View profile!</Button>
+                    </div>
                   </div>
                   </div>
                 </Card>

@@ -1,81 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from "react-router-dom";
+import { useParams } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 
 const EditUser = () => {
-  const location = useLocation();
-  const userId = location.pathname.split("/").pop();
-  const [userData, setUserData] = useState({
-    userId: userId,
-    Username: '',
-    Password: '',
-    Email: ''
-  });
+  const { userId } = useParams(); 
+  const [form] = Form.useForm(); 
 
+  const [loading, setLoading] = useState(false); 
+
+  useEffect(() => {
+    fetchUser();
+  }, [userId]);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/userss/${userId}`);
-      console.log(response.data);
-      setUserData(response.data.results);
+      const response = await axios.get(`http://localhost:8080/users/${userId}`);
+      const userData = response.data;
+      form.setFieldsValue(userData); 
     } catch (error) {
       console.error('Error fetching user:', error);
     }
   };
 
-;
-
-    const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
+    setLoading(true); 
     try {
-      await axios.put(`http://localhost:8080/editusers/${userId}`, {
-        Username:userData.Username,
-        Email:userData.Email,
-        Password:userData.Password,
-        Role:userData.Role,
-        UserID:userData.userId,
-
-      });
-      alert('User updated successfully');
+      await axios.put(`http://localhost:8080/editusers/${userId}`, values);
+      message.success('User updated successfully');
     } catch (error) {
-      alert('Failed to update user. Please try again.');
+      console.error('Failed to update user:', error);
+      message.error('Failed to update user. Please try again.');
     }
+    setLoading(false); 
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, [userId]); 
-  
-
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
-  };
-
-  console.log("User Username", userData.Username);
   return (
-    <div>
-      <h3>Edit User</h3>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input type="text" name="Username" value={userData.Username} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" name="Password" value={userData.Password} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="text" name="Role" value={userData.Role} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" name="Email" value={userData.Email} onChange={handleChange} />
-        </div>
-        <button type="submit">Save</button>
-      </form>
+    <div className='c-container p-5' style={{ maxWidth: '400px', margin: '0 auto' }}>
+      <Form form={form} onFinish={handleSubmit}>
+        <Form.Item name="Username" rules={[{ required: true, message: 'Please enter a username' }]}>
+          <Input prefix={<UserOutlined />} placeholder="Username" />
+        </Form.Item>
+        <Form.Item name="Password" rules={[{ required: true, message: 'Please enter a password' }]}>
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+        </Form.Item>
+        <Form.Item name="Role" rules={[{ required: true, message: 'Please enter a role' }]}>
+          <Input prefix={<UserOutlined />} placeholder="Role" />
+        </Form.Item>
+        <Form.Item name="Email" rules={[{ required: true, message: 'Please enter an email', type: 'email' }]}>
+          <Input prefix={<MailOutlined />} type="email" placeholder="Email" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

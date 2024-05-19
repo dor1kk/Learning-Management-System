@@ -172,7 +172,7 @@ const Friends = () => {
 
   const columns = [
     {
-      title: 'Avatar',
+      title: 'Friends',
       dataIndex: 'Image',
       key: 'Image',
       render: (text, record) => <Avatar src={record.Image} />,

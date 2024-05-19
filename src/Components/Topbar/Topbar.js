@@ -33,9 +33,9 @@ function Topbar({ toggleDarkMode, colors }) {
     
 
     return (
-        <AppBar position="static" elevation={0} style={{ backgroundColor: "white", color:"black" }}>
+        <AppBar position="static" elevation={0} style={{ backgroundColor: "white" }}>
             <Toolbar>
-                <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="div" style={{ flexGrow: 1, color:"#2774AE" }}>
                     Education.
                 </Typography>
                 <div style={{ flexGrow: 1 }}>
@@ -49,7 +49,7 @@ function Topbar({ toggleDarkMode, colors }) {
                             style={{ marginRight: "10px" }}
                         />
                         <IconButton type="submit">
-                            <SearchIcon style={{ color: "black"}} />
+                            <SearchIcon style={{ color: "#2774AE"}} />
                         </IconButton>
                     </form>
                     {searchResults.length > 0 && (
@@ -59,7 +59,7 @@ function Topbar({ toggleDarkMode, colors }) {
                                     <ListItem
                                         key={course.id}
                                         button
-                                        onClick={() => handleCourseClick()} // Call handleCourseClick function on click
+                                        onClick={() => handleCourseClick()}
                                     >
                                         <ListItemAvatar>
                                             <Avatar alt={course.title} src={course.image} />
@@ -72,14 +72,14 @@ function Topbar({ toggleDarkMode, colors }) {
                     )}
                 </div>
                 <div style={{ flexGrow: 1, textAlign: "end" }}>
-                    <IconButton edge="start" color="inherit" aria-label="menu">
+                    <IconButton edge="start" style={{color:"#2774AE"}} aria-label="menu">
                         <MenuIcon />
                     </IconButton>
                     <IconButton>
-                        <AccountCircleIcon style={{ color:"black"}} />
+                        <AccountCircleIcon style={{ color:"#2774AE"}} />
                     </IconButton>
                     <IconButton onClick={toggleDarkMode} >
-                        <WbSunnyIcon style={{ color: "black" }} />
+                        <WbSunnyIcon style={{ color: "#2774AE" }} />
                     </IconButton>
                 </div>
             </Toolbar>
