@@ -7,7 +7,6 @@ import Account from "./Components/Account/Account";
 import Accounttt from "./Components/Account/Accounttt";
 import CourseDetail from "./Components/Courses/Coursedetail";
 import StudentList from "./Components/Students/Students";
-import Chat from "./Components/Chat/Chat";
 import Notifications from "./Components/Notifications/Notifcations";
 import Tutors from "./Components/Tutors/Tutors";
 import BecomeTutor from "./Components/Tutors/BecomeTutor";
@@ -99,7 +98,6 @@ const PrivateRoute = () => {
         <Route path="/YourCourses" element={<YourCourses />} />
         <Route path="/CourseDetail/:id" element={<CourseDetail />} />
         <Route path="/CourseDetails/Details" element={<Details />}></Route>
-        <Route path="/Chat" element={<Chat />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/TutorDashboard" element={<TutorDashboard />} />
         <Route path="/T-CoursesManagement" element={<CourseManagement />} />
