@@ -18,101 +18,51 @@ import axios from 'axios'
 function TutorDashboard() {
 
     const [noStudents,setNoStudents]=useState(null);
+  
 
+    const fetchNoStudents = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/totalStudents");
+            setNoStudents(response.data.totalStudents);
+        } catch (error) {
+            console.error("Error fetching number of students:", error);
+        }
+    };
 
-    const fetchNoStudents=async ()=>{
-        const response=await axios.get("http://localhost:8080/totalStudents");
-        setNoStudents(response.data.totalStudents);
-
-    }
-
+    
     useEffect(()=>{
         fetchNoStudents();
+        
     })
 
 
-    const data = [
-        {
-          name: 'Courses',
-          uv: 50,
-          pv: 88,
-          amt: 2400,
-        },
-        {
-          name: 'Enrolled Students',
-          uv: 3000,
-          pv: 3452,
-          amt: 2210,
-        },
-        {
-          name: 'Top Course',
-          uv: 200,
-          pv: 238,
-          amt: 2290,
-        },
-        {
-          name: 'Users',
-          uv: 2780,
-          pv: 3540,
-          amt: 2000,
-        },
-        
-      ];
-     
+      const data = [
+        { name: 'Avg Grade', uv: 53, pv: 88, amt: 2400 },
+        { name: 'Enrolled Students', uv: noStudents, pv: 3452, amt: 2210 },
+        { name: 'Courses', uv: 54, pv: 238, amt: 2290 },
+        { name: 'Exam', uv: 52, pv: 3540, amt: 2000 },
+    ];
 
   return (
-    <main className='c-container p-5'>
-    
-        <div className='main-cards'>
-            <div className='card'>
+    <main className='main-container'>
+    <div className='main-cards'>
+        {data.map((item, index) => (
+            <div key={index} className='card'>
                 <div className='card-inner d-flex flex-column'>
                     <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white'>AVG GRADE</h3>
-                    <FaChalkboardTeacher className='card_icon ' style={{color:"white"}}/>
+                        <h3 className='text-white'>{item.name}</h3>
+                        {index === 0 && <FaChalkboardTeacher className='card_icon' style={{ color: 'white' }} />}
+                        {index === 1 && <FaGraduationCap className='card_icon' style={{ color: 'white' }} />}
+                        {index === 2 && <IoBookOutline className='card_icon' style={{ color: 'white' }} />}
+                        {index === 3 && <FaUser className='card_icon' style={{ color: 'white' }} />}
                     </div>
                     <div>
-                    <h1 className='text-white'>8.8</h1>
-
+                        <h1 className='text-white'>{item.uv}</h1>
                     </div>
                 </div>
             </div>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                        <h3 className='text-white' >STUDENTS</h3>
-                        <FaGraduationCap className='card_icon ' style={{ color: "white" }} />
-                    </div>
-                    <div>
-                        <h1 className='text-white'>{noStudents}</h1>
-                    </div>
-                </div>
-            </div>
-
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >COURSES</h3>
-                    <IoBookOutline className='card_icon ' style={{color:"white"}}/>
-                    </div>
-                    <div>
-                    <h1 className='text-white'>238</h1>
-
-                    </div>
-                </div>
-            </div>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >EXAMS</h3>
-                    <FaUser className='card_icon ' style={{color:"white"}}/>
-                    </div>
-                    <div>
-                    <h1 className='text-white'>20</h1>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+        ))}
+    </div>
 
         <div className='charts'>
             <ResponsiveContainer width="100%" height="100%">

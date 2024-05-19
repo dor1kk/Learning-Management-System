@@ -1,7 +1,7 @@
 
 
 export function GetAllTutors(req, res,db) {  // returns all the tutors that exists, needed in the Tutors page
-const sql = 'SELECT * FROM tutor';
+const sql = 'SELECT * FROM tutor  INNER JOIN users ON users.UserID = tutor.UserID WHERE users.UserID = ?';
 db.query(sql, (err, result) => {
   if (err) {
     console.error('Error retrieving tutors from database:', err);
@@ -48,12 +48,21 @@ export function AddTutor(req, res, db) {
             console.error('Error inserting into tutors table:', err);
             return res.status(500).send('Internal Server Error');
           }
+
+
+          const deleteStudentSql = 'DELETE FROM students WHERE UserId = ?';
+          db.query(deleteStudentSql, [userId], function(err, deleteResult) {
+            if (err) {
+              console.error('Error deleting student from students table:', err);
+              return res.status(500).send('Internal Server Error');
+            }
   
           console.log('Data saved successfully');
           res.status(200).send('Data saved successfully');
         });
       });
     });
+  });
   }
   
 
@@ -118,6 +127,7 @@ export function PasswordUsers(req,res,db){
       res.status(200).json(result);
   });
 }
+
 
 
 export function UpdatedPasswordUser(req,res,db){
@@ -215,7 +225,7 @@ export function DeletePhotoProfilt(req,res,db){
 
 
 
-export function DeleteProfilt(req,res,db){
+export function DeleteProfilet(req,res,db){
 // fshin acountin e tutorit
   const { id } = req.params;
 

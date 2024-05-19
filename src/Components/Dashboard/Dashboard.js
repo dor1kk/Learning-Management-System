@@ -10,92 +10,88 @@ import
 import { MdSchool } from 'react-icons/md';
 import { FaGraduationCap, FaUser } from 'react-icons/fa';
 import { FaChalkboardTeacher } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 
 function Dashboard() {
 
+    const [totalStudents, setTotalStudents] = useState(0);
+    const [totalTutors, setTotalTutors] = useState(0);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalCourses, setTotalCourses] = useState(0);
+
+    useEffect(() => {
+        fetchTotalStudents();
+        fetchTotalTutors();
+        fetchTotalUsers();
+        fetchTotalCourses();
+    }, []);
+
+    const fetchTotalStudents = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/total-students');
+            setTotalStudents(response.data.totalStudents);
+        } catch (error) {
+            console.error('Error fetching total number of students:', error);
+        }
+    };
+
+    const fetchTotalTutors = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/total-tutors');
+            setTotalTutors(response.data.totalTutors);
+        } catch (error) {
+            console.error('Error fetching total number of tutors:', error);
+        }
+    };
+
+    const fetchTotalUsers = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/total-users');
+            setTotalUsers(response.data.totalUsers);
+        } catch (error) {
+            console.error('Error fetching total number of users:', error);
+        }
+    };
+
+    const fetchTotalCourses = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/total-courses');
+            setTotalCourses(response.data.totalCourses);
+        } catch (error) {
+            console.error('Error fetching total number of courses:', error);
+        }
+    };
+
     const data = [
-        {
-          name: 'Tutors',
-          uv: 50,
-          pv: 88,
-          amt: 2400,
-        },
-        {
-          name: 'Students',
-          uv: 3000,
-          pv: 3452,
-          amt: 2210,
-        },
-        {
-          name: 'Courses',
-          uv: 200,
-          pv: 238,
-          amt: 2290,
-        },
-        {
-          name: 'Users',
-          uv: 2780,
-          pv: 3540,
-          amt: 2000,
-        },
-        
-      ];
-     
+        { name: 'Tutors', uv: totalTutors, pv: 88, amt: 2400 },
+        { name: 'Students', uv: totalStudents, pv: 3452, amt: 2210 },
+        { name: 'Courses', uv: totalCourses, pv: 238, amt: 2290 },
+        { name: 'Users', uv: totalUsers, pv: 3540, amt: 2000 },
+    ];
 
   return (
-    <main className='main-container'>
-    
-        <div className='main-cards'>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white'>TUTORS</h3>
-                    <FaChalkboardTeacher className='card_icon ' style={{color:"white"}}/>
+   <main className='main-container'>
+            <div className='main-cards'>
+                {data.map((item, index) => (
+                    <div key={index} className='card'>
+                        <div className='card-inner d-flex flex-column'>
+                            <div className='d-flex flex-column justify-content-center align-items-center'>
+                                <h3 className='text-white'>{item.name}</h3>
+                                {index === 0 && <FaChalkboardTeacher className='card_icon' style={{ color: 'white' }} />}
+                                {index === 1 && <FaGraduationCap className='card_icon' style={{ color: 'white' }} />}
+                                {index === 2 && <IoBookOutline className='card_icon' style={{ color: 'white' }} />}
+                                {index === 3 && <FaUser className='card_icon' style={{ color: 'white' }} />}
+                            </div>
+                            <div>
+                                <h1 className='text-white'>{item.uv}</h1>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                    <h1 className='text-white'>88</h1>
-
-                    </div>
-                </div>
+                ))}
             </div>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >STUDENTS</h3>
-                    <FaGraduationCap className='card_icon ' style={{color:"white"}}/>
-                    </div>
-                    <div>
-                    <h1 className='text-white'>3452</h1>
-
-                    </div>
-                </div>
-            </div>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >COURSES</h3>
-                    <IoBookOutline className='card_icon ' style={{color:"white"}}/>
-                    </div>
-                    <div>
-                    <h1 className='text-white'>238</h1>
-
-                    </div>
-                </div>
-            </div>
-            <div className='card'>
-                <div className='card-inner d-flex flex-column'>
-                    <div className='d-flex flex-column justify-content-center align-items-center'>
-                    <h3 className='text-white' >USERS</h3>
-                    <FaUser className='card_icon ' style={{color:"white"}}/>
-                    </div>
-                    <div>
-                    <h1 className='text-white'>3540</h1>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <div className='charts'>
             <ResponsiveContainer width="100%" height="100%">

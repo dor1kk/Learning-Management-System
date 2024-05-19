@@ -23,7 +23,7 @@ export function getLogggedInStudentInfo(req,res,db){  //returns the logged in st
         return res.status(401).send('Unauthorized');
     }
   
-    const sql = 'SELECT * FROM students INNER JOIN users ON users.UserId = students.UserId WHERE users.UserId = ?';
+    const sql = 'SELECT * FROM students INNER JOIN users ON users.UserID = students.UserId WHERE users.UserID = ?';
     const userId = req.session.userid;
   
     db.query(sql, userId, (err, result) => {
@@ -92,25 +92,28 @@ export function DeletePhotoProfilS(req,res,db){
  
   }
 
-  export function DeleteProfilS(req,res,db){//fshin profilin e studentit 
- 
-        const { id } = req.params;
-      
-        const deleteStudentSQL = 'DELETE FROM students WHERE ID = ?';
-        db.query(deleteStudentSQL, [id], (error1, results1) => {
-          if (error1) {
-            console.error('Error deleting student:', error1);
-            return res.status(500).json({ error: 'Internal server error' });
-          }
-        
-          const deleteUserSQL = 'DELETE FROM users WHERE UserID = ?';
-          db.query(deleteUserSQL, [id], (error2, results2) => {
-            if (error2) {
-              console.error('Error deleting user:', error2);
-              return res.status(500).json({ error: 'Internal server error' });
-            }
-            
-            res.status(200).json({ message: 'Student and corresponding user deleted successfully' });
-          });
-        });   
+  
+  export function DeleteProfilS(req, res, db) {
+    const { id } = req.params;
+  
+    // Delete from students table
+    const deleteStudentSQL = 'DELETE FROM students WHERE ID = ?';
+    db.query(deleteStudentSQL, [id], function(error1, results1) {
+      if (error1) {
+        console.error('Error deleting student:', error1);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      // Delete from users table
+      const deleteUserSQL = 'DELETE FROM users WHERE ID = ?';
+      db.query(deleteUserSQL, [id], function(error2, results2) {
+        if (error2) {
+          console.error('Error deleting user:', error2);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+  
+        res.status(200).json({ message: 'Profile deleted successfully' });
+      });
+    });
   }
+  

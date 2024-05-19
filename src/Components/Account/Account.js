@@ -17,17 +17,16 @@ function Account() {
     const [updatedimage_url, setUpdatedimage_url] = useState(''); 
     const [updatedcontact, setUpdatedcontact] = useState('');
     const [updatedavailability, setUpdatedavailability] = useState('');
-    const [updatedPlaceholdername, setUpdatedPlaceholdername] = useState('');
-    const [updatedPlaceholderemail, setUpdatedPlaceholderemail] = useState('');
-    const [updatedPlaceholderexpertise, setUpdatedPlaceholderexpertise] = useState('');
-    const [updatedPlaceholderbio, setUpdatedPlaceholderbio] = useState('');
-    const [updatedPlaceholdercourses, setUpdatedPlaceholdercourses] = useState('');
-    const [updatedPlaceholderexperience, setUpdatedPlaceholderexperience] = useState('');
-    const [updatedPlaceholdereducation, setUpdatedPlaceholdereducation] = useState('');
-    const [updatedPlaceholderlocation, setUpdatedPlaceholderlocation] = useState('');
-    const [updatedPlaceholdercontact, setUpdatedPlaceholdercontact] = useState('');
-    const [updatedPlaceholderavailability, setUpdatedPlaceholderavailability] = useState('');
-    const [updatedPlaceholderimage_url, setUpdatedPlaceholderimage_url] = useState('');
+    const [updatedPlaceholdername] = useState('');
+    const [updatedPlaceholderemail] = useState('');
+    const [updatedPlaceholderexpertise] = useState('');
+    const [updatedPlaceholderbio] = useState('');
+    const [updatedPlaceholdercourses] = useState('');
+    const [updatedPlaceholderexperience] = useState('');
+    const [updatedPlaceholdereducation] = useState('');
+    const [updatedPlaceholderlocation] = useState('');
+    const [updatedPlaceholdercontact] = useState('');
+    const [updatedPlaceholderavailability] = useState('');
      const [user, setUser] = useState([]);
     const [Password, setPassword] = useState('');
     const navigate=useNavigate()
@@ -39,7 +38,7 @@ function Account() {
     
 
       const fetchUsers = () => {
-        axios.get('http://localhost:8080/users', { withCredentials: true })
+        axios.get('http://localhost:8080/usersss', { withCredentials: true })
             .then(response => {
                 if (response.data && response.data.length > 0) {
                     setUser(response.data[0]); 
@@ -62,7 +61,7 @@ function Account() {
     };
       
     const deleteProfilee = () => {
-        axios.delete(`http://localhost:8080/tutors/${tutor.TutorID}`, { withCredentials: true })
+        axios.delete(`http://localhost:8080/tutorsss/${tutor.TutorID}`, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 
@@ -293,7 +292,7 @@ function Account() {
                                         {/* Old password */}
                                         <div className="col-md-6">
                                         <label className="form-label">Old Password *</label>
-                                        <input type="name" className="form-control" aria-label="Old password"  value={user.Password}  />
+                                        <input type="name" className="form-control" aria-label="Old password"  value={user.Password} disabled />
 
                                         </div>
                                         {/* New password */}

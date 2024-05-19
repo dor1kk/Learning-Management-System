@@ -7,10 +7,8 @@ import { useNavigate } from 'react-router-dom';
 function Account() {
     const [student, setStudent] = useState({});
     const [updatedName, setUpdatedName] = useState('');
-    const [updatedGrade, setUpdatedGrade] = useState('');
     const [updatedImage, setUpdatedImage] = useState('');
     const [updatedPlaceholderName, setUpdatedPlaceholderName] = useState('');
-    const [updatedPlaceholderGrade, setUpdatedPlaceholderGrade] = useState('');
     const [user, setUser] = useState([]);
     const [Password, setPassword] = useState('');
     const navigate=useNavigate()
@@ -21,7 +19,7 @@ function Account() {
     
 
       const fetchUsers = () => {
-        axios.get('http://localhost:8080/users', { withCredentials: true })
+        axios.get('http://localhost:8080/usersss', { withCredentials: true })
             .then(response => {
                 if (response.data && response.data.length > 0) {
                     setUser(response.data[0]); 
@@ -46,23 +44,19 @@ function Account() {
     };
       
 
-    const deleteProfile = () => {
-        axios.delete(`http://localhost:8080/students/${student.ID}`, { withCredentials: true })
-            .then(response => {
-                console.log(response.data);
-                
-                setStudent({});
-               
-                axios.delete(`http://localhost:8080/users/${student.UserID}`, { withCredentials: true })
-                    .then(userResponse => {
-                        console.log(userResponse.data);
-                        
-                    })
-                    .catch(userError => console.error('Error deleting corresponding user:', userError));
-            })
-            .catch(error => console.error('Error deleting profile:', error));
-    };
     
+    
+
+  const deleteProfile = async () => {
+  try {
+    await axios.delete(`http://localhost:8080/studentsi/${student.ID}`, { withCredentials: true });
+    setStudent(); 
+  } catch (error) {
+    console.error('Error deleting user:', error);
+  }
+};
+
+  
 
     const deleteeeProfile = () => {
         axios.delete(`http://localhost:8080/studentii/${student.ID}`, { withCredentials: true })
@@ -85,10 +79,9 @@ function Account() {
                     const fetchedStudent = response.data[0];
                     setStudent(fetchedStudent);
                     setUpdatedName(fetchedStudent.Name);
-                    setUpdatedGrade(fetchedStudent.Grade);
                     setUpdatedImage(fetchedStudent.Image);
                     setUpdatedPlaceholderName(fetchedStudent.Name);
-                    setUpdatedPlaceholderGrade(fetchedStudent.Grade);
+                 
                   
                     
                 }
@@ -99,9 +92,7 @@ function Account() {
         setUpdatedName(event.target.value);
     };
 
-    const handleGradeChange = (event) => {
-        setUpdatedGrade(event.target.value);
-    };
+
     
     const handleImageChange = (event) => {
         setUpdatedImage(event.target.value);
@@ -115,9 +106,7 @@ function Account() {
         if (updatedName !== '') {
             updatedData.Name = updatedName;
         }
-        if (updatedGrade !== '') {
-            updatedData.Grade = updatedGrade;
-        }
+    
         if (updatedImage !== '') {
             updatedData.Image = updatedImage;
         }
@@ -145,14 +134,11 @@ function Account() {
                                 <div className="bg-secondary-soft px-4 py-5 rounded">
                                     <div className="row g-3">
                                         <Typography variant="h6" gutterBottom fontWeight="bold" color="primary">Profile details</Typography>
-                                        <div className="col-md-6">
+                                        <div className="col-md-10">
                                             <label className="form-label">First Name *</label>
                                             <input type="text" className="form-control" placeholder={updatedPlaceholderName} aria-label="Name" value={updatedName} onChange={handleNameChange} />
                                         </div>
-                                        <div className="col-md-6">
-                                            <label className="form-label">Grade *</label>
-                                            <input type="text" className="form-control" placeholder={updatedPlaceholderGrade} aria-label="Grade" value={updatedGrade} onChange={handleGradeChange} />
-                                        </div>
+                                       
                                         {/* Add other profile details here */}
                                     </div>
                                     </div>
@@ -187,7 +173,7 @@ function Account() {
                                         {/* Old password */}
                                         <div className="col-md-6">
                                         <label className="form-label">Old Password *</label>
-                                        <input type="name" className="form-control" placeholder="" aria-label="Old password"   value={user.Password}  />
+                                        <input type="name" className="form-control" placeholder="" aria-label="Old password"   value={user.Password} disabled />
 
                                         </div>
                                         {/* New password */}
