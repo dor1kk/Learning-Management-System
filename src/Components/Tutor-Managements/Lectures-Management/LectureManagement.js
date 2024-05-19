@@ -25,7 +25,14 @@ function LectureManagement() {
   const fetchCourses = async () => {
     try {
       const response = await axios.get('http://localhost:8080/tutorcourses');
-      setCourses(response.data);
+      const fetchedCourses = response.data;
+      setCourses(fetchedCourses);
+
+      // Pre-select the first course initially
+      if (fetchedCourses.length > 0) {
+        setSelectedCourse(fetchedCourses[0]);
+        fetchAndDisplayLectures(fetchedCourses[0].CourseID);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -64,11 +71,7 @@ function LectureManagement() {
   };
 
   const handleLectureClick = (index) => {
-    if (selectedLecture === index) {
-      setSelectedLecture(null);
-    } else {
-      setSelectedLecture(index);
-    }
+    setSelectedLecture(selectedLecture === index ? null : index);
     setShowAddForm(false);
   };
 
@@ -91,22 +94,21 @@ function LectureManagement() {
       setNewLectureTitle('');
       setNewLectureImageUrl('');
       setNewLectureDescription('');
-
-      console.log('New lecture added:', newLectureTitle);
-      setShowAddForm(false); 
+      setShowAddForm(false);
     } catch (error) {
       console.error('Error adding new lecture:', error);
     }
   };
 
   return (
-    <div className="c-container p-5" style={{ backgroundColor: '#f9f9f9', height: '100vh', padding: '20px' }}>
-      <h4 className="text-center mt-5 mb-3" style={{ color: '#333' }}>
-        Select the course you want to add lecture
-      </h4>
+    <div className="c-container p-5">
       <Form layout="vertical">
         <Form.Item label="Select Course">
-          <Select onChange={handleCourseChange} placeholder="Select a course">
+          <Select
+            onChange={handleCourseChange}
+            placeholder="Select a course"
+            value={selectedCourse ? selectedCourse.CourseID : undefined}
+          >
             {courses.map((course) => (
               <Option key={course.CourseID} value={course.CourseID}>
                 {course.Title}
@@ -117,79 +119,60 @@ function LectureManagement() {
       </Form>
 
       {selectedCourse && (
-        <List>
-          <List.Item button onClick={handleCollapse} style={{ backgroundColor: '#fff', color: '#333' }}>
-            <span style={{marginLeft:"25px"}}>{`Number of Lectures: ${lectureCount}`}</span>
-            {open ? <CaretUpOutlined style={{ color: '#4caf50' }} /> : <CaretDownOutlined style={{ color: '#f44336' }} />}
-          </List.Item>
-          {open && (
-            <List component={Collapse} unmountOnExit>
-              {lectures.map((lecture, index) => (
-                <div key={index}>
-                  <List.Item
-                    button
-                    style={{ paddingLeft: '40px', backgroundColor: '#f9f9f9', color: '#333' }}
-                    selected={selectedLecture === index}
-                    onClick={() => handleLectureClick(index)}
-                  >
-                    <CaretDownOutlined style={{ color: '#2196f3' }} />
-                    <span style={{marginRight:"500px"}}>{`Lecture ${index + 1}: ${lecture.LectureTitle}`}</span>
-                  </List.Item>
-                  {selectedLecture === index && (
-                    <div>
-                      <List.Item>
-                        <span>{`Description: ${lecture.LectureContent}`}</span>
-                      </List.Item>
-                      <List.Item>
-                        <img src={lecture.Image} alt="Lecture" />
-                      </List.Item>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </List>
-          )}
+        <div className="lecture-list">
           <Button
             type="primary"
+            className="add-lecture-btn"
             onClick={handleAddLecture}
-            style={{ marginTop: '10px', backgroundColor: 'darkblue', color: '#fff' }}
             icon={<PlusOutlined />}
           >
             Add Lecture
           </Button>
+          <Collapse bordered={false} defaultActiveKey={['1']} className="lecture-collapse">
+            <Collapse.Panel
+              header={`Number of Lectures: ${lectureCount}`}
+              key="1"
+              extra={open ? <CaretUpOutlined /> : <CaretDownOutlined />}
+              onClick={handleCollapse}
+            >
+              <List
+                dataSource={lectures}
+                renderItem={(lecture, index) => (
+                  <List.Item
+                    className={`lecture-item ${selectedLecture === index ? 'selected' : ''}`}
+                    onClick={() => handleLectureClick(index)}
+                  >
+                    {`Lecture ${index + 1}: ${lecture.LectureTitle}`}
+                  </List.Item>
+                )}
+              />
+            </Collapse.Panel>
+          </Collapse>
+
           <Modal
-            visible={showAddForm}
             title="Add Lecture"
+            visible={showAddForm}
             onCancel={() => setShowAddForm(false)}
-            footer={[
-              <Button key="cancel" onClick={() => setShowAddForm(false)}>
-                Cancel
-              </Button>,
-              <Button key="submit" type="primary" onClick={handleFormSubmit}>
-                Submit
-              </Button>,
-            ]}
+            onOk={handleFormSubmit}
           >
             <Input
               placeholder="Lecture Title"
               value={newLectureTitle}
               onChange={(e) => setNewLectureTitle(e.target.value)}
-              style={{ marginTop: '10px' }}
             />
             <Input
               placeholder="Image URL"
               value={newLectureImageUrl}
               onChange={(e) => setNewLectureImageUrl(e.target.value)}
-              style={{ marginTop: '10px' }}
             />
             <Input.TextArea
               placeholder="Description"
               value={newLectureDescription}
               onChange={(e) => setNewLectureDescription(e.target.value)}
-              style={{ marginTop: '10px' }}
+              autoSize={{ minRows: 3, maxRows: 5 }}
             />
           </Modal>
-        </List>
+        </div>
       )}
     </div>
   );

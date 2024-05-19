@@ -1,17 +1,44 @@
+export function AddCompletedCourse(req, res, db) {
+  const { courseId, userId, grade } = req.body; 
+  const tutorId = req.session.userid;
 
-export function AddCompletedCourse(req,res,db){  // Inserts a new completed course after the tutor grades the exam in grade management
-    const { courseId, userId, grade} = req.body; 
-    const tutorId=req.session.userid;
-  
-    const sql = 'INSERT INTO completedcourse (StudentID, CourseID, Grade, TutorID) VALUES (?, ?, ?, ?)';
-    db.query(sql, [userId, courseId,grade, tutorId ], (error, results) => {
+  const sql = 'INSERT INTO completedcourse (StudentID, CourseID, Grade, TutorID) VALUES (?, ?, ?, ?)';
+  db.query(sql, [userId, courseId, grade, tutorId], (error, results) => {
+    if (error) {
+      console.error('Error creating exam question:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    console.log('Question created successfully.');
+    const notificationSql = 'INSERT INTO notifications(UserID, NotificationType, NotificationText) VALUES (?,?,?)';
+    const studentIdsSql = 'SELECT UserID FROM students WHERE ID=?';
+    const courseTitleSql = 'SELECT Title FROM courses WHERE CourseID=?'; 
+
+    db.query(studentIdsSql, [userId], (error, studentIds) => {
       if (error) {
-        console.error('Error creating exam question:', error);
+        console.error('Error fetching student IDs:', error);
         return res.status(500).json({ error: 'Internal server error' });
       }
-      console.log('Question created successfully.');
-      res.status(201).json({ message: 'Question created successfully' });
+      // Fetch course title
+      db.query(courseTitleSql, [courseId], (error, courseTitleResult) => {
+        if (error) {
+          console.error('Error fetching course title:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+        const courseTitle = courseTitleResult[0].Title; 
+
+        studentIds.forEach(({ UserID }) => {
+          const notificationText = `Your course ${courseTitle} has been graded with ${grade} by your tutor.`; 
+          db.query(notificationSql, [UserID, 'grade', notificationText], (error, notificationResult) => {
+            if (error) {
+              console.error('Error inserting notification:', error);
+            }
+          });
+        });
+
+        res.status(201).json({ message: 'Course added successfully' });
+      });
     });
+  });
 }
 
 

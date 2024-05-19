@@ -68,25 +68,25 @@ export function AddTutor(req, res, db) {
 
 
 
-export function GetTutorById(req,res,db){ //Returns the tutor info based on his id, needed in Tutor Details page
-
-const tutorId = req.params.id;
-
-const sql = "SELECT * FROM tutors WHERE TutorID = ?";
-
-db.query(sql, [tutorId], (err, result) => {
-  if (err) {
-    console.error('Error fetching tutor:', err);
-    return res.status(500).json({ error: "Error occurred while fetching tutor" });
+  export function GetTutorById(req, res, db) {
+    const tutorId = req.params.id;
+  
+    const sql = "SELECT * FROM tutor WHERE TutorID = ?";
+  
+    db.query(sql, [tutorId], (err, result) => {
+      if (err) {
+        console.error('Error fetching tutor:', err);
+        return res.status(500).json({ error: "Error occurred while fetching tutor" });
+      }
+  
+      if (result.length === 0) {
+        return res.status(404).json({ error: "Tutor not found" });
+      }
+  
+      return res.json(result[0]);
+    });
   }
-  if (result.length === 0) {
-    return res.status(404).json({ error: "Tutor not found" });
-  }
-  return res.json(result[0]);
-});
-}
-
-
+  
 
 export function getLoggedInTutorInfo(req,res,db){ // used to get the info of the Logged in tutor, needed in the Account page
     if (!req.session.userid) {

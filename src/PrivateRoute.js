@@ -7,7 +7,6 @@ import Account from "./Components/Account/Account";
 import Accounttt from "./Components/Account/Accounttt";
 import CourseDetail from "./Components/Courses/Coursedetail";
 import StudentList from "./Components/Students/Students";
-import Chat from "./Components/Chat/Chat";
 import Notifications from "./Components/Notifications/Notifcations";
 import Tutors from "./Components/Tutors/Tutors";
 import BecomeTutor from "./Components/Tutors/BecomeTutor";
@@ -41,6 +40,9 @@ import Progressi from "./Components/YourCourses/Progress";
 import Details from "./Components/Courses/Details";
 import ReviewContainer from "./Components/YourCourses/Review";
 import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
+import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
+import Messages from "./Components/Messages/Messages";
+import AnalyticsPage from "./Components/Admin-Managements/UserManagment/Analytics/Analytics";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -89,14 +91,13 @@ const PrivateRoute = () => {
         <Route path="/Accounttt" element={<Accounttt />} />
         <Route path="/Tutors" element={<Tutors />} />
         <Route path="/BecomeTutor" element={<BecomeTutor />} />
-        <Route path="/TutorProfile" element={<TutorProfile />} />
+        <Route path="/TutorProfile/:id" element={<TutorProfile />} />
         <Route path="/Students" element={<StudentList />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/YourCourses" element={<YourCourses />} />
         <Route path="/CourseDetail/:id" element={<CourseDetail />} />
         <Route path="/CourseDetails/Details" element={<Details />}></Route>
-        <Route path="/Chat" element={<Chat />} />
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/TutorDashboard" element={<TutorDashboard />} />
         <Route path="/T-CoursesManagement" element={<CourseManagement />} />
@@ -124,6 +125,9 @@ const PrivateRoute = () => {
         <Route path="/Progress/:id" element={<Progressi />}></Route>
         <Route path="/addrating/:id" element={<ReviewContainer />}></Route>
         <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
+        <Route path="/Mailbox" element={<Mailbox />}></Route>
+        <Route path="/Messages" element={<Messages />}></Route>
+        <Route path="/Analytics" element={<AnalyticsPage />}></Route>
    
       </Routes>
     </Sidebaar>

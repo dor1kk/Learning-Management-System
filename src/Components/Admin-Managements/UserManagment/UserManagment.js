@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
-import './UserManagement.css';
+import { Table, Space, Button, message } from 'antd'; // Import Ant Design components
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Import Ant Design icons
 import { Link } from 'react-router-dom';
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -25,11 +27,14 @@ function UserManagement() {
   const deleteUser = async (userId) => {
     try {
       await axios.delete(`http://localhost:8080/user/${userId}`);
-      fetchUsers(); 
+      message.success('User deleted successfully.');
+      fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
+      message.error('Failed to delete user.');
     }
   };
+<<<<<<< HEAD
   
 
   return (
@@ -69,6 +74,49 @@ function UserManagement() {
           </TableBody>
         </Table>
       </TableContainer>
+=======
+
+  const columns = [
+    {
+      title: 'User ID',
+      dataIndex: 'UserID',
+      key: 'UserID',
+    },
+    {
+      title: 'Role',
+      dataIndex: 'Role',
+      key: 'Role',
+    },
+    {
+      title: 'Username',
+      dataIndex: 'Username',
+      key: 'Username',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text, user) => (
+        <Space size="middle">
+          <Link to={`/home/EditUser/${user.UserID}`} style={{textDecoration:"none", borderRadius:"8px"}} className='bg-primary p-1 text-white'>
+            <EditOutlined/> Edit
+          </Link>
+          <Button type="danger" icon={<DeleteOutlined />} onClick={() => deleteUser(user.UserID)}>
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div className="c-container p-5">
+      <Table
+        dataSource={users}
+        columns={columns}
+        rowKey={(user) => user.UserID}
+        pagination={{ pageSize: 10 }} 
+      />
+>>>>>>> origin/main
     </div>
   );
 }

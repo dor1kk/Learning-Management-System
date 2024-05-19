@@ -1,26 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from "react-router-dom";
+import { useParams } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 
 
 
 const EditUser = () => {
+<<<<<<< HEAD
   const location = useLocation();
   const userId = location.pathname.split("/").pop();
   const [role, setRole] = useState('');
   
+=======
+  const { userId } = useParams(); 
+  const [form] = Form.useForm(); 
+>>>>>>> origin/main
 
+  const [loading, setLoading] = useState(false); 
+
+  useEffect(() => {
+    fetchUser();
+  }, [userId]);
 
   const fetchUser = async () => {
     try {
+<<<<<<< HEAD
       const response = await axios.get(`http://localhost:8080/userss/${userId}`);
       console.log(response.data);
       setRole(response.data.results.Role);
+=======
+      const response = await axios.get(`http://localhost:8080/users/${userId}`);
+      const userData = response.data;
+      form.setFieldsValue(userData); 
+>>>>>>> origin/main
     } catch (error) {
       console.error('Error fetching user:', error);
     }
   };
 
+<<<<<<< HEAD
 
 
     const handleSubmit = async (e) => {
@@ -33,11 +52,21 @@ const EditUser = () => {
 
       });
       alert('User updated successfully');
+=======
+  const handleSubmit = async (values) => {
+    setLoading(true); 
+    try {
+      await axios.put(`http://localhost:8080/editusers/${userId}`, values);
+      message.success('User updated successfully');
+>>>>>>> origin/main
     } catch (error) {
-      alert('Failed to update user. Please try again.');
+      console.error('Failed to update user:', error);
+      message.error('Failed to update user. Please try again.');
     }
+    setLoading(false); 
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     fetchUser();
   }, ); 
@@ -62,6 +91,29 @@ const EditUser = () => {
         <option value="Student">Student</option>
         <option value="Admin">Admin</option>
       </select>
+=======
+  return (
+    <div className='c-container p-5' style={{ maxWidth: '400px', margin: '0 auto' }}>
+      <Form form={form} onFinish={handleSubmit}>
+        <Form.Item name="Username" rules={[{ required: true, message: 'Please enter a username' }]}>
+          <Input prefix={<UserOutlined />} placeholder="Username" />
+        </Form.Item>
+        <Form.Item name="Password" rules={[{ required: true, message: 'Please enter a password' }]}>
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+        </Form.Item>
+        <Form.Item name="Role" rules={[{ required: true, message: 'Please enter a role' }]}>
+          <Input prefix={<UserOutlined />} placeholder="Role" />
+        </Form.Item>
+        <Form.Item name="Email" rules={[{ required: true, message: 'Please enter an email', type: 'email' }]}>
+          <Input prefix={<MailOutlined />} type="email" placeholder="Email" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
+            Save
+          </Button>
+        </Form.Item>
+      </Form>
+>>>>>>> origin/main
     </div>
     <button type="submit">Update Role</button>
   </form>

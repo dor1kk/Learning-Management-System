@@ -32,6 +32,7 @@ import Footer from "./Components/Footer/Footer";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineSetting } from 'react-icons/ai';
+import { MailOutline, Message } from "@mui/icons-material";
 
 
 const { Header, Sider, Content } = Layout;
@@ -141,6 +142,11 @@ const Sidebaar = ({ children }) => {
               <Menu.Item key="5"><Link to="/Home/T-CoursesManagement" style={{color:"white"}} className="link">Courses Management</Link></Menu.Item>
             </SubMenu>
           ) : null}
+            {role === "Tutor" ? (
+            <Menu.Item key="6" style={{color:"white"}} icon={<MailOutline />}>
+              <Link to="/Home/Mailbox" className="link" style={{color:"white", textDecoration:"none"}}>Mail Box</Link>
+            </Menu.Item>
+          ) : null}
           {role === "Tutor" ? (
             <Menu.Item key="6" style={{color:"white"}} icon={<ReadOutlined />}>
               <Link to="/Home/Students" className="link" style={{color:"white", textDecoration:"none"}}>My Student Management</Link>
@@ -181,6 +187,13 @@ const Sidebaar = ({ children }) => {
               <Link to="/Home/Courses" style={{color:"white", textDecoration:"none"}}>Explore Courses</Link>
             </Menu.Item>
           ) : null}
+           {role === "Student" ? (
+            <Menu.Item key="13" style={{color:"white"}} icon={<Message />}>
+              <Link to="/Home/Messages" style={{color:"white", textDecoration:"none"}}>Messages</Link>
+            </Menu.Item>
+          ) : null}
+
+
           {role === "Student" ? (
             <Menu.Item key="13" style={{color:"white"}} icon={<TeamOutlined />}>
               <Link to="/Home/Tutors" style={{color:"white", textDecoration:"none"}}>Tutors</Link>
@@ -207,7 +220,6 @@ const Sidebaar = ({ children }) => {
         {role === "Tutor" ? (
   <SubMenu key="sub3" style={{ color: "white" }} icon={<AiOutlineSetting />} title="Settings">
     <Menu.Item key="17"><Link to="/Home/Account" style={{ color: "white", textDecoration: "none" }}>Account</Link></Menu.Item>
-    <Menu.Item key="18"><Link to="/Home/Chat" style={{ color: "white", textDecoration: "none" }}>Chat</Link></Menu.Item>
     <Menu.Item key="19"><Link to="/Home/Notifications" style={{ color: "white", textDecoration: "none" }}>Notifications</Link></Menu.Item>
   </SubMenu>
   ):
@@ -215,7 +227,6 @@ const Sidebaar = ({ children }) => {
 role === "Student" ? (
   <SubMenu key="sub3" style={{ color: "white" }} icon={<AiOutlineSetting />} title="Settings">
     <Menu.Item key="17"><Link to="/Home/Accounttt" style={{ color: "white", textDecoration: "none" }}>Account</Link></Menu.Item>
-    <Menu.Item key="18"><Link to="/Home/Chat" style={{ color: "white", textDecoration: "none" }}>Chat</Link></Menu.Item>
     <Menu.Item key="19"><Link to="/Home/Notifications" style={{ color: "white", textDecoration: "none" }}>Notifications</Link></Menu.Item>
   </SubMenu>
 

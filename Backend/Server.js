@@ -16,11 +16,16 @@ import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsB
 import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, DeleteProfilS } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
+<<<<<<< HEAD
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
+=======
+import { getAllCourses, getAllStudents, getTotalStudents, getTotalTutors } from "./Routes/Dashboard.js";
+>>>>>>> origin/main
 import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progress.js";
 import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
 import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
 import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
+import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies } from "./Routes/Emails.js";
 
 
 const app = express();
@@ -433,6 +438,28 @@ app.get('/totalStudents', (req, res) => {
   getTotalStudents(req,res,db);
 });
 
+app.get('/totalTutors', (req, res) => {
+  getTotalTutors(req,res,db);
+});
+
+app.get('/allStudents', (req, res) => {
+  getAllStudents(req,res,db);
+});
+
+app.get('/getAllUsers', (req, res) => {
+  getAllUsers(req,res,db);
+});
+
+app.get('/allCourses', (req, res) => {
+  getAllCourses(req,res,db);
+});
+
+
+
+
+
+
+
 
 
 
@@ -479,9 +506,48 @@ app.put("/notifications/:id",(req,res)=>{
 
 //Dashboard
 
+<<<<<<< HEAD
 app.get("/total-students",(req,res)=>{
   TotalStudentss(req,res,db);
 })
+=======
+//emails
+
+app.post('/send-email', (req,res)=>{
+  SendEmail(req,res,db);
+})
+
+app.get("/emails",(req,res)=>{
+  getAllEmails(req,res,db);
+})
+
+app.get("/replied-emails",(req,res)=>{
+  getRepliedEmails(req,res,db);
+})
+
+app.get("/nonreplied-emails",(req,res)=>{
+  getNotRepliedEmails(req,res,db);
+})
+
+
+app.post('/addreply', (req,res)=>{
+  AddReply(req,res,db);
+})
+
+
+app.get("/replies",(req,res)=>{
+  getReplies(req,res,db);
+})
+
+app.put('/markasread',(req,res)=>{
+  MarkAsRead(req,res,db);
+})
+
+
+
+
+
+>>>>>>> origin/main
 
 app.get('/total-tutors', (req, res) => {
   TotalTutorss(req,res,db);
