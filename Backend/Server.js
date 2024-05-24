@@ -551,6 +551,64 @@ app.get('/total-courses', (req, res) => {
   TotalCoursess(req,res,db);
 });
 
+//Content Approval
+
+app.get('/approval_req', (req, res) => {
+  getContentApproval(req,res,db);
+});
+
+app.post("/courses", (req, res) => {
+  InsertCourseRequest(req,res,db);
+
+});
+
+app.post("/reject_req",(req,res)=>{
+  RejectRequest(req,res,db);
+})
+
+app.post("/accept_req",(req,res)=>{
+  ApproveCourseRequest(req,res,db);
+})
+
+
+//Feedbacks
+
+app.post('/insertFeedback',(req,res)=>{
+  insertFeedback(req,res,db);
+})
+
+app.get('/getAllFeedback',(req,res)=>{
+  getAllFeedbacks(req,res,db);
+})
+
+app.get('/total-users', (req, res) => {
+  TotalUserss(req,res,db);
+});
+
+app.get('/total-courses', (req, res) => {
+  TotalCoursess(req,res,db);
+});
+
+
+//Forums
+
+app.post('/forumpost',(req,res)=>{
+  AddPost(req,res,db);
+})
+
+app.get('/forumquestions',(req,res)=>{
+  getForumQuestions(req,res,db);
+})
+
+
+
+
+
+
+
+
+
+
 
 app.listen(8080, () => {
   console.log('Server is running on port 8080');
