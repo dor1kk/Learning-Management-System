@@ -137,6 +137,12 @@ const Sidebaar = ({ children }) => {
               <Link to="/Home/UserManagement" className="link" style={{color:"white", textDecoration:"none"}}>User Management</Link>
             </Menu.Item>
           ) : null}
+ {role === "Admin" ? (
+            <Menu.Item key="4" style={{color:"white"}} icon={<UserSwitchOutlined />}>
+              <Link to="/Home/CoursesManagement" className="link" style={{color:"white", textDecoration:"none"}}>Courses Management</Link>
+            </Menu.Item>
+          ) : null}
+
           {role === "Tutor" ? (
             <SubMenu key="sub2" icon={<EditOutlined />} style={{color:"white"}} title="My Course Management">
               <Menu.Item key="5"><Link to="/Home/T-CoursesManagement" style={{color:"white"}} className="link">Courses Management</Link></Menu.Item>

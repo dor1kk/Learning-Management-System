@@ -43,6 +43,7 @@ import AnnouncementManagement from "./Components/Tutor-Managements/Announcements
 import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
 import Messages from "./Components/Messages/Messages";
 import AnalyticsPage from "./Components/Admin-Managements/UserManagment/Analytics/Analytics";
+import CoursesManagement from "./Components/Admin-Managements/UserManagment/CoursesManagement";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -120,6 +121,7 @@ const PrivateRoute = () => {
         <Route path="/takeExam" element={<TakeExam />}></Route>
         <Route path="/AddCourse" element={<AddCourse />}></Route>
         <Route path="/EditCourse/:id" element={<EditCourse />}></Route>
+        <Route path="/CoursesManagement" element={<CoursesManagement />}></Route>
         <Route path="/CompletedCourses" element={<CompletedCourses />}></Route>
         <Route path="/Certificate/:id" element={<CertificatePage />}></Route>
         <Route path="/Progress/:id" element={<Progressi />}></Route>

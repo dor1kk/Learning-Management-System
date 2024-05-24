@@ -126,21 +126,121 @@ export function InsertCourse(req, res, db) {
 
 
 export function DeleteCourse(req, res,db) { //Delete the course based on its id , needed in Course Management Page
+  const courseId = req.params.id;
+  console.log("Deleting course with ID:", courseId);
+   
+  const deleteReviews = 'DELETE FROM reviews WHERE CourseID = ?';
+  const deletePassedExams = 'DELETE FROM passed_exams WHERE exam_id IN (SELECT examId FROM exam WHERE courseId = ?)';
+  const deleteEnrollments = 'DELETE FROM enrollments WHERE CourseID = ?';
+  const deleteCompletedLectures = 'DELETE FROM completed_lectures WHERE CourseID = ?';
+  const deleteCompletedCourse = 'DELETE FROM completedcourse WHERE CourseID = ?';
+  const deleteAnnouncements = 'DELETE FROM announcements WHERE CourseId = ?';
+  const deleteExamQuestions = 'DELETE FROM exam_questions WHERE examId IN (SELECT examId FROM exam WHERE courseId = ?)';
+  const deleteExam = 'DELETE FROM exam WHERE courseId = ?';
+  const deleteCourse = 'DELETE FROM courses WHERE CourseID = ?';
 
-const courseId = req.params.id;
-console.log("Deleting course with ID:", courseId); 
-const sql = "DELETE FROM courses WHERE CourseID = ?";
-db.query(sql, [courseId], (err, result) => {
-  if (err) {
-    console.error("Error occurred during delete:", err);
-    return res.status(500).json({ error: "An error occurred during delete" });
-  }
-  console.log("Record deleted successfully"); 
-  return res.json({ success: true, message: "Record deleted successfully" });
+  db.beginTransaction(err => {
+      if (err) {
+          console.error('Error starting transaction:', err);
+          return res.status(500).json({ error: 'An error occurred starting the transaction' });
+      }
+
+      db.query(deleteReviews, [courseId], (err, result) => {
+        if (err) {
+            return db.rollback(() => {
+                console.error('Error deleting from reviews:', err);
+                res.status(500).json({ error: 'An error occurred during delete from reviews' });
+            });
+        }
+
+      db.query(deleteEnrollments, [courseId], (err, result) => {
+          if (err) {
+              return db.rollback(() => {
+                  console.error('Error deleting from enrollments:', err);
+                  res.status(500).json({ error: 'An error occurred during delete from enrollments' });
+              });
+          }
+
+        db.query(deletePassedExams, [courseId], (err, result) => {
+          if (err) {
+              return db.rollback(() => {
+                  console.error('Error deleting from passed_exams:', err);
+                  res.status(500).json({ error: 'An error occurred during delete from passed_exams' });
+              });
+          }
+
+          db.query(deleteCompletedLectures, [courseId], (err, result) => {
+              if (err) {
+                  return db.rollback(() => {
+                      console.error('Error deleting from completed_lectures:', err);
+                      res.status(500).json({ error: 'An error occurred during delete from completed_lectures' });
+                  });
+              }
+
+              db.query(deleteCompletedCourse, [courseId], (err, result) => {
+                  if (err) {
+                      return db.rollback(() => {
+                          console.error('Error deleting from completedcourse:', err);
+                          res.status(500).json({ error: 'An error occurred during delete from completedcourse' });
+                      });
+                  }
+
+                  db.query(deleteAnnouncements, [courseId], (err, result) => {
+                      if (err) {
+                          return db.rollback(() => {
+                              console.error('Error deleting from announcements:', err);
+                              res.status(500).json({ error: 'An error occurred during delete from announcements' });
+                          });
+                      }
+
+                      db.query(deleteExamQuestions, [courseId], (err, result) => {
+                          if (err) {
+                              return db.rollback(() => {
+                                  console.error('Error deleting from exam_questions:', err);
+                                  res.status(500).json({ error: 'An error occurred during delete from exam_questions' });
+                              });
+                          }
+
+                          db.query(deleteExam, [courseId], (err, result) => {
+                              if (err) {
+                                  return db.rollback(() => {
+                                      console.error('Error deleting from exam:', err);
+                                      res.status(500).json({ error: 'An error occurred during delete from exam' });
+                                  });
+                              }
+
+                              db.query(deleteCourse, [courseId], (err, result) => {
+                                  if (err) {
+                                      return db.rollback(() => {
+                                          console.error('Error deleting from courses:', err);
+                                          res.status(500).json({ error: 'An error occurred during delete from courses' });
+                                      });
+                                  }
+
+                                  db.commit(err => {
+                                      if (err) {
+                                          return db.rollback(() => {
+                                              console.error('Error committing transaction:', err);
+                                              res.status(500).json({ error: 'An error occurred committing the transaction' });
+                                          });
+                                      }
+
+                                      console.log("Record and associated data deleted successfully");
+                                      res.json({ success: true, message: "Record and associated data deleted successfully" });
+                                  });
+                              });
+                          });
+                      });
+                  });
+              });
+          });
+        });
+    });
+  });
 });
-
 }
 
+  
 
 
 export function UpdateCourse(req, res,db) {  //Update the Course, needed in EditCourse page
@@ -172,3 +272,6 @@ if (result.affectedRows === 1) {
 });
 
 }
+
+
+

@@ -16,11 +16,7 @@ import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsB
 import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, DeleteProfilS } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
-<<<<<<< HEAD
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
-=======
-import { getAllCourses, getAllStudents, getTotalStudents, getTotalTutors } from "./Routes/Dashboard.js";
->>>>>>> origin/main
 import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progress.js";
 import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
 import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
@@ -238,7 +234,8 @@ app.get('/users', (req, res) => {
 });
 
 
-app.delete('/user/:userId', (req, res) => {
+app.delete('/users/:userId', (req, res) => {
+  console.log("Received request to delete user with ID:", req.params.userId);  // Add logging
   DeleteUsers(req, res, db);
 });
 
@@ -504,13 +501,7 @@ app.put("/notifications/:id",(req,res)=>{
   markNotificationsAsRead(req,res,db);
 })
 
-//Dashboard
 
-<<<<<<< HEAD
-app.get("/total-students",(req,res)=>{
-  TotalStudentss(req,res,db);
-})
-=======
 //emails
 
 app.post('/send-email', (req,res)=>{
@@ -542,12 +533,11 @@ app.get("/replies",(req,res)=>{
 app.put('/markasread',(req,res)=>{
   MarkAsRead(req,res,db);
 })
+//Dashboard
 
-
-
-
-
->>>>>>> origin/main
+app.get("/total-students",(req,res)=>{
+  TotalStudentss(req,res,db);
+})
 
 app.get('/total-tutors', (req, res) => {
   TotalTutorss(req,res,db);
