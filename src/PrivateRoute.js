@@ -42,8 +42,11 @@ import ReviewContainer from "./Components/YourCourses/Review";
 import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
 import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
 import Messages from "./Components/Messages/Messages";
-import AnalyticsPage from "./Components/Admin-Managements/UserManagment/Analytics/Analytics";
+import AnalyticsPage from "./Components/Admin-Managements/Analytics/Analytics";
 import CoursesManagement from "./Components/Admin-Managements/UserManagment/CoursesManagement";
+import ContentManagement from "./Components/Admin-Managements/ContentManagement/ContentManagement";
+import Forum from "./Components/Forum/Forum";
+
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -130,6 +133,8 @@ const PrivateRoute = () => {
         <Route path="/Mailbox" element={<Mailbox />}></Route>
         <Route path="/Messages" element={<Messages />}></Route>
         <Route path="/Analytics" element={<AnalyticsPage />}></Route>
+        <Route path="/ContentManagement" element={<ContentManagement />}></Route>
+        <Route path="/Forum" element={<Forum />}></Route>
    
       </Routes>
     </Sidebaar>

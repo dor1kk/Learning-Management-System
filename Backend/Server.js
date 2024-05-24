@@ -22,7 +22,9 @@ import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Ro
 import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
 import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
 import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies } from "./Routes/Emails.js";
-
+import { ApproveCourseRequest, getContentApproval, InsertCourseRequest, RejectRequest,  } from "./Routes/Approvals.js";
+import { getAllFeedbacks, insertFeedback } from "./Routes/Feedback.js";
+import { AddPost, getForumQuestions } from "./Routes/Forum.js";
 
 const app = express();
 app.use(cors({

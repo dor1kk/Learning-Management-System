@@ -19,6 +19,7 @@ import {
   BookOutlined,
   CheckSquareOutlined,
   VideoCameraOutlined,
+  ContainerTwoTone,
   ContainerOutlined,
   DashboardOutlined,
   UserAddOutlined,
@@ -32,7 +33,7 @@ import Footer from "./Components/Footer/Footer";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineSetting } from 'react-icons/ai';
-import { MailOutline, Message } from "@mui/icons-material";
+import { ContentCopyRounded, ContentCutOutlined, Forum, MailOutline, Message } from "@mui/icons-material";
 
 
 const { Header, Sider, Content } = Layout;
@@ -143,6 +144,11 @@ const Sidebaar = ({ children }) => {
             </Menu.Item>
           ) : null}
 
+          {role === "Admin" ? (
+            <Menu.Item key="4" style={{color:"white"}} icon={<ContentCutOutlined />}>
+              <Link to="/Home/ContentManagement" className="link" style={{color:"white", textDecoration:"none"}}>Content Management</Link>
+            </Menu.Item>
+          ) : null}
           {role === "Tutor" ? (
             <SubMenu key="sub2" icon={<EditOutlined />} style={{color:"white"}} title="My Course Management">
               <Menu.Item key="5"><Link to="/Home/T-CoursesManagement" style={{color:"white"}} className="link">Courses Management</Link></Menu.Item>
@@ -218,6 +224,12 @@ const Sidebaar = ({ children }) => {
           {role === "Student" ? (
             <Menu.Item key="16" style={{color:"white"}} icon={<ContainerOutlined />}>
               <Link to="/Home/Courseslecture" className="link" style={{color:"white", textDecoration:"none"}}>Lectures</Link>
+            </Menu.Item>
+          ) : null}
+
+{role === "Student" ? (
+            <Menu.Item key="13" style={{color:"white"}} icon={<Forum />}>
+              <Link to="/Home/Forum" style={{color:"white", textDecoration:"none"}}>Forums</Link>
             </Menu.Item>
           ) : null}
    
