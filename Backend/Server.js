@@ -9,11 +9,11 @@ import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } 
 import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
 import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture } from "./Routes/Lectures.js";
 import { EnrollStudent, GetEnrolledCourses ,DeleteEnrollment } from "./Routes/Enroll.js";
-import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt , DeleteProfilet  } from "./Routes/Tutors.js";
+import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt } from "./Routes/Tutors.js";
 import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
 import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
-import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, DeleteProfilS } from "./Routes/Students.js";
+import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS } from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
@@ -23,7 +23,7 @@ import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
 import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
 import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies } from "./Routes/Emails.js";
 import { ApproveCourseRequest, getContentApproval, InsertCourseRequest, RejectRequest,  } from "./Routes/Approvals.js";
-import { getAllFeedbacks, insertFeedback } from "./Routes/Feedback.js";
+import { UFeedback, getAllFeedbacks, insertFeedback } from "./Routes/Feedback.js";
 import { AddComment, AddPost, getForumComments, getForumQuestions } from "./Routes/Forum.js";
 
 const app = express();
@@ -112,10 +112,7 @@ app.get('/tutorcourses', (req, res) => {
   getCoursesByTutor(req,res,db)
 });
 
-app.post("/courses", (req, res) => {
-  InsertCourse(req,res,db);
 
-});
 
 app.get('/courses/:id', (req, res) => {
     getCoursesById(req,res,db);
@@ -242,6 +239,7 @@ app.delete('/users/:userId', (req, res) => {
 });
 
 
+
 app.put('/editusers/:id', (req, res) => {
   UpdateUsers(req,res,db);
 });
@@ -282,7 +280,7 @@ app.get('/usersss', (req, res) => {
 UpdatestudentA(req,res,db);
 });
 
-app.put('/tutorss/:id', (req, res) => {
+app.put('/tutorss/id', (req, res) => {
   UpdatedData(req,res,db);
   });
   
@@ -294,13 +292,7 @@ app.put('/tutorss/:id', (req, res) => {
     DeletePhotoProfilS(req,res,db);
   });
 
-  app.delete('/tutorsss/:id', (req, res) => {
-    DeleteProfilet(req,res,db);
-  });
-  app.delete('/studentsi/:id', (req, res) => {
-    DeleteProfilS(req,res,db);
-  });
-
+ 
 
 
 
@@ -591,6 +583,9 @@ app.get('/total-courses', (req, res) => {
   TotalCoursess(req,res,db);
 });
 
+app.put('/feedback', (req, res) => {
+  UFeedback(req, res, db);
+});
 
 //Forums
 

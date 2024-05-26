@@ -136,10 +136,17 @@ const Sidebaar = ({ children }) => {
               <Menu.Item key="4" style={{ color: "white" }} icon={<UserSwitchOutlined />}>
                 <Link to="/Home/UserManagement" className="link" style={{ color: "white", textDecoration: "none" }}>User Management</Link>
               </Menu.Item>
+              <Menu.Item key="5" style={{ color: "white" }} icon={<EditOutlined />}>
+                <Link to="/Home/CoursesManagement" className="link" style={{ color: "white", textDecoration: "none" }}>Courses Management</Link>
+              </Menu.Item>
               <Menu.Item key="5" style={{ color: "white" }} icon={<ContentCutOutlined />}>
                 <Link to="/Home/ContentManagement" className="link" style={{ color: "white", textDecoration: "none" }}>Content Management</Link>
               </Menu.Item>
+              <Menu.Item key="5" style={{ color: "white" }} icon={<ContentCutOutlined />}>
+                <Link to="/Home/Feedback" className="link" style={{ color: "white", textDecoration: "none" }}>Feedback</Link>
+              </Menu.Item>
             </>
+            
           )}
           {role === "Tutor" && (
             <>

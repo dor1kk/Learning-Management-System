@@ -20,3 +20,28 @@ export function getAllFeedbacks(req,res,db){
 
 
 }
+export function UFeedback (req,res,db){
+
+    const { reply, FeedbackID } = req.body;
+
+    console.log(FeedbackID);
+    console.log(reply);
+  
+    const sqlInsert = `UPDATE feedback SET reply = ? WHERE FeedbackID = ?`;
+  
+    db.query(sqlInsert, [reply, FeedbackID], (err, result) => {
+      if (err) {
+        console.error("Error inserting reply:", err);
+        res.status(500).send("Internal Server Error");
+        return;
+      }
+  
+      if (result.affectedRows === 1) {
+        res.status(200).send("Reply inserted successfully");
+      } else {
+        res.status(404).send('Feedback not found');
+      }
+    });
+ }
+  
+
