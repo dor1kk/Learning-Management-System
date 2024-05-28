@@ -21,7 +21,6 @@ function Account() {
     const [updatedPlaceholderemail] = useState('');
     const [updatedPlaceholderexpertise] = useState('');
     const [updatedPlaceholderbio] = useState('');
-    const [updatedPlaceholdercourses] = useState('');
     const [updatedPlaceholderexperience] = useState('');
     const [updatedPlaceholdereducation] = useState('');
     const [updatedPlaceholderlocation] = useState('');
@@ -60,22 +59,7 @@ function Account() {
         }
     };
       
-    const deleteProfilee = () => {
-        axios.delete(`http://localhost:8080/tutorsss/${tutor.TutorID}`, { withCredentials: true })
-            .then(response => {
-                console.log(response.data);
-                
-              setTutor  ({});
-               
-                axios.delete(`http://localhost:8080/users/${tutor.UserID}`, { withCredentials: true })
-                    .then(userResponse => {
-                        console.log(userResponse.data);
-                        
-                    })
-                    .catch(userError => console.error('Error deleting corresponding user:', userError));
-            })
-            .catch(error => console.error('Error deleting profile:', error));
-    };
+ 
 
     const deleteeProfile = () => {
         axios.delete(`http://localhost:8080/tuturii/${tutor.TutorID}`, { withCredentials: true })
@@ -101,7 +85,6 @@ function Account() {
                     setUpdatedemail(fetchedTutor.email);
                     setUpdatedexpertise(fetchedTutor.expertise);
                     setUpdatedbio(fetchedTutor.bio);
-                    setUpdatedcourses(fetchedTutor.courses);
                     setUpdatedexperience(fetchedTutor.experience);
                     setUpdatededucation(fetchedTutor.education);
                     setUpdatedlocation(fetchedTutor.location);
@@ -130,9 +113,6 @@ function Account() {
         setUpdatedbio(event.target.value);
     };
 
-    const handlecoursesChange = (event) => {
-        setUpdatedcourses(event.target.value);
-    };
 
     const handleexperienceChange = (event) => {
         setUpdatedexperience(event.target.value);
@@ -234,10 +214,6 @@ function Account() {
                                             <input type="text" className="form-control" placeholder={updatedPlaceholderbio} aria-label="Bio" value={updatedbio} onChange={handlebioChange} />
                                         </div>
                                         <div className="col-md-6">
-                                            <label className="form-label">Courses *</label>
-                                            <input type="text" className="form-control" placeholder={updatedPlaceholdercourses} aria-label="Courses" value={updatedcourses} onChange={handlecoursesChange} />
-                                        </div>
-                                        <div className="col-md-6">
                                             <label className="form-label">Experience *</label>
                                             <input type="text" className="form-control" placeholder={updatedPlaceholderexperience} aria-label="Experience" value={updatedexperience} onChange={handleexperienceChange} />
                                         </div>
@@ -311,7 +287,7 @@ function Account() {
                  
                   
                     <div style={{ marginTop: '-30px' }} className="gap-3 d-md-flex justify-content-md-end">
-                        <button type="button" className="btn btn-danger btn-lg me-3" onClick={deleteProfilee}>Delete profile</button>
+                     
                         <button type="button" className="btn btn-primary btn-lg" onClick={updateProfileee}>Update profile</button>
                     </div>
                 </div>

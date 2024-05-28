@@ -34,6 +34,7 @@ import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCou
 import CompletedCourses from "./Components/YourCourses/CompletedCourses";
 import CertificatePage from "./Components/YourCourses/Certificate";
 import EditUser from "./Components/Admin-Managements/UserManagment/EditUser";
+import Feedback from "./Components/Admin-Managements/Feedback";
 import Details from "./Components/Courses/Details";
 import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
 import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
@@ -125,6 +126,7 @@ const PrivateRoute = () => {
         <Route path="/Certificate/:id" element={<CertificatePage />}></Route>
         <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
         <Route path="/Mailbox" element={<Mailbox />}></Route>
+        <Route path="/Feedback" element={<Feedback />}></Route>
         <Route path="/Messages" element={<Messages />}></Route>
         <Route path="/Analytics" element={<AnalyticsPage />}></Route>
         <Route path="/ContentManagement" element={<ContentManagement />}></Route>

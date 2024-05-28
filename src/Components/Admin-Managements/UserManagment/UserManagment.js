@@ -19,7 +19,6 @@ function UserManagement() {
       console.error('Error fetching users:', error);
     }
   };
-
   const deleteUser = async (userId) => {
     try {
         console.log("Attempting to delete user with ID:", userId);  // Add logging
@@ -31,6 +30,7 @@ function UserManagement() {
         message.error('Failed to delete user.');
     }
 };
+
 
   const columns = [
     {

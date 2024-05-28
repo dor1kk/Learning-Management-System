@@ -1,7 +1,7 @@
 
-export function GetAllTutors(req, res, db) {
+
+export function GetAllTutors(req, res, db) {  
   const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserID = tutor.UserID';
-  
   db.query(sql, (err, result) => {
     if (err) {
       console.error('Error retrieving tutors from database:', err);
@@ -12,6 +12,7 @@ export function GetAllTutors(req, res, db) {
     res.status(200).json(result);
   });
 }
+
 
 export function AddTutor(req, res, db) {
     const { name, email, expertise, bio, courses, experience, education, location, contact, availability } = req.body;
@@ -223,27 +224,4 @@ export function DeletePhotoProfilt(req,res,db){
 }
 
 
-
-export function DeleteProfilet(req,res,db){
-// fshin acountin e tutorit
-  const { id } = req.params;
-
-  const deleteUserSQL = 'DELETE FROM users WHERE UserID = ?';
-  db.query(deleteUserSQL, [id], (error, results) => {
-    if (error) {
-      console.error('Error deleting user:', error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    const deleteTutorSQL = 'DELETE FROM tutor WHERE TutorID = ?';
-    db.query(deleteTutorSQL, [id], (error2, results2) => {
-      if (error2) {
-        console.error('Error deleting tutor:', error2);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-
-      res.status(200).json({ message: 'Tutor and corresponding user deleted successfully' });
-    });
-  });
-}
 

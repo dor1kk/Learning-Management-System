@@ -43,19 +43,6 @@ function Account() {
         }
     };
       
-
-    
-    
-
-  const deleteProfile = async () => {
-  try {
-    await axios.delete(`http://localhost:8080/studentsi/${student.ID}`, { withCredentials: true });
-    setStudent(); 
-  } catch (error) {
-    console.error('Error deleting user:', error);
-  }
-};
-
   
 
     const deleteeeProfile = () => {
@@ -194,7 +181,6 @@ function Account() {
                                       
                     {/* Button */}
                     <div  style={{ marginTop: '100px' }} className="gap-3 d-md-flex justify-content-md-end">
-                        <button type="button" className="btn btn-danger btn-lg me-3" onClick={deleteProfile}>Delete profile</button>
                         <button type="button" className="btn btn-primary btn-lg" onClick={updateProfile}>Update profile</button>
                     </div>
                 </div>
