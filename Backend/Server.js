@@ -84,9 +84,9 @@ app.get('/role', (req, res) => {
   checkRole(req, res); 
 });
 
-app.post('logout'),(req,res)=>{
-  Logout(req,res,db);
-}
+app.post('/logout', (req, res) => {
+  Logout(req, res, db);
+});
 
 
 
@@ -112,10 +112,7 @@ app.get('/tutorcourses', (req, res) => {
   getCoursesByTutor(req,res,db)
 });
 
-app.post("/courses", (req, res) => {
-  InsertCourse(req,res,db);
 
-});
 
 app.get('/courses/:id', (req, res) => {
     getCoursesById(req,res,db);

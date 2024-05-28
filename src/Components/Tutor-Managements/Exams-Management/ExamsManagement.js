@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Button, Modal } from 'antd';
-import { EditFilled, DeleteFilled } from '@ant-design/icons';
+import { Button, Modal } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 
 const ExamManagement = () => {
   const [exams, setExams] = useState([]);
@@ -72,9 +72,9 @@ const ExamManagement = () => {
   };
 
   return (
-    <div className="c-container p-5 ">
+    <div className="c-container p-5">
       <h2>Exam Management</h2>
-      <div className='d-flex flex-row ' style={{ gap: "15px" }}>
+      <div className='d-flex flex-row' style={{ gap: "15px" }}>
         <Link to={"/home/addexam"} className='btn btn-primary'>Add Exam</Link>
         <Link to={"/home/manageQuestions"} className='btn btn-primary'>Manage Questions</Link>
       </div>
@@ -85,8 +85,8 @@ const ExamManagement = () => {
               {exam.examName} - {formatDate(exam.startTime)} to {formatDate(exam.endTime)}
             </span>
             <div className='d-flex flex-row' style={{ marginLeft: 'auto' }}>
-              <Link to={`/home/editexam/${exam.examId}`} className="mt-2" style={{ backgroundColor: "white", color: "#53a8b6", borderRadius: "50%" }}><EditFilled /></Link>
-              <Button onClick={() => handleDeleteConfirmation(exam.examId)} className=" ms-2 " style={{ border: "none", backgroundColor: "white", color: "red", borderRadius: "50%" }}><DeleteFilled /></Button>
+              <Link to={`/home/editexam/${exam.examId}`} className="mt-2" style={{ backgroundColor: "white", color: "#53a8b6", borderRadius: "50%" }}><Edit /></Link>
+              <Button onClick={() => handleDeleteConfirmation(exam.examId)} className=" ms-2 " style={{ border: "none", backgroundColor: "white", color: "red", borderRadius: "50%" }}><Delete /></Button>
             </div>
           </li>
         ))}
@@ -94,9 +94,9 @@ const ExamManagement = () => {
 
       <Modal
         title="Delete Exam"
-        visible={modalVisible}
+        open={modalVisible}
+        onClose={() => setModalVisible(false)}
         onOk={handleDelete}
-        onCancel={() => setModalVisible(false)}
       >
         <p>Are you sure you want to delete this exam?</p>
       </Modal>

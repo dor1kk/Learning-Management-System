@@ -161,13 +161,10 @@ function Topbar({ toggleDarkMode, colors }) {
                                 <IconButton onClick={showFeedbackModal}>
                                     <FeedbackIcon style={{ color: "#2774AE" }} />
                                 </IconButton>
-                                {/* Add the IconButton for "About Us" */}
                                 <IconButton onClick={showAboutUsModal}>
                                     <VideoLibraryIcon style={{ color: "#2774AE" }} />
                                 </IconButton>
-                                {/* Add the IconButton for "Step by Step Guide" */}
                                 <IconButton onClick={showStepByStepGuideModal}>
-                                    {/* Use any appropriate icon */}
                                     <MapRounded style={{ color: "#2774AE" }} />
                                 </IconButton>
                             </div>

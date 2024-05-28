@@ -76,8 +76,7 @@ const Forum = () => {
                 className='post-item'
                 key={item.post_id}
                 actions={[
-                    <span><LikeOutlined /> {item.likes || 0}</span>,
-                    <span onClick={() => fetchComments(item.post_id)}><CommentOutlined /> {item.comments?.length || 0}</span>
+                    <span onClick={() => fetchComments(item.post_id)}><CommentOutlined /></span>
                 ]}
             >
                 <List.Item.Meta

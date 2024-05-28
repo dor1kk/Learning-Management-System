@@ -1,17 +1,16 @@
 
-
-export function GetAllTutors(req, res,db) {  // returns all the tutors that exists, needed in the Tutors page
-const sql = 'SELECT * FROM tutor  INNER JOIN users ON users.UserID = tutor.UserID WHERE users.UserID = ?';
-db.query(sql, (err, result) => {
-  if (err) {
-    console.error('Error retrieving tutors from database:', err);
-    res.status(500).send('Internal Server Error');
-    return;
-  }
-  console.log('Tutors retrieved from database:', result);
-  res.status(200).json(result);
-});
-
+export function GetAllTutors(req, res, db) {
+  const sql = 'SELECT * FROM tutor INNER JOIN users ON users.UserID = tutor.UserID';
+  
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error('Error retrieving tutors from database:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    console.log('Tutors retrieved from database:', result);
+    res.status(200).json(result);
+  });
 }
 
 export function AddTutor(req, res, db) {

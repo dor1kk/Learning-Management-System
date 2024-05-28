@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { List, Button, Input, Collapse, Select, Form, Modal } from 'antd';
-import { CaretUpOutlined, CaretDownOutlined, PlusOutlined } from '@ant-design/icons';
+import { List, Button, Input, Collapse, Select, FormControl, MenuItem, FormHelperText, Modal } from '@mui/material';
+import { ExpandMore, ExpandLess, Add } from '@mui/icons-material';
 import './Lecture.css';
-
-const { Option } = Select;
 
 function LectureManagement() {
   const [courses, setCourses] = useState([]);
@@ -58,7 +56,8 @@ function LectureManagement() {
     }
   };
 
-  const handleCourseChange = (value) => {
+  const handleCourseChange = (event) => {
+    const value = event.target.value;
     const course = courses.find((c) => c.CourseID === value);
     setSelectedCourse(course);
     setOpen(true);
@@ -102,75 +101,69 @@ function LectureManagement() {
 
   return (
     <div className="c-container p-5">
-      <Form layout="vertical">
-        <Form.Item label="Select Course">
-          <Select
-            onChange={handleCourseChange}
-            placeholder="Select a course"
-            value={selectedCourse ? selectedCourse.CourseID : undefined}
-          >
-            {courses.map((course) => (
-              <Option key={course.CourseID} value={course.CourseID}>
-                {course.Title}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </Form>
+      <FormControl variant="outlined">
+        <Select
+          onChange={handleCourseChange}
+          displayEmpty
+          value={selectedCourse ? selectedCourse.CourseID : ''}
+        >
+          <MenuItem value="" disabled>Select a course</MenuItem>
+          {courses.map((course) => (
+            <MenuItem key={course.CourseID} value={course.CourseID}>
+              {course.Title}
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText>Select Course</FormHelperText>
+      </FormControl>
 
       {selectedCourse && (
         <div className="lecture-list">
           <Button
-            type="primary"
+            variant="contained"
+            color="primary"
             className="add-lecture-btn"
             onClick={handleAddLecture}
-            icon={<PlusOutlined />}
+            startIcon={<Add />}
           >
             Add Lecture
           </Button>
-          <Collapse bordered={false} defaultActiveKey={['1']} className="lecture-collapse">
-            <Collapse.Panel
-              header={`Number of Lectures: ${lectureCount}`}
-              key="1"
-              extra={open ? <CaretUpOutlined /> : <CaretDownOutlined />}
-              onClick={handleCollapse}
-            >
-              <List
-                dataSource={lectures}
-                renderItem={(lecture, index) => (
-                  <List.Item
-                    className={`lecture-item ${selectedLecture === index ? 'selected' : ''}`}
-                    onClick={() => handleLectureClick(index)}
-                  >
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <List component="div">
+              <List component="div" disablePadding>
+                {lectures.map((lecture, index) => (
+                  <List key={index} className={`lecture-item ${selectedLecture === index ? 'selected' : ''}`} onClick={() => handleLectureClick(index)}>
                     {`Lecture ${index + 1}: ${lecture.LectureTitle}`}
-                  </List.Item>
-                )}
-              />
-            </Collapse.Panel>
+                  </List>
+                ))}
+              </List>
+            </List>
           </Collapse>
 
           <Modal
-            title="Add Lecture"
-            visible={showAddForm}
-            onCancel={() => setShowAddForm(false)}
-            onOk={handleFormSubmit}
+            open={showAddForm}
+            onClose={() => setShowAddForm(false)}
           >
-            <Input
-              placeholder="Lecture Title"
-              value={newLectureTitle}
-              onChange={(e) => setNewLectureTitle(e.target.value)}
-            />
-            <Input
-              placeholder="Image URL"
-              value={newLectureImageUrl}
-              onChange={(e) => setNewLectureImageUrl(e.target.value)}
-            />
-            <Input.TextArea
-              placeholder="Description"
-              value={newLectureDescription}
-              onChange={(e) => setNewLectureDescription(e.target.value)}
-              autoSize={{ minRows: 3, maxRows: 5 }}
-            />
+            <div>
+              <Input
+                placeholder="Lecture Title"
+                value={newLectureTitle}
+                onChange={(e) => setNewLectureTitle(e.target.value)}
+              />
+              <Input
+                placeholder="Image URL"
+                value={newLectureImageUrl}
+                onChange={(e) => setNewLectureImageUrl(e.target.value)}
+              />
+              <Input
+                placeholder="Description"
+                value={newLectureDescription}
+                onChange={(e) => setNewLectureDescription(e.target.value)}
+                multiline
+                rows={3}
+              />
+              <Button onClick={handleFormSubmit}>Submit</Button>
+            </div>
           </Modal>
         </div>
       )}

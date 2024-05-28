@@ -68,7 +68,6 @@ const CourseManagement = () => {
 
   return (
     <div className="c-container p-4" style={{ textAlign: "center" }}>
-      <Typography.Title level={2} style={{ fontWeight: "bold" }} className='text-primary'>Courses</Typography.Title>
       <Space style={{ marginBottom: '20px' }}>
         <Input
           placeholder="Search"

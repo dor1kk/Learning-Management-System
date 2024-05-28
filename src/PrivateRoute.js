@@ -18,7 +18,6 @@ import ExamManagement from "./Components/Tutor-Managements/Exams-Management/Exam
 import AddExam from "./Components/Tutor-Managements/Exams-Management/AddExam";
 import LectureManagement from "./Components/Tutor-Managements/Lectures-Management/LectureManagement";
 import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
-import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
 import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
 import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
@@ -35,10 +34,7 @@ import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCou
 import CompletedCourses from "./Components/YourCourses/CompletedCourses";
 import CertificatePage from "./Components/YourCourses/Certificate";
 import EditUser from "./Components/Admin-Managements/UserManagment/EditUser";
-import Progress from "./Components/YourCourses/Progress";
-import Progressi from "./Components/YourCourses/Progress";
 import Details from "./Components/Courses/Details";
-import ReviewContainer from "./Components/YourCourses/Review";
 import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
 import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
 import Messages from "./Components/Messages/Messages";
@@ -46,7 +42,7 @@ import AnalyticsPage from "./Components/Admin-Managements/Analytics/Analytics";
 import CoursesManagement from "./Components/Admin-Managements/UserManagment/CoursesManagement";
 import ContentManagement from "./Components/Admin-Managements/ContentManagement/ContentManagement";
 import Forum from "./Components/Forum/Forum";
-
+import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -127,8 +123,6 @@ const PrivateRoute = () => {
         <Route path="/CoursesManagement" element={<CoursesManagement />}></Route>
         <Route path="/CompletedCourses" element={<CompletedCourses />}></Route>
         <Route path="/Certificate/:id" element={<CertificatePage />}></Route>
-        <Route path="/Progress/:id" element={<Progressi />}></Route>
-        <Route path="/addrating/:id" element={<ReviewContainer />}></Route>
         <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
         <Route path="/Mailbox" element={<Mailbox />}></Route>
         <Route path="/Messages" element={<Messages />}></Route>
