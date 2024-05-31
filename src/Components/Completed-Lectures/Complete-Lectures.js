@@ -62,7 +62,7 @@ function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, cou
 
 
     return (
-        <div className="c-container p-5">
+        <div className="container p-5">
             <h4 className="text-center text-primary">Lectures for course: {courseTitle}</h4>
             <div className="row mt-4">
             {completedLectures.map((lecture, index) => {

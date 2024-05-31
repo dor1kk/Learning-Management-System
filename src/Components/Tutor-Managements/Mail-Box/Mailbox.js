@@ -63,9 +63,8 @@ const Mailbox = () => {
   };
 
   return (
-    <div className="c-container p-5">
+    <div className="container p-5">
       <div style={{ marginBottom: "16px" }}>
-        <h1 className="text-primary">Emails</h1>
         <Input
           style={{ width: "200px", marginRight: "8px" }}
           placeholder="Search emails"
@@ -106,8 +105,8 @@ const Mailbox = () => {
             ]}
           >
             <List.Item.Meta
-              avatar={<Avatar icon={<MailOutlined />} />}
-              title={<a href="#">{email.subject}</a>}
+              avatar={<Avatar className="bg-primary" icon={<MailOutlined />} />}
+              title={<a href="#" className="text-primary">{email.subject}</a>}
               description={email.message.slice(0, 100) + "..."} 
             />
           </List.Item>

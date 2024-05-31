@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { List, Button, Input, Collapse, Select, FormControl, MenuItem, FormHelperText, Modal } from '@mui/material';
-import { ExpandMore, ExpandLess, Add } from '@mui/icons-material';
+import { Table, Button, Select, notification } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import AddLecture from './AddLecture';
+import EditLecture from './EditLecture';
 import './Lecture.css';
+import { Link } from '@mui/material';
 
-function LectureManagement() {
+const { Option } = Select;
+
+const LectureManagement = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [selectedLecture, setSelectedLecture] = useState(null);
-  const [newLectureTitle, setNewLectureTitle] = useState('');
-  const [newLectureImageUrl, setNewLectureImageUrl] = useState('');
-  const [newLectureDescription, setNewLectureDescription] = useState('');
-  const [lectureCount, setLectureCount] = useState(0);
   const [lectures, setLectures] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editLecture, setEditLecture] = useState(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [expandedContent, setExpandedContent] = useState(null);
 
   useEffect(() => {
     fetchCourses();
@@ -23,152 +25,170 @@ function LectureManagement() {
   const fetchCourses = async () => {
     try {
       const response = await axios.get('http://localhost:8080/tutorcourses');
-      const fetchedCourses = response.data;
-      setCourses(fetchedCourses);
-
-      // Pre-select the first course initially
-      if (fetchedCourses.length > 0) {
-        setSelectedCourse(fetchedCourses[0]);
-        fetchAndDisplayLectures(fetchedCourses[0].CourseID);
+      setCourses(response.data);
+      if (response.data.length > 0) {
+        setSelectedCourse(response.data[0]);
+        fetchAndDisplayLectures(response.data[0].CourseID);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const fetchLecturesByCourse = async (courseID) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/lectures/${courseID}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching lectures:', error);
-      return [];
+      console.error('Error fetching courses:', error);
     }
   };
 
   const fetchAndDisplayLectures = async (courseID) => {
     try {
-      const lectures = await fetchLecturesByCourse(courseID);
-      setLectures(lectures);
-      setLectureCount(lectures.length);
+      const response = await axios.get(`http://localhost:8080/lectures/${courseID}`);
+      setLectures(response.data);
     } catch (error) {
-      console.error('Error fetching and displaying lectures:', error);
+      console.error('Error fetching lectures:', error);
     }
   };
 
-  const handleCourseChange = (event) => {
-    const value = event.target.value;
+  const handleCourseChange = (value) => {
     const course = courses.find((c) => c.CourseID === value);
     setSelectedCourse(course);
-    setOpen(true);
     fetchAndDisplayLectures(course.CourseID);
   };
 
-  const handleCollapse = () => {
-    setOpen(!open);
-    setSelectedLecture(null);
-  };
-
-  const handleLectureClick = (index) => {
-    setSelectedLecture(selectedLecture === index ? null : index);
-    setShowAddForm(false);
-  };
-
   const handleAddLecture = () => {
-    setShowAddForm(true);
+    setShowAddModal(true);
   };
 
-  const handleFormSubmit = async () => {
+  const handleCancelAddLecture = () => {
+    setShowAddModal(false);
+  };
+
+  const handleEditClick = (lecture) => {
+    setEditLecture(lecture);
+    setEditModalVisible(true);
+  };
+
+  const handleEditModalOk = async () => {
     try {
-      await axios.post('http://localhost:8080/addlecture', {
-        CourseID: selectedCourse.CourseID,
-        LectureTitle: newLectureTitle,
-        LectureImageUrl: newLectureImageUrl,
-        LectureDescription: newLectureDescription,
-        LectureIndex: lectureCount,
+      await axios.put('http://localhost:8080/editlecture', editLecture);
+      notification.success({
+        message: 'Lecture Updated',
+        description: 'The lecture has been successfully updated.',
       });
-
-      await fetchAndDisplayLectures(selectedCourse.CourseID);
-
-      setNewLectureTitle('');
-      setNewLectureImageUrl('');
-      setNewLectureDescription('');
-      setShowAddForm(false);
+      fetchAndDisplayLectures(selectedCourse.CourseID);
+      setEditModalVisible(false);
     } catch (error) {
-      console.error('Error adding new lecture:', error);
+      console.error('Error editing lecture:', error);
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while editing the lecture.',
+      });
     }
   };
 
-  return (
-    <div className="c-container p-5">
-      <FormControl variant="outlined">
-        <Select
-          onChange={handleCourseChange}
-          displayEmpty
-          value={selectedCourse ? selectedCourse.CourseID : ''}
-        >
-          <MenuItem value="" disabled>Select a course</MenuItem>
-          {courses.map((course) => (
-            <MenuItem key={course.CourseID} value={course.CourseID}>
-              {course.Title}
-            </MenuItem>
-          ))}
-        </Select>
-        <FormHelperText>Select Course</FormHelperText>
-      </FormControl>
+  const handleEditModalCancel = () => {
+    setEditModalVisible(false);
+  };
 
-      {selectedCourse && (
-        <div className="lecture-list">
+  const handleDeleteLecture = async (lectureID) => {
+    try {
+      await axios.delete(`http://localhost:8080/deletelecture/${lectureID}`);
+      notification.success({
+        message: 'Lecture Deleted',
+        description: 'The lecture has been successfully deleted.',
+      });
+      fetchAndDisplayLectures(selectedCourse.CourseID);
+    } catch (error) {
+      console.error('Error deleting lecture:', error);
+      notification.error({
+        message: 'Error',
+        description: 'An error occurred while deleting the lecture.',
+      });
+    }
+  };
+
+  const renderContent = (content) => {
+    if (expandedContent && expandedContent === content) {
+      return (
+        <>
+          <div>{content}</div>
+          <Link onClick={() => setExpandedContent(null)}>See Less</Link>
+        </>
+      );
+    }
+    if (content.length > 50) {
+      return (
+        <>
+          <div>{`${content.substring(0, 50)}...`}</div>
+          <Link onClick={() => setExpandedContent(content)}>See More</Link>
+        </>
+      );
+    }
+    return <div>{content}</div>;
+  };
+
+  const columns = [
+    { title: 'Title', dataIndex: 'LectureTitle', key: 'title' },
+    { title: 'Image', dataIndex: 'Image', key: 'imageUrl' },
+    { title: 'Lecture Content', dataIndex: 'LectureContent', key: 'description', render: renderContent },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, lecture) => (
+        <span className='d-flex flex-row'>
           <Button
-            variant="contained"
-            color="primary"
-            className="add-lecture-btn"
-            onClick={handleAddLecture}
-            startIcon={<Add />}
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClick(lecture)}
           >
-            Add Lecture
           </Button>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div">
-              <List component="div" disablePadding>
-                {lectures.map((lecture, index) => (
-                  <List key={index} className={`lecture-item ${selectedLecture === index ? 'selected' : ''}`} onClick={() => handleLectureClick(index)}>
-                    {`Lecture ${index + 1}: ${lecture.LectureTitle}`}
-                  </List>
-                ))}
-              </List>
-            </List>
-          </Collapse>
-
-          <Modal
-            open={showAddForm}
-            onClose={() => setShowAddForm(false)}
+          <Button
+            type="danger"
+            icon={<DeleteOutlined />}
+            style={{ marginLeft: '7px' }}
+            onClick={() => handleDeleteLecture(lecture.LectureID)}
           >
-            <div>
-              <Input
-                placeholder="Lecture Title"
-                value={newLectureTitle}
-                onChange={(e) => setNewLectureTitle(e.target.value)}
-              />
-              <Input
-                placeholder="Image URL"
-                value={newLectureImageUrl}
-                onChange={(e) => setNewLectureImageUrl(e.target.value)}
-              />
-              <Input
-                placeholder="Description"
-                value={newLectureDescription}
-                onChange={(e) => setNewLectureDescription(e.target.value)}
-                multiline
-                rows={3}
-              />
-              <Button onClick={handleFormSubmit}>Submit</Button>
-            </div>
-          </Modal>
-        </div>
-      )}
+          </Button>
+        </span>
+      ),
+    },
+  ];
+
+  return (
+    <div className="container p-5">
+      <Select
+        onChange={handleCourseChange}
+        value={selectedCourse ? selectedCourse.CourseID : undefined}
+        style={{ width: 200, marginBottom: 20 }}
+      >
+        {courses.map((course) => (
+          <Option key={course.CourseID} value={course.CourseID}>
+            {course.Title}
+          </Option>
+        ))}
+      </Select>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={handleAddLecture}
+        style={{ marginBottom: 20 }}
+      >
+        Add Lecture
+      </Button>
+      <Table dataSource={lectures} columns={columns} rowKey="LectureID" />
+
+      <AddLecture
+        visible={showAddModal}
+        onCancel={handleCancelAddLecture}
+        fetchAndDisplayLectures={fetchAndDisplayLectures}
+        selectedCourse={selectedCourse}
+        lectures={lectures} 
+      />
+
+      <EditLecture
+        visible={editModalVisible}
+        onCancel={handleEditModalCancel}
+        onOk={handleEditModalOk}
+        editLecture={editLecture}
+        setEditLecture={setEditLecture}
+      />
     </div>
   );
-}
+};
 
 export default LectureManagement;

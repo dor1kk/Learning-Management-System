@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { List, Avatar, Typography, Space, Spin, Tooltip, Empty, Menu, Dropdown, Button } from "antd";
-import { MessageOutlined, EyeOutlined, UserOutlined, DownOutlined } from "@ant-design/icons";
+import { EyeOutlined, UserOutlined, DownOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -80,28 +80,30 @@ const Messages = () => {
           </div>
         ) : (
           filteredMessages.length > 0 ? (
-            <List
-              itemLayout="horizontal"
-              dataSource={filteredMessages}
-              renderItem={(message) => (
-                <List.Item
-                  actions={[renderListItemActions(message)]}
-                  style={{ backgroundColor: message.read ? "#ffffff" : "#fffff" }}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar icon={<UserOutlined />} />}
-                    title={message.reply}
-                    description={
-                      <div>
-                        <Text strong>From:</Text> {message.email} <br />
-                        <Text strong>Subject:</Text> {message.subject} <br />
-                        <Text strong>Received:</Text> {message.receivedAt} <br />
+            <div style={{ border: "1px solid #e8e8e8", borderRadius: "5px", overflow: "hidden" }}>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                {filteredMessages.map(message => (
+                  <li key={message.id} style={{ borderBottom: "1px solid #e8e8e8" }}>
+                    <div style={{ display: "flex", alignItems: "center", padding: "12px" }}>
+                      <Avatar icon={<UserOutlined />} />
+                      <div style={{ flex: "1", marginLeft: "12px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <Text strong>{message.reply}</Text>
+                          <Space>
+                            {renderListItemActions(message)}
+                          </Space>
+                        </div>
+                        <div>
+                          <Text strong>From:</Text> {message.email} <br />
+                          <Text strong>Subject:</Text> {message.subject} <br />
+                          <Text strong>Received:</Text> {message.receivedAt} <br />
+                        </div>
                       </div>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <Empty description="No messages match the selected filter" />
           )

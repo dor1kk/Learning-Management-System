@@ -7,19 +7,19 @@ import bodyParser from 'body-parser';
 import { Password } from "@mui/icons-material";
 import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } from './Routes/Signin.js'; 
 import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
-import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture } from "./Routes/Lectures.js";
+import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture, EditLecture, DeleteLecture } from "./Routes/Lectures.js";
 import { EnrollStudent, GetEnrolledCourses ,DeleteEnrollment } from "./Routes/Enroll.js";
 import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt } from "./Routes/Tutors.js";
 import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
 import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
 import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS } from "./Routes/Students.js";
-import { addQuestion, DeleteQuestion, getQuestionsByExam } from "./Routes/Questions.js";
+import { addQuestion, DeleteQuestion, EditQuestion, getQuestionsByExam, getQuestionsByTutor } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
 import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progress.js";
 import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
-import { addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
+import { DeleteAnnouncement, EditAnnouncement, addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
 import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
 import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies } from "./Routes/Emails.js";
 import { ApproveCourseRequest, getContentApproval, InsertCourseRequest, RejectRequest,  } from "./Routes/Approvals.js";
@@ -54,7 +54,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'learning_management_system',
+  database: 'learning_system',
 });
 
 
@@ -155,6 +155,17 @@ app.get('/lecturescourse/:id', (req, res) => {
 
 app.get('/lectures', (req, res) => {
     getAllLectures(req,res,db);
+});
+
+
+
+
+app.put('/editlecture', (req, res) => {
+  EditLecture(req,res,db);
+});
+
+app.delete('/deletelecture/:id', (req, res) => {
+  DeleteLecture(req,res,db);
 });
 
 app.get('/specificlecture/:id', (req, res) => {
@@ -377,6 +388,10 @@ app.get('/enrolledcoursesexams',(req,res)=>{
   getExamsByEnrolledCourses(req,res,db);
 })
 
+app.get('/getQuestionsByTutor',(req,res)=>{
+  getQuestionsByTutor(req,res,db);
+})
+
 
 //Questions Info and Management
 
@@ -389,9 +404,13 @@ app.get('/examsquestions/:examId', (req, res) => {
   
 });
 
-app.delete('/question/:id', (req, res) => {
+app.delete('/question', (req, res) => {
   DeleteQuestion(req,res,db);
 });
+
+app.put('/editquestion',(req,res)=>{
+  EditQuestion(req,res,db);
+})
 
 
 //Completed Courses
@@ -484,6 +503,13 @@ app.get("/announcements/:id",(req,res)=>{
   getAnnouncements(req,res,db);
 })
 
+app.put('/editannouncement',(req,res)=>{
+  EditAnnouncement(req,res,db);
+})
+
+app.delete('/deleteannouncement/:id',(req,res)=>{
+  DeleteAnnouncement(req,res,db);
+})
 
 //Notifications
 

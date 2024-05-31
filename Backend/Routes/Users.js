@@ -9,6 +9,7 @@ export function getAllUsers(req,res,db){  // gets all the users in the database 
         res.json(results); 
       });
 }
+
 export function DeleteUsers(req, res, db) {
     const userId = req.params.userId;
     console.log("Deleting user with ID:", userId);
@@ -18,142 +19,19 @@ export function DeleteUsers(req, res, db) {
         return res.status(400).json({ error: "UserID is required" });
     }
 
-    db.beginTransaction((err) => {
+    db.query("DELETE FROM users WHERE UserID = ?", [userId], (err, result) => {
         if (err) {
-            console.error("Error starting transaction:", err);
+            console.error("Error deleting user:", err);
             return res.status(500).json({ error: "An error occurred during deletion" });
         }
 
-        const executeDeleteQueries = (queries, index, callback) => {
-            if (index >= queries.length) {
-                return callback(null);
-            }
-            db.query(queries[index], [userId], (err, result) => {
-                if (err) {
-                    return callback(err);
-                }
-                executeDeleteQueries(queries, index + 1, callback);
-            });
-        };
-
-        const deleteReviewsQuery = `
-        DELETE FROM reviews 
-        WHERE CourseID IN (SELECT CourseID FROM courses WHERE TutorID = ?)
-    `;
-
-
-        const deleteEnrollmentsQuery = `
-            DELETE FROM enrollments 
-            WHERE CourseID IN (SELECT CourseID FROM courses WHERE TutorID = ?)
-        `;
-
-        const deleteUserQueries = [
-            "DELETE FROM emails WHERE receiver_id IN (SELECT TutorID FROM tutor WHERE UserID = ?)" ,
-            "DELETE FROM emails WHERE sender_id IN (SELECT TutorID FROM tutor WHERE UserID = ?)",
-            "DELETE FROM enrollments WHERE StudentID = ?",
-            "DELETE FROM passed_exams WHERE user_id = ?",
-            "DELETE FROM completed_lectures WHERE userId = ?",
-            "DELETE FROM reviews WHERE UserID = ?",
-            "DELETE FROM friend_requests WHERE sender_id = ? ",
-            "DELETE FROM friend_requests WHERE  receiver_id = ?",
-            "DELETE FROM notifications WHERE UserID = ?",
-            "DELETE FROM completedcourse WHERE TutorID = ? ",
-            "DELETE FROM completedcourse WHERE  StudentID = ?",
-            "DELETE FROM announcements WHERE TutorId = ?",
-            "DELETE FROM emails WHERE sender_id = ? ",
-            "DELETE FROM emails WHERE  receiver_id = ?",
-            "DELETE FROM completedcourse WHERE StudentID = ?",
-           "DELETE FROM comments WHERE user_id = ?", // Delete comments related to the user
-            "DELETE FROM comments WHERE post_id IN (SELECT post_id FROM forum WHERE user_id = ?)", // Delete comments related to the forum post
-              "DELETE FROM forum WHERE user_id = ?", // Delete forum posts
-              "DELETE FROM feedback WHERE UserID = ?",
-             "DELETE FROM approval_requests WHERE UserID = ?"
-        ];
-        const deleteCourseRelatedQueries = [
-            "DELETE FROM exam_questions WHERE examId IN (SELECT examId FROM exam WHERE TutorID = ?)",
-            "DELETE FROM exam WHERE TutorID = ?",
-            "DELETE FROM completed_lectures WHERE lectureId IN (SELECT LectureID FROM lectures WHERE CourseID IN (SELECT CourseID FROM courses WHERE TutorID = ?))",
-            "DELETE FROM lectures WHERE CourseID IN (SELECT CourseID FROM courses WHERE TutorID = ?)",
-            "DELETE FROM announcements WHERE CourseId IN (SELECT CourseID FROM courses WHERE TutorID = ?)",
-            "DELETE FROM courses WHERE TutorID = ?"
-        ];
-        
-        db.query(deleteReviewsQuery, [userId], (err, result) => {
-            if (err) {
-                return db.rollback(() => {
-                    console.error("Error deleting reviews related to courses:", err);
-                    return res.status(500).json({ error: "An error occurred during deletion" });
-                });
-            }
-
-        db.query(deleteEnrollmentsQuery, [userId], (err, result) => {
-            if (err) {
-                return db.rollback(() => {
-                    console.error("Error deleting enrollments related to courses:", err);
-                    return res.status(500).json({ error: "An error occurred during deletion" });
-                });
-            }
-
-            executeDeleteQueries(deleteUserQueries, 0, (err) => {
-                if (err) {
-                    return db.rollback(() => {
-                        console.error("Error deleting user records:", err);
-                        return res.status(500).json({ error: "An error occurred during deletion" });
-                    });
-                }
-
-                executeDeleteQueries(deleteCourseRelatedQueries, 0, (err) => {
-                    if (err) {
-                        return db.rollback(() => {
-                            console.error("Error deleting course related records:", err);
-                            return res.status(500).json({ error: "An error occurred during deletion" });
-                        });
-                    }
-
-                    db.query("DELETE FROM tutor WHERE UserID = ?", [userId], (err, result) => {
-                        if (err) {
-                            return db.rollback(() => {
-                                console.error("Error deleting tutor from tutor table:", err);
-                                return res.status(500).json({ error: "An error occurred during deletion" });
-                            });
-                        }
-
-                        db.query("DELETE FROM students WHERE UserId = ?", [userId], (err, result) => {
-                            if (err) {
-                                return db.rollback(() => {
-                                    console.error("Error deleting student from students table:", err);
-                                    return res.status(500).json({ error: "An error occurred during deletion" });
-                                });
-                            }
-
-                            db.query("DELETE FROM users WHERE UserID = ?", [userId], (err, result) => {
-                                if (err) {
-                                    return db.rollback(() => {
-                                        console.error("Error deleting user from users table:", err);
-                                        return res.status(500).json({ error: "An error occurred during deletion" });
-                                    });
-                                }
-
-                                db.commit((err) => {
-                                    if (err) {
-                                        return db.rollback(() => {
-                                            console.error("Error committing transaction:", err);
-                                            return res.status(500).json({ error: "An error occurred during deletion" });
-                                        });
-                                    }
-
-                                    console.log("User deleted successfully");
-                                    return res.json({ success: true, message: "User deleted successfully" });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-        });
+        console.log("User deleted successfully");
+        return res.json({ success: true, message: "User deleted successfully" });
     });
 }
+
+
+
 
 export function UpdateUsers(req, res, db) {
   const { id } = req.params;

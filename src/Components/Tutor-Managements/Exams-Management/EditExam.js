@@ -1,34 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import { Form, Input, Button, DatePicker, notification } from 'antd';
+import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
 
-const EditExam = ({ fetchExams }) => {
-  const location = useLocation();
-  const examId = location.pathname.split('/').pop(); // Extract examId from URL
+const EditExam = ({ exam, fetchExams, closeModal }) => {
   const [form] = Form.useForm();
-  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  const fetchCourses = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/tutorcourses');
-      setCourses(response.data);
-    } catch (error) {
-      console.error('Error fetching tutor courses:', error);
+    if (exam) {
+      form.setFieldsValue({
+        examId: exam.examId,
+        examName: exam.examName,
+        startTime: dayjs(exam.startTime),
+        endTime: dayjs(exam.endTime),
+      });
     }
-  };
+  }, [exam, form]);
 
   const handleEdit = async (values) => {
     try {
-      await axios.put(`http://localhost:8080/exams/${examId}`, values);
+      await axios.put(`http://localhost:8080/exams/${exam.examId}`, values);
       notification.success({
         message: 'Exam Updated',
         description: 'The exam has been successfully updated.',
       });
+      fetchExams();
+      closeModal();
     } catch (error) {
       console.error('Error editing exam:', error);
       notification.error({
@@ -39,14 +37,19 @@ const EditExam = ({ fetchExams }) => {
   };
 
   return (
-    <div className="c-container p-5">
-      <h2 className='text-primary'>Edit Exam</h2>
+    <div className="container p-5">
       <Form
         form={form}
         layout="vertical"
         onFinish={handleEdit}
-        initialValues={{ examId: examId }}
+        initialValues={{ examId: exam.examId }}
       >
+        <Form.Item
+          name="examId"
+          style={{ display: 'none' }}
+        >
+          <Input type="hidden" />
+        </Form.Item>
         <Form.Item
           label="Exam Name"
           name="examName"

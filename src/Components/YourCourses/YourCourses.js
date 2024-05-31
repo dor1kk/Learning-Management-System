@@ -100,7 +100,7 @@ function YourCourses() {
   );
 
   return (
-    <main className="c-container p-5">
+    <main className="container p-5">
       <div className="course-filters d-flex flex-row">
         <Input
           placeholder="Search courses..."

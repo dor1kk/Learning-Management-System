@@ -78,7 +78,7 @@ function Lecture() {
     }
 
     return (
-        <div className="c-container p-4 ">
+        <div className="container p-4 ">
             <div className="lecture-card">
                 <div className="lecture-card-body">
                     <h5 className="card-title text-primary" style={{fontSize:"29px"}}>{lecture.LectureTitle}</h5>

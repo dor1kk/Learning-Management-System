@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { toPng } from 'html-to-image'; // Corrected import statement
+import { toPng } from 'html-to-image'; 
 import { Height } from '@mui/icons-material';
 
 const { Title, Paragraph } = Typography;
@@ -26,7 +26,7 @@ const CertificatePage = () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:8080/completedcoursesbyid', {
-        params: { courseId: courseId } // Send courseId as a query parameter
+        params: { courseId: courseId } 
       });
       setCompletedCourseData(response.data.results);
     } catch (error) {
@@ -61,8 +61,9 @@ const CertificatePage = () => {
   };
 
   return (
-    <div id='cert-container' className='c-container p-3' style={{height:"85vh"}}>
-      <Card className='c-container' style={{ width: '100%', height:"90%", marginTop:"50px" }}>
+    <>
+    <div id='cert-container' className='container p-3' style={{height:"85vh"}}>
+      <Card className='container' style={{ width: '80%', height:"90%", marginTop:"50px", boxShadow:"0 2px 6px rgba(0,0,0,0.1)" }}>
         <div style={{ textAlign: 'center' }}>
           <TrophyOutlined style={{ fontSize: '48px', color: '#1890ff' }} />
           <Title level={2}>Certificate of Completion</Title>
@@ -84,13 +85,16 @@ const CertificatePage = () => {
             </div>
           ))}
         </div>
-        <div style={{ textAlign: 'center', marginTop: '30px' }}>
+      </Card>
+   
+    </div>
+    <div style={{ textAlign: 'center', marginTop: '30px' }}>
           <Button type="primary" size="default" onClick={downloadCertificate}>
             <CheckOutlined /> Download Certificate
           </Button>
         </div>
-      </Card>
-    </div>
+</>
+
   );
 };
 

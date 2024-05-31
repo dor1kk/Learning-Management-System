@@ -88,7 +88,7 @@ const Sidebar = ({ children }) => {
   return (
     <div style={{ display: 'flex' }}>
       <Drawer variant="persistent" anchor="left" open={open}>
-        <div style={{ width: 250, backgroundColor: '#2774AE', height: '100vh', color: 'white' }}>
+        <div style={{ width: 250, backgroundColor: '#2774AE', height: '120vh', color: 'white' }}>
           <List>
             <ListItem>
               <ListItemIcon>
@@ -233,6 +233,12 @@ const Sidebar = ({ children }) => {
   </ListItemIcon>
   <ListItemText primary="Forums" />
 </ListItem>
+<ListItem button component={Link} to="/Home/Notifications" onClick={handleMenuItemClick}>
+                  <ListItemIcon>
+                    <Notifications style={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Notifications" />
+                </ListItem>
 
               </>
             )}
@@ -254,12 +260,7 @@ const Sidebar = ({ children }) => {
                   </ListItemIcon>
                   <ListItemText primary="Account" />
                 </ListItem>
-                <ListItem button component={Link} to="/Home/Notifications" onClick={handleMenuItemClick}>
-                  <ListItemIcon>
-                    <Notifications style={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText primary="Notifications" />
-                </ListItem>
+               
               </List>
             </Collapse>
           )}
@@ -274,8 +275,8 @@ const Sidebar = ({ children }) => {
     </Drawer>
     <div style={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar style={{ backgroundColor: '#1890ff' }}>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerToggle}>
+        <Toolbar style={{ backgroundColor:"white"}}>
+          <IconButton style={{Color:"#2774AE"}} edge="start"  aria-label="menu" onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
             <Topbar />

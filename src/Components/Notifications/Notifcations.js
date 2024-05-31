@@ -67,7 +67,7 @@ function Notifications() {
   };
 
   return (
-    <div className="c-container p-5">
+    <div className="container p-5">
       <h1 style={{color:"#2774AE"}}>Notifications</h1>
       <Tabs defaultActiveKey="all" onChange={(key) => setActiveCategory(key)}>
         <TabPane tab="All" key="all">

@@ -192,3 +192,42 @@ const { CourseID, LectureTitle, LectureImageUrl, LectureDescription, LectureInde
   );
 
 }
+
+
+export function EditLecture(req, res, db) {
+  const { LectureID, LectureTitle, Image, LectureContent } = req.body;
+
+  const sql = 'UPDATE lectures SET LectureTitle = ?, Image = ?, LectureContent = ? WHERE LectureID = ?';
+  const values = [LectureTitle, Image, LectureContent, LectureID];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error editing lecture:', err);
+      res.status(500).json({ error: 'An error occurred while editing the lecture' });
+      return;
+    }
+    console.log('Lecture updated successfully');
+    res.status(200).json({ message: 'Lecture updated successfully' });
+  });
+}
+
+
+export function DeleteLecture(req,res,db){
+  const { id } = req.params;
+  
+  const sql = 'DELETE FROM lectures WHERE LectureID = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting lecture:', err);
+      res.status(500).json({ error: 'An error occurred while deleting the lecture' });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: 'Lecture not found' });
+      return;
+    }
+    console.log('Lecture deleted successfully');
+    res.status(200).json({ message: 'Lecture deleted successfully' });
+  });
+};
+

@@ -1,183 +1,163 @@
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { Table, Button, Modal, Form, Input, Row, Col, Select, notification } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
-function ManageQuestions() {
-  const [exam, setExam] = useState([]);
-  const [selectedExam, setSelectedExam] = useState("");
-  const [selectedExamDetails, setSelectedExamDetails] = useState(null);
-  const [formData, setFormData] = useState({
-    questionText: "",
-    option1: "",
-    option2: "",
-    option3: "",
-    option4: "",
-    correctOption: "",
-  });
+const { Option } = Select;
 
-  const fetchExam = async () => {
-    const response = await axios.get("http://localhost:8080/exams");
-    setExam(response.data);
-  };
+const ManageQuestions = ({ exam }) => {
+  const [questions, setQuestions] = useState([]);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchExam();
-  }, []); 
+    fetchQuestions();
+  }, []);
 
-  const handleExamChange = (e) => {
-    const selectedExamId = parseInt(e.target.value);
-    const examDetail = exam.find((exam) => exam.examId === selectedExamId);
-    setSelectedExamDetails(examDetail);
-    setSelectedExam(selectedExamId);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchQuestions = async () => {
     try {
-      console.log("Form Data:", formData); // Log form data before submission
-      await axios.post("http://localhost:8080/addQuestion", {
-        Question: formData.questionText,
-        Option1: formData.option1,
-        Option2: formData.option2,
-        Option3: formData.option3,
-        Option4: formData.option4,
-        correctOption: formData.correctOption,
-        exam: selectedExam
-      });
-      // Clear form after successful submission
-      setFormData({
-        questionText: "",
-        option1: "",
-        option2: "",
-        option3: "",
-        option4: "",
-        correctOption: "",
-      });
+      const response = await axios.get("http://localhost:8080/getQuestionsByTutor");
+      setQuestions(response.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching questions:", error);
     }
-  }
-  
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    console.log("Input Change - Name:", name, "Value:", value); // Log input change
-    if (name === "correctOption") {
-      console.log("Correct Option Change - Value:", value); // Log correctOption change
+  };
+
+  const handleEdit = (question) => {
+    setCurrentQuestion(question);
+    form.setFieldsValue({
+      questionText: question.questionText,
+      option1: question.option1,
+      option2: question.option2,
+      option3: question.option3,
+      option4: question.option4,
+      correctOption: question.correctOption
+    });
+    setEditModalVisible(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/question`, {
+        data: { questionId: currentQuestion.questionId } 
+      });
+      notification.success({ message: 'Question Deleted', description: 'The question has been successfully deleted.' });
+      fetchQuestions();
+      setDeleteModalVisible(false);
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      notification.error({ message: 'Error', description: 'An error occurred while deleting the question.' });
     }
-    setFormData({ ...formData, [name]: value });
   };
-  
-  const handleOptionChange = (e) => {
-    const { name, value } = e.target;
-    console.log("Option Change - Name:", name, "Value:", value); // Log option change
-    setFormData({ ...formData, [name]: value });
+
+  const handleEditSubmit = async (values) => {
+    try {
+      await axios.put(`http://localhost:8080/editQuestion`, {
+        questionId: currentQuestion.questionId, 
+        ...values 
+      });
+      notification.success({ message: 'Question Updated', description: 'The question has been successfully updated.' });
+      fetchQuestions();
+      setEditModalVisible(false);
+    } catch (error) {
+      console.error("Error updating question:", error);
+      notification.error({ message: 'Error', description: 'An error occurred while updating the question.' });
+    }
   };
+
+  const handleDeleteConfirmation = (question) => {
+    setCurrentQuestion(question);
+    setDeleteModalVisible(true);
+  };
+
+  const columns = [
+    {
+      title: 'Question',
+      dataIndex: 'questionText',
+      key: 'questionText',
+    },
+    {
+      title: 'Options',
+      dataIndex: 'options',
+      key: 'options',
+      render: (_, question) => (
+        <span>{`${question.option1}, ${question.option2}, ${question.option3}, ${question.option4}`}</span>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, question) => (
+        <span className="d-flex flex-row" style={{gap:"7px"}}>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(question)} />
+          <Button type="secondary" onClick={() => handleDeleteConfirmation(question)} danger icon={<DeleteOutlined />} />
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <div className="c-container p-5">
-      <div className="row">
-        <div className="col-md-11">
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="examSelect">Select Exam:</label>
-              <select
-                id="examSelect"
-                className="form-control bg-light"
-                value={selectedExam}
-                onChange={handleExamChange}
-              >
-                {exam.map((exam) => (
-                  <option key={exam.examId} value={exam.examId}>
-                    {exam.examName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectedExamDetails && (
-              <div>
-                <h3 className="text-primary">Add Question for: {selectedExamDetails.examName}</h3>
-                <div className="form-group">
-                  <label htmlFor="questionText">Question:</label>
-                  <input
-                    type="text"
-                    id="questionText"
-                    className="form-control"
-                    name="questionText"
-                    value={formData.questionText}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              <div className="d-flex flex-row" style={{gap:"20px"}}>
-                <div className="form-group col-md-5">
-                  <label htmlFor="option1">Option 1:</label>
-                  <input
-                    type="text"
-                    id="option1"
-                    className="form-control"
-                    name="option1"
-                    value={formData.option1}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-                <div className="form-group col-md-5">
-                  <label htmlFor="option2">Option 2:</label>
-                  <input
-                    type="text"
-                    id="option2"
-                    className="form-control"
-                    name="option2"
-                    value={formData.option2}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-                </div>
-                <div className="d-flex flex-row" style={{gap:"20px"}}>
-
-                <div className="form-group col-md-5">
-                  <label htmlFor="option3">Option 3:</label>
-                  <input
-                    type="text"
-                    id="option3"
-                    className="form-control"
-                    name="option3"
-                    value={formData.option3}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-                <div className="form-group col-md-5">
-                  <label htmlFor="option4">Option 4:</label>
-                  <input
-                    type="text"
-                    id="option4"
-                    className="form-control"
-                    name="option4"
-                    value={formData.option4}
-                    onChange={handleOptionChange}
-                  />
-                </div>
-                </div>
-                <div className="form-group">
-                <select
-  id="correctOption"
-  className="form-control"
-  name="correctOption"
-  value={formData.correctOption}
-  onChange={handleInputChange}
->
-  <option value="option1">{formData.option1}</option>
-  <option value="option2">{formData.option2}</option>
-  <option value="option3">{formData.option3}</option>
-  <option value="option4">{formData.option4}</option>
-</select>
-
-                </div>
-                <button type="submit" className="btn btn-primary">Submit</button>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
+    <div className="container p-3">
+      <Table dataSource={questions} columns={columns} />
+      <Modal
+        title="Edit Question"
+        visible={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        footer={null}
+      >
+        <Form form={form} layout="vertical" onFinish={handleEditSubmit}>
+          <Form.Item label="Question" name="questionText" rules={[{ required: true, message: 'Please enter the question text' }]}>
+            <Input />
+          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Option 1" name="option1" rules={[{ required: true, message: 'Please enter option 1' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Option 2" name="option2" rules={[{ required: true, message: 'Please enter option 2' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Option 3" name="option3" rules={[{ required: true, message: 'Please enter option 3' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Option 4" name="option4" rules={[{ required: true, message: 'Please enter option 4' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item label="Correct Option" name="correctOption" rules={[{ required: true, message: 'Please select the correct option' }]}>
+            <Select>
+              <Option value="option1">Option 1</Option>
+              <Option value="option2">Option 2</Option>
+              <Option value="option3">Option 3</Option>
+              <Option value="option4">Option 4</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">Save Changes</Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Delete Question"
+        visible={deleteModalVisible}
+        onOk={handleDelete}
+        onCancel={() => setDeleteModalVisible(false)}
+      >
+        <p>Are you sure you want to delete this question?</p>
+      </Modal>
     </div>
   );
-}
+};
 
 export default ManageQuestions;

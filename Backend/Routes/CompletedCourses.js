@@ -2,6 +2,9 @@ export function AddCompletedCourse(req, res, db) {
   const { courseId, userId, grade } = req.body; 
   const tutorId = req.session.userid;
 
+
+  console.log("userid", userId);
+
   const sql = 'INSERT INTO completedcourse (StudentID, CourseID, Grade, TutorID) VALUES (?, ?, ?, ?)';
   db.query(sql, [userId, courseId, grade, tutorId], (error, results) => {
     if (error) {
@@ -18,7 +21,6 @@ export function AddCompletedCourse(req, res, db) {
         console.error('Error fetching student IDs:', error);
         return res.status(500).json({ error: 'Internal server error' });
       }
-      // Fetch course title
       db.query(courseTitleSql, [courseId], (error, courseTitleResult) => {
         if (error) {
           console.error('Error fetching course title:', error);
@@ -46,7 +48,7 @@ export function AddCompletedCourse(req, res, db) {
 export function getCompletedCourses(req,res,db){
     const studentId=req.session.userid;
   
-    const sql = 'SELECT DISTINCT * FROM completedcourse cc Inner join students s on s.ID=cc.StudentID inner join users u on u.UserID=s.UserID inner join courses c on cc.CourseID=c.CourseID WHERE s.UserID=?';
+    const sql = 'SELECT DISTINCT * FROM completedcourse cc inner join users u on u.UserID=cc.StudentID inner join courses c on cc.CourseID=c.CourseID WHERE cc.StudentID=?';
     db.query(sql, [studentId ], (error, results) => {
       if (error) {
         console.error('Error creating exam question:', error);
@@ -72,10 +74,10 @@ export function getCompletedCoursesById(req, res, db) {
     const sql = `
       SELECT DISTINCT cc.*, s.*, u.*, c.*
       FROM completedcourse cc
-      INNER JOIN students s ON s.ID = cc.StudentID
-      INNER JOIN users u ON u.UserID = s.UserID
+      INNER JOIN users u ON u.UserID = cc.StudentID
+      Inner JOIN students s on s.UserID=u.UserID
       INNER JOIN courses c ON cc.CourseID = c.CourseID
-      WHERE s.UserID = ? AND cc.CompletedCourseID = ?
+      WHERE cc.StudentID = ? AND cc.CompletedCourseID = ?
     `;
   
     db.query(sql, [studentId, courseId], (error, results) => {

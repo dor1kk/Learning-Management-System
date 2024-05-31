@@ -31,15 +31,47 @@ export function getQuestionsByExam(req,res,db){ // returns all the questions fro
 }
 
 
-export function DeleteQuestion(req,res,db){ //Delete the question needed in manage questions page
-    const { questionId} = req.body;
+export function getQuestionsByTutor(req,res,db){ // returns all the questions from an specific exam , needed in the take exam page 
+  const tutorId=req.session.userid;
+const sql = 'SELECT * FROM exam_questions inner join exam on exam.examId=exam_questions.examId WHERE exam.tutorId=?';
+db.query(sql, [tutorId], (error, results) => {
+  if (error) {
+    console.error('Error fetching questions:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+  res.json(results);
+});
+}
 
-    const sql = 'DELETE FROM exam_questions WHERE questionId=?';
-    db.query(sql, [questionId], (error, results) => {
-      if (error) {
-        console.error('Error creating exam:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-      res.status(201).json({ message: 'Exam deleted successfully' });
-    });
+
+export function DeleteQuestion(req, res, db) {
+  const { questionId } = req.body; 
+
+  const sql = 'DELETE FROM exam_questions WHERE questionId = ?';
+  db.query(sql, [questionId], (error, results) => {
+    if (error) {
+      console.error('Error deleting question:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+    res.status(200).json({ message: 'Question deleted successfully' });
+  });
+}
+
+export function EditQuestion(req, res, db) {
+  const { questionId, questionText, option1, option2, option3, option4, correctOption } = req.body;
+
+  const sql = 'UPDATE exam_questions SET questionText = ?, option1 = ?, option2 = ?, option3 = ?, option4 = ?, correctOption = ? WHERE questionId = ?';
+  db.query(sql, [questionText, option1, option2, option3, option4, correctOption, questionId], (error, results) => {
+    if (error) {
+      console.error('Error updating question:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+    res.status(200).json({ message: 'Question updated successfully' });
+  });
 }

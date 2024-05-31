@@ -48,7 +48,7 @@ function CourseLecture() {
   });
 
   return (
-    <main className="c-container p-5">
+    <main className="container p-5">
       <div style={{ marginBottom: "20px" }}>
         <Search
           placeholder="Search courses..."
@@ -61,10 +61,8 @@ function CourseLecture() {
           onChange={handleFilterChange}
         >
           <Option value="">All Categories</Option>
-          {/* Assuming you have a list of categories */}
           <Option value="category1">Category 1</Option>
           <Option value="category2">Category 2</Option>
-          {/* Add more options as needed */}
         </Select>
       </div>
       <section className="cslec-course-cards" style={{ marginLeft: "20px", paddingTop: "20px" }}>

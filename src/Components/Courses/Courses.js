@@ -46,7 +46,7 @@ function Courses() {
   });
 
   return (
-    <main className="container-kursi p-5">
+    <main className="container p-5">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <List component="ul" sx={{ display: 'flex', padding: 0, width: "100%" }}>

@@ -37,8 +37,7 @@ function CompletedCourses() {
     
 
     return (
-        <div className="c-container p-5">
-            <h2 className="text-primary">Completed courses</h2>
+        <div className="container p-5">
             <div className="d-flex flex-row flex-wrap justify-content-evenly">
                 {completedCourses.map(course => (
                     <Card key={course.CourseID} title={<Tag color="green">Completed</Tag>} className="mt-3" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)", height:"200px", width:"400px" }}>

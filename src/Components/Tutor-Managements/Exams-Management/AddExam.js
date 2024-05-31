@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Form, Select, Input, Button, DatePicker , notification} from 'antd';
+import { Form, Select, Input, Button, DatePicker, notification } from 'antd';
 
 const { Option } = Select;
 
-const AddExam = ({ fetchExams }) => {
+const AddExamForm = ({ fetchExams, closeModal }) => {
   const [form] = Form.useForm();
   const [courses, setCourses] = useState([]);
 
@@ -24,10 +24,12 @@ const AddExam = ({ fetchExams }) => {
   const handleSubmit = async (values) => {
     try {
       await axios.post('http://localhost:8080/exams', values);
+      fetchExams();
       notification.success({
         message: 'Exam Added',
         description: 'The exam has been successfully added.',
       });
+      closeModal(); // Close the modal after adding the exam
     } catch (error) {
       console.error('Error creating exam:', error);
       notification.error({
@@ -36,11 +38,9 @@ const AddExam = ({ fetchExams }) => {
       });
     }
   };
-  
 
   return (
-    <div className="c-container p-5">
-      <h2 className='text-primary'>Add Exam</h2>
+    <div>
       <Form
         form={form}
         layout="vertical"
@@ -88,4 +88,4 @@ const AddExam = ({ fetchExams }) => {
   );
 };
 
-export default AddExam;
+export default AddExamForm;

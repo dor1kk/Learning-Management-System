@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Typography, Input, List, Avatar, Space, Modal, Form } from 'antd';
+import { Button, Typography, Input, List, Avatar, Space, Modal } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons';
-import "./CourseManagement.css"
+import "./CourseManagement.css";
 import AddCourse from './AddCourse';
-import { Link } from 'react-router-dom';
-
+import EditCourse from './EditCourse'; // Import the EditCourse component
 
 const { confirm } = Modal;
-
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editCourseData, setEditCourseData] = useState(null);
+  const [editCourseId, setEditCourseId] = useState(null); // State to hold the course ID for editing
 
   const fetchCourses = async () => {
     try {
@@ -67,7 +69,7 @@ const CourseManagement = () => {
   );
 
   return (
-    <div className="c-container p-4" style={{ textAlign: "center" }}>
+    <div className="container p-4" style={{ textAlign: "center" }}>
       <Space style={{ marginBottom: '20px' }}>
         <Input
           placeholder="Search"
@@ -80,10 +82,9 @@ const CourseManagement = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
+          onClick={() => setAddModalVisible(true)} // Open add modal
         >
-          <Link to={'/Home/AddCourse'} style={{textDecoration:"none"}}>
           Add Course
-          </Link>
         </Button>
       </Space>
 
@@ -100,10 +101,13 @@ const CourseManagement = () => {
               <Button
                 type="primary"
                 icon={<EditOutlined />}
+                onClick={() => {
+                  setEditCourseId(course.CourseID); // Set the course ID for editing
+                  setEditCourseData(course);
+                  setEditModalVisible(true); // Open edit modal
+                }}
               >
-                <Link to={`/Home/EditCourse/${course.CourseID}`} style={{textDecoration:"none"}}>
                 Edit
-                </Link>
               </Button>,
               <Button
                 type="danger"
@@ -123,9 +127,26 @@ const CourseManagement = () => {
         )}
       />
 
-    
+      {/* Add Course Modal */}
+      <Modal
+        title="Add New Course"
+        visible={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        footer={null}
+      >
+        <AddCourse onClose={() => setAddModalVisible(false)} />
+      </Modal>
 
-  
+      <Modal
+  title="Edit Course"
+  visible={editModalVisible}
+  onCancel={() => setEditModalVisible(false)}
+  footer={null}
+>
+  <EditCourse courseId={editCourseId} onClose={() => setEditModalVisible(false)} />
+</Modal>
+
+
     </div>
   );
 };

@@ -15,7 +15,6 @@ import YourCourses from "./Components/YourCourses/YourCourses";
 import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
 import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
 import ExamManagement from "./Components/Tutor-Managements/Exams-Management/ExamsManagement";
-import AddExam from "./Components/Tutor-Managements/Exams-Management/AddExam";
 import LectureManagement from "./Components/Tutor-Managements/Lectures-Management/LectureManagement";
 import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
 import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
@@ -25,7 +24,6 @@ import Lecture from "./Components/Lectures/Lecture";
 import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
 import Friends from "./Components/Friends/Friends";
 import EditExam from "./Components/Tutor-Managements/Exams-Management/EditExam";
-import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
 import Exams from "./Components/Exams/Exams";
 import Exam from "./Components/Exams/Exam";
 import TakeExam from "./Components/Exams/takeExam";
@@ -44,6 +42,7 @@ import CoursesManagement from "./Components/Admin-Managements/UserManagment/Cour
 import ContentManagement from "./Components/Admin-Managements/ContentManagement/ContentManagement";
 import Forum from "./Components/Forum/Forum";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
+import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -113,9 +112,8 @@ const PrivateRoute = () => {
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
         <Route path="/Friends" element={<Friends />}></Route>
-        <Route path="/addexam" element={<AddExam />}></Route>
         <Route path="/editexam/:id" element={<EditExam />}></Route>
-        <Route path="/manageQuestions" element={<ManageQuestions />}></Route>
+        <Route path="/ManageQuestions" element={<ManageQuestions />}></Route>
         <Route path="/exams" element={<Exams />}></Route>
         <Route path="/exam" element={<Exam />} />
         <Route path="/takeExam" element={<TakeExam />}></Route>

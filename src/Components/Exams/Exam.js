@@ -43,8 +43,7 @@ const Exam = () => {
   };
 
   return (
-    <div className="c-container p-5">
-      <Link to="/home/exams" className="go-back-link" style={{marginBottom:"35px"}}><FaArrowLeft /> Go Back</Link>
+    <div className="container p-5">
       {passedExams.length > 0 && (
         <div className="test-card-container mt-5">
           {passedExams.map((exam) => (

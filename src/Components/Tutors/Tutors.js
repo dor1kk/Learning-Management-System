@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, Button, Typography, Avatar, List, Input, Select, Tag } from 'antd';
-import { UserOutlined, InfoCircleOutlined, GraduationCapOutlined, UserTieOutlined, BriefcaseOutlined } from '@mui/material';
+import { LaptopOutlined, VerifiedUserOutlined, Cases, Person } from '@mui/icons-material';
 import "./Tutors.css";
-import { Cases, Email, LaptopOutlined, Person, VerifiedUser, VerifiedUserOutlined } from "@mui/icons-material";
 
 function Tutors() {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ function Tutors() {
 
   const fetchTutors = async () => {
     try {
-           const response = await axios.get("http://localhost:8080/tutors");
+      const response = await axios.get("http://localhost:8080/tutors");
       setTutors(response.data);
     } catch (error) {
       console.error("Error fetching tutors:", error);
@@ -26,18 +25,18 @@ function Tutors() {
   };
 
   return (
-    <div className="c-container p-5">
+    <div className="container p-5">
       <div className="mt-4">
         <div style={{ marginBottom: 16 }}>
           <Input.Search
             placeholder="Search tutors"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: 200, marginRight: 10 , boxShadow:"0 2px 6px rgba(0,0,0,0.1)"}}
+            style={{ width: 200, marginRight: 10, boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}
           />
           <Select
             placeholder="Filter by experience"
-            style={{ width: 200, boxShadow:"0 2px 6px rgba(0,0,0,0.1)" }}
+            style={{ width: 200, boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}
             value={filter}
             onChange={(value) => setFilter(value)}
           >
@@ -48,61 +47,58 @@ function Tutors() {
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
-              <Card className="p-4 d-flex flex-row" style={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)",height:"300px", borderRadius: "10px", marginTop: "16px", flex: 1, marginRight: "16px" }}>
-                <div>
-                  <Typography.Title level={3} type="primary"><Tag color="green" style={{fontSize:"16px"}}>Become a tutor</Tag></Typography.Title>
-                  <Typography.Text type="secondary">Start your journey sharing your knowledge...</Typography.Text>
-                  <Button type="primary" onClick={() => navigate("/Home/BecomeTutor")}>Get started</Button>
-                </div>
-                <div className="d-flex flex-column">
+            <Card className="p-4 d-flex flex-row" style={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)", height: "300px", borderRadius: "10px", marginTop: "16px", flex: 1, marginRight: "16px" }}>
+              <div>
+                <Typography.Title level={3} type="primary"><Tag color="green" style={{ fontSize: "16px" }}>Become a tutor</Tag></Typography.Title>
+                <Typography.Text type="secondary">Start your journey sharing your knowledge...</Typography.Text>
+                <Button type="primary" onClick={() => navigate("/Home/BecomeTutor")}>Get started</Button>
+              </div>
+              <div className="d-flex flex-column">
                 <Typography.Text type="secondary" style={{ marginTop: "8px" }}>Invite your friends</Typography.Text>
-                  <Button type="default" style={{ marginTop: "8px" }}>Get the link!</Button>
-                </div>
-             
-              </Card>
+                <Button type="default" style={{ marginTop: "8px" }}>Get the link!</Button>
+              </div>
+            </Card>
 
-              <Card className="p-3 d-flex flex-row" style={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)",height:"300px", gap:"30px", borderRadius: "10px", marginTop: "16px", flex: 1, marginRight: "16px" }}>
-              
-                <div style={{ flex: 1 }}>
-                  <Typography.Title level={3} type="primary">Top Tutors</Typography.Title>
-                  <Typography.Text type="secondary">Here are our top tutors:</Typography.Text>
-                  <List>
-                    {tutors.slice(0, 3).map((tutor, index) => (
-                      <List.Item key={tutor.id} style={{ marginBottom: '8px' }}>
-                        <Avatar src={tutor.image_url} />
-                        <Typography.Text>{index + 1}. {tutor.name}</Typography.Text>
-                      </List.Item>
-                    ))}
-                  </List>
-                </div>
-              </Card>
+            <Card className="p-3 d-flex flex-row" style={{ boxShadow: "0 3px 6px rgba(0,0,0,0.1)", height: "300px", gap: "30px", borderRadius: "10px", marginTop: "16px", flex: 1, marginRight: "16px" }}>
+              <div style={{ flex: 1 }}>
+                <Typography.Title level={3} type="primary">Top Tutors</Typography.Title>
+                <Typography.Text type="secondary">Here are our top tutors:</Typography.Text>
+                <List>
+                  {tutors.slice(0, 3).map((tutor, index) => (
+                    <List.Item key={tutor.id} style={{ marginBottom: '8px' }}>
+                      <Avatar src={tutor.image_url} />
+                      <Typography.Text>{index + 1}. {tutor.name}</Typography.Text>
+                    </List.Item>
+                  ))}
+                </List>
+              </div>
+            </Card>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap',}}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', }}>
             {tutors.map(tutor => (
               <div key={tutor.id} style={{ width: '100%' }}>
-                <Card className="mt-3 d-flex flex-row justify-content-between align-items-center" style={{height:"120px",  boxShadow: "0 3px 6px rgba(0,0,0,0.1)", borderRadius: "10px", width: '100%' }}>
+                <Card className="mt-3 d-flex flex-row justify-content-between align-items-center" style={{ height: "120px", boxShadow: "0 3px 6px rgba(0,0,0,0.1)", borderRadius: "10px", width: '100%' }}>
                   <div className="d-flex flex-row justify-content-center align-items-center">
                     <div>
-                  <Avatar src={tutor.image_url} style={{ width: 80, height: 80, margin:3 }} />
-                  </div>
-                  <div style={{ display:"flex", flexDirection:"column", marginLeft:"30px" }}>
-                    <div className="d-flex flex-row justify-content-between">
-                    <Typography.Title level={5}>{tutor.name}</Typography.Title>
+                      <Avatar src={tutor.image_url} style={{ width: 80, height: 80, margin: 3 }} />
                     </div>
-                    <div className="d-flex flex-row">
-                    <div style={{ display: 'flex', gap:"8px", justifyContent: 'space-between' }}>
-                      <Typography.Text><Tag color="blue"> <LaptopOutlined className="text-primary" /> Courses:{tutor.courses}</Tag></Typography.Text>
-                   
-                    <Typography.Text> <Tag color="orange"> <VerifiedUserOutlined className="text-primary" /> Expertise:{tutor.expertise}</Tag></Typography.Text>
-                    <Typography.Text> <Tag color="pink"> <Cases className="text-primary" /> Experience:{tutor.experience} </Tag></Typography.Text>
-                    <Typography.Text> <Tag color="green"> <Person className="text-primary" /> Bio:  {tutor.bio} </Tag></Typography.Text>
+                    <div style={{ display: "flex", flexDirection: "column", marginLeft: "30px" }}>
+                      <div className="d-flex flex-row justify-content-between">
+                        <Typography.Title level={5}>{tutor.name}</Typography.Title>
+                      </div>
+                      <div className="d-flex flex-row">
+                        <div style={{ display: 'flex', gap: "8px", justifyContent: 'space-between' }}>
+                          <Typography.Text><Tag color="blue"> <LaptopOutlined className="text-primary" /> Courses:{tutor.courses}</Tag></Typography.Text>
+                          <Typography.Text> <Tag color="orange"> <VerifiedUserOutlined className="text-primary" /> Expertise:{tutor.expertise}</Tag></Typography.Text>
+                          <Typography.Text> <Tag color="pink"> <Cases className="text-primary" /> Experience:{tutor.experience} </Tag></Typography.Text>
+                          <Typography.Text> <Tag color="green"> <Person className="text-primary" /> Bio:  {tutor.bio} </Tag></Typography.Text>
+                        </div>
+                      </div>
+                      <div className="d-flex">
+                        <Button type="primary" className="w-25" style={{ marginTop: "8px" }} onClick={() => navigate(`/Home/TutorProfile/${tutor.TutorID}`)}>View profile!</Button>
+                      </div>
                     </div>
-                    </div>
-                    <div className="d-flex">
-                    <Button type="primary" className="w-25" style={{ marginTop: "8px" }} onClick={() => navigate(`/Home/TutorProfile/${tutor.TutorID}`)}>View profile!</Button>
-                    </div>
-                  </div>
                   </div>
                 </Card>
               </div>
@@ -115,3 +111,4 @@ function Tutors() {
 }
 
 export default Tutors;
+

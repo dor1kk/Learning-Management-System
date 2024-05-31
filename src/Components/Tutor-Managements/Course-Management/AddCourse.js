@@ -1,8 +1,9 @@
+// AddCourse.js
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, TextField, Button, Grid, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 
-const AddCourse = () => {
+const AddCourse = ({ onClose }) => {
   const [tutorId, setTutorId] = useState('');
   const [courseData, setCourseData] = useState({
     title: '',
@@ -38,17 +39,16 @@ const AddCourse = () => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:8080/courses', courseData);
+      onClose(); // Close the modal
     } catch (error) {
       console.error('Error adding course:', error);
     }
   };
 
   return (
-    <div className='c-container p-5'>
+    <div className='container'>
       <Container  maxWidth="md" style={{ marginTop: '20px' }}>
-        <Typography variant="h4" gutterBottom className='text-primary'>
-          Add New Course
-        </Typography>
+    
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -121,28 +121,7 @@ const AddCourse = () => {
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Number of Lectures"
-                variant="outlined"
-                fullWidth
-                type="number"
-                name="lectures"
-                value={courseData.lectures}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Number of Assignments"
-                variant="outlined"
-                fullWidth
-                type="number"
-                name="assignments"
-                value={courseData.assignments}
-                onChange={handleChange}
-              />
-            </Grid>
+            
             <Grid item xs={12}>
               <Button variant="contained" color="primary" type="submit">
                 Add Course

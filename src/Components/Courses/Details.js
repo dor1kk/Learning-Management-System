@@ -26,7 +26,7 @@ const Details = ({ courseId }) => {
         
         <span className="mt-3" style={{color:"gray"}}><Tag color="blue"><FaCode /> Category:</Tag> {courses.Category}</span>
 
-        <span color="orange" className="mt-3 " style={{width:"500px", color:"gray"}}><Tag color="orange"><FaCode />Description:</Tag> {courses.Description}</span>
+        <span color="orange" className="mt-3 " style={{width:"1000px", color:"gray"}}><Tag color="orange"><FaCode />Description:</Tag> {courses.Description}</span>
         <span  className="mt-3 " style={{width:"500px", color:"gray"}}><Tag color="blue"><FaCode />Image:</Tag><img src={courses.Image} style={{height:"280px"}}></img></span>
         <span  className="mt-3 " style={{width:"500px", color:"gray"}}><Tag color="orange"><FaCode />Lectures:</Tag> {courses.Lectures}</span>
 

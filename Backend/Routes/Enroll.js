@@ -56,20 +56,28 @@ db.query(sql, [courseId, userId], (err, result) => {
 
 
 
-export function GetEnrolledCourses(req, res,db) { // gets all the courses that the loggedin user has been enrolled to
 
-const studentId = req.session.userid;
+
+
+export function GetEnrolledCourses(req, res, db) {
+  const studentId = req.session.userid;
+  
   db.query(
-    "SELECT * FROM courses INNER JOIN enrollments ON courses.CourseID = enrollments.CourseID WHERE enrollments.StudentID = ?",
-    [studentId],
+    `SELECT * FROM courses 
+     INNER JOIN enrollments ON courses.CourseID = enrollments.CourseID 
+     WHERE enrollments.StudentID = ? 
+       AND courses.CourseID NOT IN (
+         SELECT completedcourse.CourseID 
+         FROM completedcourse 
+         INNER JOIN courses ON courses.CourseID = completedcourse.CourseID WHERE StudentID=?
+       )`,
+    [studentId, studentId],
     (error, result) => {
       if (error) {
-        console.log("Error Fetching enrolled courses ", error);
+        console.log("Error fetching enrolled courses ", error);
         return res.status(500).json({ error: "Internal error" });
       }
       res.status(200).json({ message: "Fetched successfully", enrolledCourses: result });
     }
   );
-
-
 }

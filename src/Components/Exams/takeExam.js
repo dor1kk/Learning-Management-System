@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation , Link} from 'react-router-dom';
-import {notification} from 'antd';
+import { useLocation } from 'react-router-dom';
+import { notification, Modal } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, SmileOutlined, FrownOutlined } from '@ant-design/icons'; // Import icons
 
 function TakeExam() {
   const [questions, setQuestions] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [answersFeedback, setAnswersFeedback] = useState({}); 
-  const [message, setMessage] = useState("");
-  const [messageColor, setMessageColor] = useState(""); // Define messageColor state
+  const [answersFeedback, setAnswersFeedback] = useState({});
+  const [examResult, setExamResult] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [percentageCorrect, setPercentageCorrect] = useState(0);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const examId = searchParams.get('examId');
@@ -26,11 +30,12 @@ function TakeExam() {
         return acc;
       }, {});
       setSelectedOptions(initialSelectedOptions);
+      setTotalQuestions(response.data.length); // Set total number of questions
     } catch (error) {
       console.error('Error fetching questions:', error);
     }
   };
-  
+
   const handleOptionSelect = (questionId, option) => {
     setSelectedOptions({ ...selectedOptions, [questionId]: option });
   };
@@ -45,27 +50,23 @@ function TakeExam() {
       [questionId]: isCorrect ? 'Correct!' : 'Incorrect!'
     }));
   };
-  
+
   const handleTakeExam = async () => {
     console.log("Submitting exam...");
-    const totalQuestions = questions.length;
-    const correctAnswers = Object.values(answersFeedback).filter(
+    const correct = Object.values(answersFeedback).filter(
       (feedback) => feedback === "Correct!"
     ).length;
-    const percentageCorrect = (correctAnswers / totalQuestions) * 100;
-  
-    let examResult = "";
-    if (percentageCorrect > 50) {
-      examResult = "Congratulations! You have passed the exam.";
-      if (correctAnswers > totalQuestions / 2) {
+    const percentage = (correct / totalQuestions) * 100;
+    setCorrectAnswers(correct);
+    setPercentageCorrect(percentage);
+    let resultMessage = "";
+    if (percentage > 50) {
+      resultMessage = "Congratulations! You have passed the exam.";
+      if (correct > totalQuestions / 2) {
         try {
           await axios.post("http://localhost:8080/passExam", {
             examId: examId,
-            score: percentageCorrect,
-          });
-          notification.success({
-            message: 'Exam Passed',
-            description: 'Congratulations! You have passed the exam.',
+            score: percentage,
           });
           console.log("Exam passed data sent to the server.");
         } catch (error) {
@@ -77,20 +78,43 @@ function TakeExam() {
         }
       }
     } else {
-      examResult = "You have failed the exam.";
+      resultMessage = "You have failed the exam.";
     }
-  
-    setMessage(
-      `You got ${correctAnswers} out of ${totalQuestions} questions correct.\n${examResult}`
+    setExamResult(resultMessage);
+    setModalVisible(true);
+  };
+
+  const ResultModal = () => {
+    return (
+      <Modal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+        centered
+      >
+        <div style={{ textAlign: 'center' }}>
+          {examResult.includes('passed') ? (
+            <CheckCircleOutlined style={{ fontSize: '48px', color: '#52c41a' }} />
+          ) : (
+            <CloseCircleOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />
+          )}
+          <h2>{examResult}</h2>
+          <p>{`You got ${correctAnswers} out of ${totalQuestions} questions correct.`}</p>
+          <p>{`Percentage Correct: ${percentageCorrect}%`}</p>
+          {examResult.includes('passed') ? (
+            <SmileOutlined style={{ fontSize: '36px', color: '#52c41a' }} />
+          ) : (
+            <FrownOutlined style={{ fontSize: '36px', color: '#ff4d4f' }} />
+          )}
+        </div>
+      </Modal>
     );
   };
-  
 
   return (
-    <div className="c-container p-5">
-      <h4 className="text-center mt-5 mb-3 text-primary">Take Exam</h4>
+    <div className="container p-5">
       {questions.map((question) => (
-        <div key={question.questionId} className="take-card p-4 mb-3 bg-white" style={{boxShadow:"0 2px 6px rgba(0,0,0,0.1)"}} >
+        <div key={question.questionId} className="take-card p-4 mb-3 bg-white" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }} >
           <div className="card-body">
             <h5 className="card-title">{question.questionText}</h5>
             <div className="d-flex flex-column">
@@ -116,11 +140,6 @@ function TakeExam() {
               >
                 Submit Answer
               </button>
-              {answersFeedback[question.questionId] && (
-                <p className={answersFeedback[question.questionId] === 'Correct!' ? 'text-success' : 'text-danger'}>
-                  {answersFeedback[question.questionId]}
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -128,15 +147,13 @@ function TakeExam() {
       <div className="d-flex justify-content-center">
         <button
           className="btn mt-3"
-          style={{backgroundColor:"#00538C", color:"white"}}
+          style={{ backgroundColor: "#00538C", color: "white" }}
           onClick={handleTakeExam}
         >
           Submit Exam
         </button>
       </div>
-      <div className={`mt-3 ${messageColor}`} style={{ textAlign: "center", fontWeight:"bold" }}>
-        <p>{message}</p>
-      </div>
+      <ResultModal />
     </div>
   );
 }

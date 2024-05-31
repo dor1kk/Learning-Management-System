@@ -79,10 +79,10 @@ function CourseDetail() {
 
 
   return (
-    <div className="c-container p-5">
+    <div className="container p-5">
       <div className="row">
-        <div className="col-md-8">
-          <Paper elevation={1} className="p-4" style={{width:"550px"}}>
+        <div className="col-md-12">
+          <Paper elevation={0} className="p-4" style={{width:""}}>
             <div className="course-details" style={{ width: "100%" }}>
               <div className="d-flex justify-content-between align-items-center mb-3">
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -105,16 +105,11 @@ function CourseDetail() {
                 {activeTab === "reviews" && <Reviews />}
                 {activeTab === "courseInfo" && <Details courseId={id} />}
                 {activeTab === "announcements" && <Announcements courseId={id} />}
-              </div>
-            </div>
-          </Paper>
-        </div>
-        <div className="col-md-4">
-          <Paper elevation={1} className="p-3" style={{marginLeft:"-60px"}}>
-            <Progressi />
-            <div className="course-info-box mt-3">
+                <div className="course-info-box mt-3">
           
-              <Button variant="contained" color="primary" onClick={handleEnrollNow}>Enroll Now...</Button>
+          <Button variant="contained" color="primary" onClick={handleEnrollNow}>Enroll Now...</Button>
+        </div>
+              </div>
             </div>
           </Paper>
         </div>

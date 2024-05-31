@@ -1,107 +1,173 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Button, Modal, Table, Space } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import AddExamForm from './AddExam';
+import EditExam from './EditExam';
+import AddQuestion from './AddQuestion';
 import { Link } from 'react-router-dom';
-import { Button, Modal } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { FaPlus } from 'react-icons/fa';
 
 const ExamManagement = () => {
-  const [exams, setExams] = useState([]);
-  const [showQuestionForm, setShowQuestionForm] = useState(false);
-  const [selectedExamId, setSelectedExamId] = useState(null);
-  const [questionText, setQuestionText] = useState('');
-  const [answerText, setAnswerText] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [examToDelete, setExamToDelete] = useState(null);
+    const [examToDelete, setExamToDelete] = useState(null);
+    const [exams, setExams] = useState([]);
+    const [addExamModalVisible, setAddExamModalVisible] = useState(false);
+    const [deleteExamModalVisible, setDeleteExamModalVisible] = useState(false);
+    const [editExamModalVisible, setEditExamModalVisible] = useState(false);
+    const [manageQuestionsModalVisible, setManageQuestionsModalVisible] = useState(false);
+    const [examToEdit, setExamToEdit] = useState(null);
+    const [selectedExamForQuestions, setSelectedExamForQuestions] = useState(null);
 
-  useEffect(() => {
-    fetchExams();
-  }, []);
-
-  const fetchExams = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/exams');
-      setExams(response.data);
-    } catch (error) {
-      console.error('Error fetching exams:', error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (examToDelete) {
-      try {
-        await axios.delete(`http://localhost:8080/exams/${examToDelete}`, { data: { examId: examToDelete } });
+    useEffect(() => {
         fetchExams();
-        setModalVisible(false);
-      } catch (error) {
-        console.error('Error deleting exam:', error);
-      }
-    }
-  };
+    }, []);
 
-  const handleExamClick = (examId) => {
-    setSelectedExamId(examId);
-    setShowQuestionForm(!showQuestionForm);
-  };
-
-  const handleQuestionSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:8080/examsquestion', { selectedExamId, questionText, answerText });
-      setQuestionText('');
-      setAnswerText('');
-    } catch (error) {
-      console.error('Error adding question:', error);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "2-digit",
-      hour: "numeric",
-      minute: "numeric"
+    const fetchExams = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/exams');
+            setExams(response.data);
+        } catch (error) {
+            console.error('Error fetching exams:', error);
+        }
     };
-    return date.toLocaleDateString("en-US", options);
-  };
 
-  const handleDeleteConfirmation = (examId) => {
-    setModalVisible(true);
-    setExamToDelete(examId); // Set the examId to be deleted
-  };
+    const handleAddExam = () => {
+        setAddExamModalVisible(true);
+    };
 
-  return (
-    <div className="c-container p-5">
-      <h2>Exam Management</h2>
-      <div className='d-flex flex-row' style={{ gap: "15px" }}>
-        <Link to={"/home/addexam"} className='btn btn-primary'>Add Exam</Link>
-        <Link to={"/home/manageQuestions"} className='btn btn-primary'>Manage Questions</Link>
-      </div>
-      <ul className="mt-4">
-        {exams.map((exam) => (
-          <li key={exam.examId} className="mb-2 p-2 d-flex flex-row list-group-item bg-white w-100" style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
-            <span onClick={() => handleExamClick(exam.examId)} style={{ cursor: 'pointer' }}>
-              {exam.examName} - {formatDate(exam.startTime)} to {formatDate(exam.endTime)}
-            </span>
-            <div className='d-flex flex-row' style={{ marginLeft: 'auto' }}>
-              <Link to={`/home/editexam/${exam.examId}`} className="mt-2" style={{ backgroundColor: "white", color: "#53a8b6", borderRadius: "50%" }}><Edit /></Link>
-              <Button onClick={() => handleDeleteConfirmation(exam.examId)} className=" ms-2 " style={{ border: "none", backgroundColor: "white", color: "red", borderRadius: "50%" }}><Delete /></Button>
+    const handleAddExamModalClose = () => {
+        setAddExamModalVisible(false);
+    };
+
+    const handleDelete = async () => {
+        if (examToDelete) {
+            try {
+                await axios.delete(`http://localhost:8080/exams/${examToDelete}`, { data: { examId: examToDelete } });
+                fetchExams();
+                setDeleteExamModalVisible(false);
+            } catch (error) {
+                console.error('Error deleting exam:', error);
+            }
+        }
+    };
+
+    const handleDeleteConfirmation = (examId) => {
+        setDeleteExamModalVisible(true);
+        setExamToDelete(examId);
+    };
+
+    const handleEdit = (exam) => {
+        setExamToEdit(exam);
+        setEditExamModalVisible(true);
+    };
+
+    const handleEditExamModalClose = () => {
+        setEditExamModalVisible(false);
+        setExamToEdit(null);
+    };
+
+    const handleManageQuestions = (exam) => {
+        setSelectedExamForQuestions(exam);
+        setManageQuestionsModalVisible(true);
+    };
+
+    const handleManageQuestionsModalClose = () => {
+        setManageQuestionsModalVisible(false);
+        setSelectedExamForQuestions(null);
+    };
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "numeric",
+    
+      });
+  };
+  
+
+  const columns = [
+    {
+        title: 'Exam Name',
+        dataIndex: 'examName',
+        key: 'examName',
+    },
+    {
+        title: 'Start Time',
+        dataIndex: 'startTime',
+        key: 'startTime',
+        render: (text, record) => formatDate(text),
+    },
+    {
+        title: 'End Time',
+        dataIndex: 'endTime',
+        key: 'endTime',
+        render: (text, record) => formatDate(text),
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        render: (text, record) => (
+            <Space size="middle">
+                <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+                <Button type='secondary' onClick={() => handleDeleteConfirmation(record.examId)} danger icon={<DeleteOutlined />} />
+                <Button type="primary" icon={<FaPlus />} onClick={() => handleManageQuestions(record)} />
+            </Space>
+        ),
+    },
+]
+
+    
+
+    return (
+        <div className="container p-5">
+            <div className="exam-management-links">
+                <Button type="primary" onClick={handleAddExam}>Add Exam</Button>
+                <Modal
+                    title="Add Exam"
+                    visible={addExamModalVisible}
+                    onCancel={handleAddExamModalClose}
+                    footer={null}
+                >
+                    <AddExamForm fetchExams={fetchExams} closeModal={handleAddExamModalClose} />
+                </Modal>
+                <Link to={'/home/ManageQuestions'} type="primary"  style={{textDecoration:"none", marginLeft:"10px"}}>
+                    Manage Questions
+                </Link>
             </div>
-          </li>
-        ))}
-      </ul>
-
-      <Modal
-        title="Delete Exam"
-        open={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onOk={handleDelete}
-      >
-        <p>Are you sure you want to delete this exam?</p>
-      </Modal>
-    </div>
-  );
+            <Table
+                columns={columns}
+                dataSource={exams}
+                rowKey="examId"
+            />
+            <Modal
+                title="Delete Exam"
+                visible={deleteExamModalVisible}
+                onOk={handleDelete}
+                onCancel={() => setDeleteExamModalVisible(false)}
+            >
+                <p>Are you sure you want to delete this exam?</p>
+            </Modal>
+            <Modal
+                title="Edit Exam"
+                visible={editExamModalVisible}
+                onCancel={handleEditExamModalClose}
+                footer={null}
+            >
+                {examToEdit && <EditExam exam={examToEdit} fetchExams={fetchExams} closeModal={handleEditExamModalClose} />}
+            </Modal>
+            <Modal
+                title={`Add Question for ${selectedExamForQuestions?.examName}`}
+                visible={manageQuestionsModalVisible}
+                onCancel={handleManageQuestionsModalClose}
+                footer={null}
+            >
+                {selectedExamForQuestions && <AddQuestion exam={selectedExamForQuestions} />}
+            </Modal>
+        </div>
+    );
 };
 
 export default ExamManagement;

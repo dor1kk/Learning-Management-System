@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { List, Avatar, Select, Button, notification } from 'antd';
+import { Table, Avatar, Select, Button, notification } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
-
 
 const { Option } = Select;
 
@@ -32,7 +31,7 @@ function GradeManagement() {
         setGrades(gradesArray);
     }, []);
 
-    const handleChange = (value) => {
+    const handleChange = (value, courseId, userId) => {
         setFormData({ ...formData, grade: value });
     }
 
@@ -65,47 +64,62 @@ function GradeManagement() {
         }
     };
 
-    return (
-        <div className="c-container p-5" style={{ textAlign: "center" }}>
-            <h2 className='text-primary' style={{ fontWeight: "bold" }}>Grades</h2>
-
-            <div className="row">
-                <div className="col">
-                    <List
-                        dataSource={exams}
-                        renderItem={exam => (
-                            <List.Item
-                            style={{ background: "white", padding: "10px", marginBottom: "10px", borderRadius: "8px", boxShadow:"0 2px 6px rgba(0,0,0,0.1)" }}
-
-                                key={exam.id}
-                                actions={[
-                                    <Select
-                                        defaultValue=""
-                                        onChange={handleChange}
-                                        style={{ width: 100 }}
-                                    >
-                                        {grades.map((grade, index) => (
-                                            <Option key={index} value={grade}>{grade}</Option>
-                                        ))}
-                                    </Select>,
-                                    <Button
-                                        type="primary"
-                                        onClick={() => handleSubmit(exam.courseId, exam.ID)}
-                                    >
-                                        Add Grade
-                                    </Button>
-                                ]}
-                            >
-                                <List.Item.Meta
-                                    avatar={<Avatar src={exam.Image} />}
-                                    title={`${exam.Name} - ${exam.examName}`}
-                                    description={`Score: ${exam.score}`}
-                                />
-                            </List.Item>
-                        )}
-                    />
+    const columns = [
+        {
+            title: 'Exam',
+            dataIndex: 'Name',
+            key: 'Name',
+            render: (text, record) => (
+                <div>
+                    <Avatar src={record.Image} />
+                    <span>{`${record.Name} - ${record.examName}`}</span>
                 </div>
-            </div>
+            )
+        },
+        {
+            title: 'Score',
+            dataIndex: 'score',
+            key: 'score',
+        },
+        {
+            title: 'Grade',
+            dataIndex: 'grade',
+            key: 'grade',
+            render: (text, record) => (
+                <Select
+                    defaultValue=""
+                    onChange={(value) => handleChange(value, record.courseId, record.ID)}
+                    style={{ width: 100 }}
+                >
+                    {grades.map((grade, index) => (
+                        <Option key={index} value={grade}>{grade}</Option>
+                    ))}
+                </Select>
+            )
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'actions',
+            key: 'actions',
+            render: (text, record) => (
+                <Button
+                    type="primary"
+                    onClick={() => handleSubmit(record.courseId, record.UserId)}
+                >
+                    Add Grade
+                </Button>
+            )
+        }
+    ];
+
+    return (
+        <div className="container p-5">
+            <Table
+                dataSource={exams}
+                columns={columns}
+                rowKey="id"
+                pagination={false}
+            />
         </div>
     );
 }

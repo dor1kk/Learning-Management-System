@@ -78,28 +78,31 @@ export function getPassedExams(req,res,db){ //get all the info of the passed exa
 
 
 export function getAvailableExams(req, res, db) {
-    const userId = req.session.userid;
-  
-    const sql = `
-      SELECT DISTINCT exam.*
-      FROM exam
-      INNER JOIN courses ON exam.courseId = courses.CourseID
-      INNER JOIN enrollments ON enrollments.CourseID = courses.CourseID
-      WHERE examId NOT IN (
-        SELECT exam_id FROM passed_exams WHERE user_id = ?
-      )
-      AND enrollments.StudentID = ?
-    `;
-  
-    db.query(sql, [userId, userId], (error, results) => {
-      if (error) {
-        console.error('Error fetching available exams:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-      res.json(results);
-    });
-  }
-  
+  const userId = req.session.userid;
+
+  const sql = `
+    SELECT DISTINCT exam.*
+    FROM exam
+    INNER JOIN courses ON exam.courseId = courses.CourseID
+    INNER JOIN enrollments ON enrollments.CourseID = courses.CourseID
+    WHERE exam.examId NOT IN (
+      SELECT exam_id FROM passed_exams WHERE user_id = ?
+    )
+    AND enrollments.StudentID = ?
+    AND courses.CourseID NOT IN (
+      SELECT CourseID FROM completedcourse WHERE StudentID = ?
+    )
+  `;
+
+  db.query(sql, [userId, userId, userId], (error, results) => {
+    if (error) {
+      console.error('Error fetching available exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.status(200).json(results);
+  });
+}
+
 
 
 
@@ -140,7 +143,7 @@ export function getPassedExamInfo(req,res,db){ //returns the info of the student
 
   console.log("user id", req.session.userid);
   const sql = `
-  SELECT * FROM passed_exams inner join exam on exam.examId = passed_exams.exam_id inner join students s on s.UserId=passed_exams.user_id Where exam.tutorId=?
+  SELECT * FROM passed_exams inner join exam on exam.examId = passed_exams.exam_id inner join students s on s.UserId=passed_exams.user_id Where exam.tutorId=? 
   
   `;
   db.query(sql,[tutorid], (error, results) => {
