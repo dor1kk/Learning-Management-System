@@ -29,188 +29,68 @@ export function DeleteUsers(req, res, db) {
         return res.json({ success: true, message: "User deleted successfully" });
     });
 }
-
-
-
+ 
 
 export function UpdateUsers(req, res, db) {
   const { id } = req.params;
   const { Role } = req.body;
-
-  const sqlDeleteFromTutor = `DELETE FROM tutor WHERE UserID = ?`;
-  const sqlDeleteExams = `DELETE FROM exam WHERE tutorId = ?`;
-  const sqlDeletePassedExams = `DELETE FROM passed_exams WHERE exam_id IN (SELECT examId FROM exam WHERE tutorId = ?)`;
-  const sqlSelectExamIds = `SELECT examId FROM exam WHERE tutorId = ?`;
-  const sqlDeleteExamQuestions = `DELETE FROM exam_questions WHERE examId = ?`;
-  const sqlDeleteNotifications = `DELETE FROM notifications WHERE UserID = ?`;
-  const sqlDeleteAnnouncements = `DELETE FROM announcements WHERE TutorId = ?`;
-  const sqlDeleteReview = `DELETE FROM reviews WHERE UserID = ?`;
-  const sqlDeleteFriendRequests = `DELETE FROM friend_requests WHERE receiver_id = ? OR sender_id = ?`;
-  const sqlDeleteFromStudent = `DELETE FROM students WHERE UserId = ?`;
-  const sqlMoveToTutor = `INSERT INTO tutor (UserID) VALUES (?)`;
-  const sqlMoveToStudent = `INSERT INTO students (UserId) VALUES (?)`;
-  const sqlUpdateRole = `UPDATE users SET Role = ? WHERE UserID = ?`;
- const sqlDeleteEmails = `DELETE FROM emails WHERE receiver_id IN (SELECT TutorID FROM tutor WHERE UserID = ?)`;
- const sqlDeleteCompletedCourses = `DELETE FROM completedcourse WHERE StudentID  IN (SELECT ID FROM students WHERE UserId = ?)`;
- const sqlDeleteEnrollments = `DELETE FROM enrollments WHERE StudentID IN (SELECT ID FROM students WHERE UserId = ?)`;
-
-
-  // Begin transaction for role changes
-  db.beginTransaction((err) => {
-      if (err) {
-          console.error("Error starting transaction:", err);
-          return sendInternalServerError(res);
-      }
-
-      let deleteSql, insertSql;
-
-      if (Role === 'Tutor') {
-          deleteSql = sqlDeleteFromStudent;
-          insertSql = sqlMoveToTutor;
-      } else if (Role === 'Student') {
-          deleteSql = sqlDeleteFromTutor;
-          insertSql = sqlMoveToStudent;
-      } else if (Role === 'Admin') {
-          // If role is 'Admin', update the role directly without moving between tables
-          db.query(sqlUpdateRole, [Role, id], (err, updateResult) => {
-              if (err) {
-                  console.error("Error updating user's role:", err);
-                  return sendInternalServerError(res);
-              }
-              if (updateResult.affectedRows === 1) {
-                  res.status(200).send("User updated successfully");
-              } else {
-                  res.status(404).send('User not found');
-              }
-          });
-          return;
-      } else {
-          return res.status(400).send('Invalid role');
-      }
-      db.query(sqlDeleteAnnouncements, [id], (err, deleteAnnouncementsResult) => {
-        if (err) {
-            return handleTransactionRollback(db, res, err);
-        }
-      db.query(sqlDeleteFriendRequests, [id, id], (err, deleteFriendRequestsResult) => {
-        if (err) {
-            handleTransactionRollback(db, res, err);
-            return;
-        }
-        
-       db.query(sqlDeletePassedExams, [id], (err, deletePassedExamsResult) => {
-                if (err) {
-                    handleTransactionRollback(db, res, err);
-                    return;
-                }
-
-        db.query(sqlSelectExamIds, [id], (err, examIds) => {
-            if (err) {
-                handleTransactionRollback(db, res, err);
-                return;
-            }
-
-            const examIdsArray = examIds.map(exam => exam.examId);
-
+ const sqlDeleteFromTutor = `DELETE FROM tutor WHERE UserID = ?`;
+        const sqlDeleteFromStudent = `DELETE FROM students WHERE UserId = ?`;
+        const sqlMoveToTutor = `INSERT INTO tutor (UserID) VALUES (?)`;
+        const sqlMoveToStudent = `INSERT INTO students (UserId) VALUES (?)`;
+        const sqlUpdateRole = `UPDATE users SET Role = ? WHERE UserID = ?`;
+        const sqlGetCurrentRole = `SELECT Role FROM users WHERE UserID = ?`;
+        const sqlCheckTutorExists = `SELECT 1 FROM tutor WHERE UserID = ?`;
+        const sqlCheckStudentExists = `SELECT 1 FROM students WHERE UserID = ?`;
     
-            
-
-            examIdsArray.forEach(examId => {
-                db.query(sqlDeleteExamQuestions, [examId], (err, deleteExamQuestionsResult) => {
-                    if (err) {
-                        handleTransactionRollback(db, res, err);
-                        return;
-                    }
+        if (Role === 'Admin') {
+            db.query(sqlGetCurrentRole, [id], (err, result) => {
+                if (err) return handleError(res, "Error fetching current role", err);
+                if (result.length === 0) return res.status(404).send('User not found');
+    
+                const currentRole = result[0].Role;
+                const deleteSql = currentRole === 'Tutor' ? sqlDeleteFromTutor : currentRole === 'Student' ? sqlDeleteFromStudent : null;
+    
+                if (deleteSql) {
+                    db.query(deleteSql, [id], (err) => {
+                        if (err) return handleError(res, "Error deleting from current role table", err);
+                        updateRole();
+                    });
+                } else {
+                    updateRole();
+                }
+            });
+        } else {
+            const checkSql = Role === 'Tutor' ? sqlCheckTutorExists : sqlCheckStudentExists;
+            const deleteSql = Role === 'Tutor' ? sqlDeleteFromStudent : sqlDeleteFromTutor;
+            const insertSql = Role === 'Tutor' ? sqlMoveToTutor : sqlMoveToStudent;
+    
+            db.query(checkSql, [id], (err, result) => {
+                if (err) return handleError(res, "Error checking existence in target role table", err);
+                if (result.length > 0) return res.status(400).send('User already exists in the target role table');
+    
+                db.query(deleteSql, [id], (err) => {
+                    if (err) return handleError(res, "Error deleting from previous role table", err);
+    
+                    db.query(insertSql, [id], (err) => {
+                        if (err) return handleError(res, "Error inserting into new role table", err);
+                        updateRole();
+                    });
                 });
             });
-
-        db.query(sqlDeleteExams, [id], (err, deleteExamsResult) => {
-            if (err) {
-                return handleTransactionRollback(db, res, err);
-            }
-           
+        }
     
-     
-        db.query(sqlDeleteReview, [id], (err, deleteReviewResult) => {
-            if (err) {
-              handleTransactionRollback(db, res, err);
-              return;
-            }
-
-        db.query(sqlDeleteNotifications, [id], (err, deleteNotificationsResult) => {
-            if (err) {
-                handleTransactionRollback(db, res, err);
-                return;
-            }
-            db.query(sqlDeleteEmails, [id], (err, deleteEmailsResult) => {
-                if (err) {
-                    handleTransactionRollback(db, res, err);
-                    return;
-                }
-
-                db.query(sqlDeleteCompletedCourses, [id], (err) => {
-                    if (err) return handleTransactionRollback(db, res, err);
-
-            db.query(deleteSql, [id], (err, deleteResult) => {
-                if (err) {
-                    handleTransactionRollback(db, res, err);
-                    return;
-                }
-
-                db.query(sqlDeleteEnrollments, [id], (err, deleteEnrollmentsResult) => {
-                    if (err) return callback(err);
-
-                
-
-      db.query(deleteSql, [id], (err, deleteResult) => {
-          if (err) {
-              handleTransactionRollback(db, res, err);
-              return;
-          }
-
-          db.query(insertSql, [id], (err, insertResult) => {
-              if (err) {
-                  handleTransactionRollback(db, res, err);
-                  return;
-              }
-
-              db.query(sqlUpdateRole, [Role, id], (err, updateResult) => {
-                  if (err) {
-                      handleTransactionRollback(db, res, err);
-                      return;
-                  }
-
-                  db.commit((err) => {
-                      if (err) {
-                          handleTransactionRollback(db, res, err);
-                          return;
-                      }
-
-                      res.status(200).send("User updated successfully");
-                  });
-                });
-              });
-          });
-      });
-    });
-    });
-});
-});
-});
-});
-  });
-});
-});
-});
-});
-}
-
-function sendInternalServerError(res) {
-  res.status(500).send("Internal Server Error");
-}
-
-function handleTransactionRollback(db, res, err) {
-  console.error("Error during transaction:", err);
-  db.rollback(() => {
-      sendInternalServerError(res);
-  });
-}
+        function updateRole() {
+            db.query(sqlUpdateRole, [Role, id], (err, updateResult) => {
+                if (err) return handleError(res, "Error updating user's role", err);
+                if (updateResult.affectedRows === 0) return res.status(404).send('User not found');
+                res.status(200).send("User updated successfully");
+            });
+        }
+    
+        function handleError(res, message, err) {
+            console.error(message, err);
+            res.status(500).send(message);
+        }
+    }
+    

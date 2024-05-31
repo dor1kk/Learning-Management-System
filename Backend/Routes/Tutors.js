@@ -167,7 +167,7 @@ export function UpdatedPasswordUser(req,res,db){
 export function UpdatedData(req,res,db){
   // i bon update tdhanat te tutori e ndrrohen edhe te useri
   const { id } = req.params;
-  const { name, email, expertise, bio, courses, experience, education, location, contact, availability ,image_url} = req.body; 
+  const { name, email, expertise, bio,  experience, education, location, contact, image_url} = req.body; 
 
   const sqlUpdate = `
     UPDATE tutor AS t
@@ -176,17 +176,15 @@ export function UpdatedData(req,res,db){
         t.email = ?,
         t.expertise = ?,
         t.bio = ?,
-        t.courses = ?,
         t.experience = ?,
         t.education = ?,
         t.location = ?,
         t.contact = ?,
-        t.availability = ?,
         t.image_url = ?,
         u.Username = ?
     WHERE t.TutorID = ?`;
 
-  db.query(sqlUpdate, [name, email, expertise, bio, courses, experience, education, location, contact, availability,image_url, name, id], (err, result) => {
+  db.query(sqlUpdate, [name, email, expertise, bio,  experience, education, location, contact,image_url, name, id], (err, result) => {
     if (err) {
       console.error("Error updating tutor and user:", err);
       res.status(500).send("Internal Server Error");
@@ -225,3 +223,57 @@ export function DeletePhotoProfilt(req,res,db){
 
 
 
+export function DeleteProfilet(req,res,db){
+  // fshin acountin e tutorit
+    const { id } = req.params;
+  
+    const deleteUserSQL = 'DELETE FROM users WHERE UserID = ?';
+    db.query(deleteUserSQL, [id], (error, results) => {
+      if (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      const deleteTutorSQL = 'DELETE FROM tutor WHERE TutorID = ?';
+      db.query(deleteTutorSQL, [id], (error2, results2) => {
+        if (error2) {
+          console.error('Error deleting tutor:', error2);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+  
+        res.status(200).json({ message: 'Tutor and corresponding user deleted successfully' });
+      });
+    });
+  }
+
+
+export function fetchStudentsofTutors(req, res, db) {
+  if (!req.session.userid) {
+    return res.status(401).send('Unauthorized');
+  }
+
+  const tutorId = req.session.userid;
+
+  const sql = `
+    SELECT 
+      students.Name, 
+      students.Image, 
+      students.Grade
+    FROM 
+      students
+    INNER JOIN 
+      enrollments ON students.ID = enrollments.StudentID
+    INNER JOIN 
+      courses ON enrollments.CourseID = courses.CourseID
+    WHERE 
+      courses.TutorID = ?
+  `;
+
+  db.query(sql, [tutorId], (error, results) => {
+    if (error) {
+      console.error('Error fetching students by tutor:', error);
+      return res.status(500).json({ error: 'Internal error' });
+    }
+    res.status(200).json({ message: 'Fetched successfully', students: results });
+  });
+}

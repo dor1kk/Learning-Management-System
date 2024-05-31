@@ -187,6 +187,15 @@ const Sidebar = ({ children }) => {
   <ListItemText primary="Announcements Management" />
 </ListItem>
 
+<ListItem button component={Link} to="/Home/Account" onClick={handleMenuItemClick}>
+                  <ListItemIcon>
+                    <Notifications style={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Account" />
+                </ListItem>
+
+              
+
               </>
             )}
             {role === "Student" && (
@@ -240,7 +249,15 @@ const Sidebar = ({ children }) => {
                   <ListItemText primary="Notifications" />
                 </ListItem>
 
+                <ListItem button component={Link} to="/Home/Accounttt" onClick={handleMenuItemClick}>
+                  <ListItemIcon>
+                    <Notifications style={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Account" />
+                </ListItem>
+
               </>
+              
             )}
             {role && (
               <ListItem button onClick={handleDrawerToggle}>
@@ -253,15 +270,7 @@ const Sidebar = ({ children }) => {
             )}
             {open && (
               <Collapse in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItem button component={Link} to="/Home/Account" onClick={handleMenuItemClick}>
-                                      <ListItemIcon>
-                    <AccountCircle style={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText primary="Account" />
-                </ListItem>
                
-              </List>
             </Collapse>
           )}
           <ListItem button onClick={handleLogout}>

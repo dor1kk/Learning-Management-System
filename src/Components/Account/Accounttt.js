@@ -42,7 +42,23 @@ function Account() {
             alert("Failed to Insert. Please try again.");
         }
     };
-      
+    const deleteProfile = () => {
+        axios.delete(`http://localhost:8080/studentsi/${student.ID}`, { withCredentials: true })
+            .then(response => {
+                console.log(response.data);
+                
+                setStudent ({});
+               
+                axios.delete(`http://localhost:8080/users/${student.UserId}`, { withCredentials: true })
+                    .then(userResponse => {
+                        console.log(userResponse.data);
+                        navigate('/signin');  
+                    })
+                    .catch(userError => console.error('Error deleting corresponding user:', userError));
+            })
+            .catch(error => console.error('Error deleting profile:', error));
+    };
+    
   
 
     const deleteeeProfile = () => {
@@ -112,7 +128,7 @@ function Account() {
             <div className="row">
                 <div className="col-10">
                     <div className="my-5">
-                        <Typography variant="h3" gutterBottom fontWeight="bold" color="primary">My Profile</Typography>
+                       
                     </div>
                     <form className="file-upload">
                         <div className="row mb-5 gx-5">
@@ -181,6 +197,7 @@ function Account() {
                                       
                     {/* Button */}
                     <div  style={{ marginTop: '100px' }} className="gap-3 d-md-flex justify-content-md-end">
+                    <button type="button" className="btn btn-danger btn-lg me-3" onClick={deleteProfile}>Delete profile</button>
                         <button type="button" className="btn btn-primary btn-lg" onClick={updateProfile}>Update profile</button>
                     </div>
                 </div>

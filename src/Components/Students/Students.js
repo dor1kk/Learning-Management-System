@@ -31,17 +31,19 @@ const StudentList = () => {
 
   const fetchStudents = async () => {
     try {
-      const studentResponse = await fetch('http://localhost:8080/student');
-      const studentData = await studentResponse.json();
-      setStudents(studentData);
-
-      const courseResponse = await fetch('http://localhost:8080/courses');
-      const courseData = await courseResponse.json();
-      setCourses(courseData);
+      const response = await fetch('http://localhost:8080/studentikursi', {
+        credentials: 'include', 
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setStudents(data.students);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
 
   useEffect(() => {
     fetchStudents();

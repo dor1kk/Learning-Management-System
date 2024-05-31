@@ -9,11 +9,11 @@ import { signUpUser,Logout, signInUser, checkUserId, checkRole, checkUsername } 
 import { getCourses, getCoursesByTutor, getCoursesTutorInfo, getCoursesById, InsertCourse, UpdateCourse, DeleteCourse} from "./Routes/Courses.js";
 import { getAllLectures, CompleteALecture, checkLectureCompletionStatus, getLectureByUserIdAndCourseId, AddLecture, getLecturesByCourse, getLecturesById, getSpecificLecture, EditLecture, DeleteLecture } from "./Routes/Lectures.js";
 import { EnrollStudent, GetEnrolledCourses ,DeleteEnrollment } from "./Routes/Enroll.js";
-import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt } from "./Routes/Tutors.js";
+import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordUsers,  UpdatedPasswordUser,  UpdatedData, DeletePhotoProfilt ,  fetchStudentsofTutors,DeleteProfilet } from "./Routes/Tutors.js";
 import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
 import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
-import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS } from "./Routes/Students.js";
+import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS ,  DeleteProfilS} from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, EditQuestion, getQuestionsByExam, getQuestionsByTutor } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
@@ -236,6 +236,11 @@ app.get('/tutoria', (req, res) => {
 });
 
 
+app.get('/studentikursi', (req, res) => {
+  fetchStudentsofTutors(req,res,db);
+});
+
+
 
 //Users info and Management
 
@@ -291,9 +296,6 @@ app.get('/usersss', (req, res) => {
 UpdatestudentA(req,res,db);
 });
 
-app.put('/tutorss/id', (req, res) => {
-  UpdatedData(req,res,db);
-  });
   
   app.delete('/tuturii/:id', (req, res) => {
     DeletePhotoProfilt(req,res,db);
@@ -304,8 +306,19 @@ app.put('/tutorss/id', (req, res) => {
   });
 
  
+  app.delete('/tutorsss/:id', (req, res) => {
+    DeleteProfilet(req,res,db);
+  });
+  
+ 
+  app.delete('/studentsi/:id', (req, res) => {
+    DeleteProfilS(req,res,db);
+  });
 
 
+  app.put('/tutorss/:id', (req, res) => { 
+    UpdatedData(req, res, db);
+  });
 
 
 

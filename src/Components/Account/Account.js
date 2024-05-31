@@ -25,7 +25,6 @@ function Account() {
     const [updatedPlaceholdereducation] = useState('');
     const [updatedPlaceholderlocation] = useState('');
     const [updatedPlaceholdercontact] = useState('');
-    const [updatedPlaceholderavailability] = useState('');
      const [user, setUser] = useState([]);
     const [Password, setPassword] = useState('');
     const navigate=useNavigate()
@@ -59,7 +58,22 @@ function Account() {
         }
     };
       
- 
+    const deleteProfilee = () => {
+        axios.delete(`http://localhost:8080/tutorsss/${tutor.TutorID}`, { withCredentials: true })
+            .then(response => {
+                console.log(response.data);
+                
+              setTutor  ({});
+               
+                axios.delete(`http://localhost:8080/users/${tutor.UserID}`, { withCredentials: true })
+                    .then(userResponse => {
+                        console.log(userResponse.data);
+                        navigate('/signin');  
+                    })
+                    .catch(userError => console.error('Error deleting corresponding user:', userError));
+            })
+            .catch(error => console.error('Error deleting profile:', error));
+    };
 
     const deleteeProfile = () => {
         axios.delete(`http://localhost:8080/tuturii/${tutor.TutorID}`, { withCredentials: true })
@@ -89,7 +103,6 @@ function Account() {
                     setUpdatededucation(fetchedTutor.education);
                     setUpdatedlocation(fetchedTutor.location);
                     setUpdatedcontact(fetchedTutor.contact);
-                    setUpdatedavailability(fetchedTutor.availability);
                     setUpdatedimage_url(fetchedTutor.image_url);
 
                 }
@@ -130,9 +143,7 @@ function Account() {
         setUpdatedcontact(event.target.value);
     };
 
-    const handleavailabilityChange = (event) => {
-        setUpdatedavailability(event.target.value);
-    };
+
  
     const handleimage_urlChange = (event) => {
         setUpdatedimage_url(event.target.value);
@@ -153,9 +164,7 @@ function Account() {
         if (updatedbio !== '') {
             updatedData.bio = updatedbio;
         }
-        if (updatedcourses !== '') {
-            updatedData.courses = updatedcourses;
-        }
+    
         if (updatedexperience !== '') {
             updatedData.experience = updatedexperience;
         }
@@ -168,10 +177,7 @@ function Account() {
         if (updatedcontact !== '') {
             updatedData.contact = updatedcontact;
         }
-        if (updatedavailability !== '') {
-            updatedData.availability = updatedavailability;
-        }
-
+    
         if (updatedimage_url !== '') {
             updatedData.image_url = updatedimage_url;
         }
@@ -187,7 +193,7 @@ function Account() {
             <div className="row">
                 <div className="col-12">
                     <div className="my-5">
-                    <Typography variant="h3" gutterBottom fontWeight="bold" color="primary">My Profile</Typography>
+
                     </div>
                     <form className="file-upload">
                         <div className="row mb-5 gx-5">
@@ -229,10 +235,7 @@ function Account() {
                                             <label className="form-label">Contact *</label>
                                             <input type="text" className="form-control" placeholder={updatedPlaceholdercontact} aria-label="Contact" value={updatedcontact} onChange={handlecontactChange} />
                                         </div>
-                                        <div className="col-md-6">
-                                            <label className="form-label">Availability *</label>
-                                            <input type="text" className="form-control" placeholder={updatedPlaceholderavailability} aria-label="Availability" value={updatedavailability} onChange={handleavailabilityChange} />
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -261,7 +264,7 @@ function Account() {
                         </div> 
                         </form>
                         <form onSubmit={Submit}>
-                        <div className="col-md-6 " >
+                        <div style={{ marginTop: '-120px' }} className="col-md-6 " >
                                 <div className="bg-secondary-soft px-4 py-2 rounded">
                                     <div className="row g-3">
                                     <Typography style={{ marginTop: '10px', color: 'green', fontWeight: 'bold' }} variant="h6" gutterBottom>Change Password</Typography>
@@ -287,7 +290,7 @@ function Account() {
                  
                   
                     <div style={{ marginTop: '-30px' }} className="gap-3 d-md-flex justify-content-md-end">
-                     
+                    <button type="button" className="btn btn-danger btn-lg me-3" onClick={deleteProfilee}>Delete profile</button>
                         <button type="button" className="btn btn-primary btn-lg" onClick={updateProfileee}>Update profile</button>
                     </div>
                 </div>

@@ -17,6 +17,12 @@ function FeedbackTable() {
     axios.get("http://localhost:8080/getAllFeedback")
       .then(response => {
         setFeedbacks(response.data);
+        const initialReplies = {};
+        response.data.forEach(item => {
+          initialReplies[item.FeedbackID] = item.reply || "";
+        });
+        setEditingReply(initialReplies);
+    
       })
       .catch(error => {
         console.error("Error fetching feedback data:", error);
@@ -91,6 +97,7 @@ function FeedbackTable() {
         bordered
         size="middle"
         scroll={{ x: "max-content" }}
+        rowKey="FeedbackID"
       />
     </div>
   );

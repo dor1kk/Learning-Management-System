@@ -93,4 +93,27 @@ export function DeletePhotoProfilS(req,res,db){
   }
 
   
+  export function DeleteProfilS(req, res, db) {
+    const { id } = req.params;
   
+   
+  
+   
+    const deleteUserSQL = 'DELETE FROM users WHERE UserId = ?';
+    db.query(deleteUserSQL, [id], function(error2, results2) {
+      if (error2) {
+        console.error('Error deleting user:', error2);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+    const deleteStudentSQL = 'DELETE FROM students WHERE ID = ?';
+    db.query(deleteStudentSQL, [id], function(error1, results1) {
+      if (error1) {
+        console.error('Error deleting student:', error1);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+        res.status(200).json({ message: 'Profile deleted successfully' });
+      });
+    });
+  }
