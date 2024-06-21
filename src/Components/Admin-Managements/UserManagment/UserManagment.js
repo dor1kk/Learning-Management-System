@@ -4,7 +4,11 @@ import { Table, Space, Button, message } from 'antd'; // Import Ant Design compo
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Import Ant Design icons
 import { Link } from 'react-router-dom';
 
-function UserManagement() {
+function UserManagement({role}) {
+
+  if (role !== "Admin") {
+    window.location.href = "/unauthorized";
+  }
   const [users, setUsers] = useState([]);
 
   useEffect(() => {

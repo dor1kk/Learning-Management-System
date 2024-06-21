@@ -1,122 +1,79 @@
 import React, { useState } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Form, Input, Button, Typography, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AiOutlineUser, AiOutlineMail, AiOutlineStar, AiOutlineProfile, AiOutlineBook, AiOutlineFieldTime, AiOutlineBank, AiOutlineEnvironment, AiOutlinePhone, AiOutlineCalendar, AiOutlinePicture } from 'react-icons/ai';
-import "./Tutors.css";
+import { UserOutlined, MailOutlined, StarOutlined, ProfileOutlined, BookOutlined, FieldTimeOutlined, BankOutlined, EnvironmentOutlined, PhoneOutlined, CalendarOutlined, PictureOutlined } from '@ant-design/icons';
 
+const { Title } = Typography;
 
 function BecomeTutor() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [expertise, setExpertise] = useState('');
-    const [bio, setBio] = useState('');
-    const [courses, setCourses] = useState('');
-    const [experience, setExperience] = useState('');
-    const [education, setEducation] = useState('');
-    const [location, setLocation] = useState('');
-    const [contact, setContact] = useState('');
-    const [availability, setAvailability] = useState('');
-    const [image_url, setImage] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-  
-    const Submit = async (e) => {
-        e.preventDefault();
+
+    const onFinish = async (values) => {
+        setLoading(true);
         try {
-            const formData = { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url };
-            await axios.post("http://localhost:8080/becomeTutor", formData);
-            alert("Insert successfully!");
+            await axios.post("http://localhost:8080/TutorRequest", values);
+            message.success('Request submitted successfully!');
             navigate('/');
         } catch (error) {
-            console.error("Insert enrolling:", error);
-            alert("Failed to Insert. Please try again.");
+            console.error("Error submitting request:", error);
+            message.error('Failed to submit request. Please try again.');
         }
+        setLoading(false);
     };
-      
+
     return (
-        
-            <div className='c-container d-flex vh-300 justify-content-center align-items-center' style={{ backgroundColor: '#ADD8E6' }}>
-            <div className='w-50 bg-white rounded p-3'>
-                <form onSubmit={Submit}>
-                <h2 style={{ color: '#007BFF', textAlign: 'center', marginBottom: '2rem', textTransform: 'uppercase' }}>Become a Tutor</h2>
-                    <div className="d-flex flex-row" style={{gap:"10px"}}>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineUser /></span>
-                                <input type='text' name='name' placeholder='Name' className='form-control' onChange={(e) =>setName(e.target.value)}/>
-                            </div>
-                        </div>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineMail /></span>
-                                <input type='text' name='email' placeholder='Email' className='form-control' onChange={(e) =>setEmail(e.target.value)}/>
-                            </div>
-                        </div>
+        <div className='container d-flex vh-100 justify-content-center align-items-center'>
+            <div className=' bg-white rounded p-3'>
+                <Form
+                    name="becomeTutorForm"
+                    onFinish={onFinish}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                    layout="vertical"
+                >
+                    <div className="d-flex flex-row">
+                        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]} className="flex-grow-1 mr-2">
+                            <Input prefix={<UserOutlined />} placeholder="Name" />
+                        </Form.Item>
+                        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]} className="flex-grow-1">
+                            <Input prefix={<MailOutlined />} placeholder="Email" />
+                        </Form.Item>
                     </div>
-                    <div className="d-flex flex-row" style={{gap:"10px"}}>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineStar /></span>
-                                <input type='text' name='expertise' placeholder='Expertise' className='form-control' onChange={(e) =>setExpertise(e.target.value)}/>
-                            </div>
-                        </div>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineProfile /></span>
-                                <input type='text' name='bio' placeholder='Bio' className='form-control' onChange={(e) =>setBio(e.target.value)}/>
-                            </div>
-                        </div>
+                    <div className="d-flex flex-row">
+                        <Form.Item label="Expertise" name="expertise" rules={[{ required: true, message: 'Please input your expertise!' }]} className="flex-grow-1 mr-2">
+                            <Input prefix={<StarOutlined />} placeholder="Expertise" />
+                        </Form.Item>
+                        <Form.Item label="Bio" name="bio" rules={[{ required: true, message: 'Please input your bio!' }]} className="flex-grow-1">
+                            <Input prefix={<ProfileOutlined />} placeholder="Bio" />
+                        </Form.Item>
                     </div>
-                    <div className="d-flex flex-row" style={{gap:"10px"}}>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineBook /></span>
-                                <input type='text' name='courses' placeholder='Courses' className='form-control' onChange={(e) =>setCourses(e.target.value)}/>
-                            </div>
-                        </div>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineFieldTime /></span>
-                                <input type='text' name='experience' placeholder='Experience' className='form-control' onChange={(e) =>setExperience(e.target.value)}/>
-                            </div>
-                        </div>
+                    <div className="d-flex flex-row">
+                    <Form.Item label="Contact" name="contact" rules={[{ required: true, message: 'Please input your contact!' }]} className="flex-grow-1 mr-2">
+                            <Input prefix={<PhoneOutlined />} placeholder="Contact" />
+                        </Form.Item>
+                        <Form.Item label="Experience" name="experience" rules={[{ required: true, message: 'Please input your experience!' }]} className="flex-grow-1">
+                            <Input prefix={<FieldTimeOutlined />} placeholder="Experience" />
+                        </Form.Item>
                     </div>
-                    <div className="d-flex flex-row" style={{gap:"10px"}}>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineBank /></span>
-                                <input type='text' name='education' placeholder='Education' className='form-control' onChange={(e) =>setEducation(e.target.value)}/>
-                            </div>
-                        </div>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlineEnvironment /></span>
-                                <input type='text' name='location' placeholder='Location' className='form-control' onChange={(e) =>setLocation(e.target.value)}/>
-                            </div>
-                        </div>
+                    <div className="d-flex flex-row">
+                        <Form.Item label="Education" name="education" rules={[{ required: true, message: 'Please input your education!' }]} className="flex-grow-1 mr-2">
+                            <Input prefix={<BankOutlined />} placeholder="Education" />
+                        </Form.Item>
+                        <Form.Item label="Location" name="location" rules={[{ required: true, message: 'Please input your location!' }]} className="flex-grow-1">
+                            <Input prefix={<EnvironmentOutlined />} placeholder="Location" />
+                        </Form.Item>
                     </div>
-                    <div className="d-flex flex-row" style={{gap:"10px"}}>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text  bg-primary text-white"><AiOutlinePhone /></span>
-                                <input type='text' name='contact' placeholder='Contact' className='form-control' onChange={(e) =>setContact(e.target.value)}/>
-                            </div>
-                        </div>
-                        <div className='form-group'>
-                            <div className="input-group">
-                                <span className="input-group-text bg-primary text-white"><AiOutlineCalendar /></span>
-                                <input type='text' name='availability' placeholder='Availability' className='form-control' onChange={(e) =>setAvailability(e.target.value)}/>
-                            </div>
-                        </div>
+                    <div className="d-flex flex-row">
+                 
+                    
                     </div>
-                    <div className='form-group'>
-                        <div className="input-group">
-                            <span className="input-group-text  bg-primary text-white"><AiOutlinePicture /></span>
-                            <input type='text' name='image_url' placeholder='Image URL' className='form-control' onChange={(e) =>setImage(e.target.value)}/>
-                        </div>
-                    </div>
-                    <button type="submit" className='btn btn-primary text-white' variant="contained" color="primary">Submit</button>
-                </form>
+                   
+                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                        <Button type="primary" htmlType="submit" loading={loading}>Submit</Button>
+                    </Form.Item>
+                </Form>
             </div>
         </div>
     );

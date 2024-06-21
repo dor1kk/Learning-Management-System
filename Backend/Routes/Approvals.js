@@ -139,3 +139,88 @@ export function getContentApproval(req, res,db) {
   );
 }
 
+
+
+export function RequestTutorApproval(req, res, db) {
+  const { name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url } = req.body;
+  const userId = req.session.userid;
+
+  if (!userId) {
+      return res.status(401).send('Unauthorized');
+  }
+
+  const requestDetails = JSON.stringify({ name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url });
+
+  db.query(
+      "INSERT INTO approval_requests (UserID, RequestType, RequestDetails) VALUES (?, ?, ?)",
+      [userId, 'role_change', requestDetails],
+      (error, result) => {
+          if (error) {
+              console.error("Tutor approval request error:", error);
+              return res.status(500).json({ error: "Internal server error" });
+          }
+
+          res.status(201).json({ message: 'Tutor application request submitted successfully', RequestID: result.insertId });
+      }
+  );
+}
+
+
+export function ApproveTutorRequest(req, res, db) {
+  const { requestId } = req.body;
+
+  db.query(
+      "SELECT * FROM approval_requests WHERE RequestID = ?",
+      [requestId],
+      (error, results) => {
+          if (error) {
+              console.error("Error retrieving request:", error);
+              return res.status(500).send('Internal Server Error');
+          }
+
+          if (results.length === 0) {
+              return res.status(404).send('Request not found');
+          }
+
+          const request = results[0];
+          const requestDetails = JSON.parse(request.RequestDetails);
+          const userId = request.UserID;
+
+          db.query(
+              "UPDATE users SET role = 'Tutor',Username=?, Email=?  WHERE UserID = ?",
+              [requestDetails.name, requestDetails.email, userId],
+              (err) => {
+                  if (err) {
+                      console.error("Error updating user role:", err);
+                      return res.status(500).send('Internal Server Error');
+                  }
+
+                  db.query(
+                      "INSERT INTO tutor (name, email, expertise, bio, courses, experience, education, location, contact, availability, image_url, UserID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                      [requestDetails.name, requestDetails.email, requestDetails.expertise, requestDetails.bio, requestDetails.courses, requestDetails.experience, requestDetails.education, requestDetails.location, requestDetails.contact, requestDetails.availability, requestDetails.image_url, userId],
+                      (err) => {
+                          if (err) {
+                              console.error("Error inserting into tutors table:", err);
+                              return res.status(500).send('Internal Server Error');
+                          }
+
+                          db.query(
+                              "DELETE FROM approval_requests WHERE RequestID = ?",
+                              [requestId],
+                              (err) => {
+                                  if (err) {
+                                      console.error("Error deleting approval request:", err);
+                                      return res.status(500).send('Internal Server Error');
+                                  }
+
+                                  res.status(200).send('Tutor approved and data saved successfully');
+                              }
+                          );
+                      }
+                  );
+              }
+          );
+      }
+  );
+}
+

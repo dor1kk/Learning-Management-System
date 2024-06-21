@@ -53,7 +53,7 @@ const CertificatePage = () => {
     const cardElement = document.getElementById('cert-container');
     toPng(cardElement) 
       .then(function (dataUrl) {
-        var link = document.createElement('a');
+        let link = document.createElement('a');
         link.download = 'certificate.png';
         link.href = dataUrl;
         link.click();

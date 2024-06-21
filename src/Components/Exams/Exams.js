@@ -7,7 +7,11 @@ import "./Exams.css";
 
 const { Option } = Select;
 
-function Exams() {
+function Exams({role}) {
+  if (role !== "Student") {
+    window.location.href = "/unauthorized";
+  }
+  
   const [exams, setExams] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("all");

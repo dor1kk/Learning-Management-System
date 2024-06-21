@@ -7,7 +7,13 @@ import './Forum.css'; // Import the CSS file for custom styling
 const { Header, Content, Sider } = Layout;
 const { TextArea } = Input;
 
-const Forum = () => {
+const Forum = ({role}) => {
+
+    if (role !== "Student") {
+        window.location.href = "/unauthorized";
+      }
+      
+
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newPost, setNewPost] = useState({ title: '', body: '' });
@@ -104,9 +110,9 @@ const Forum = () => {
                         <Menu.Item key="3">Favorites</Menu.Item>
                     </Menu>
                 </Sider>
-                <Layout className='c-container'>
+                <Layout className='container'>
                     <Content
-                        className="c-container"
+                        className="container"
                         style={{
                             padding: 24,
                             margin: 0,

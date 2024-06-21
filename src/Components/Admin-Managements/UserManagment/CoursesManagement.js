@@ -4,7 +4,12 @@ import { Table, Space, Button, message } from 'antd'; // Import Ant Design compo
 import { DeleteOutlined } from '@ant-design/icons'; // Import Ant Design icons
 import { Link } from 'react-router-dom';
 
-function CoursesManagement() {
+function CoursesManagement({role}) {
+
+  if (role !== "Admin") {
+    window.location.href = "/unauthorized";
+  }
+
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {

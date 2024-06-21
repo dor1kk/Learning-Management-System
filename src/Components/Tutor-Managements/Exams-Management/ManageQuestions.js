@@ -5,7 +5,11 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-const ManageQuestions = ({ exam }) => {
+const ManageQuestions = ({ role }) => {
+
+    if (role !== "Tutor") {
+        window.location.href = "/unauthorized";
+      }
   const [questions, setQuestions] = useState([]);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);

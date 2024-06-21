@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Select, Chip, Card, CardContent, Typography, Button, Grid, FormControl, MenuItem, InputLabel, Box, List, ListItem, ListItemText } from "@mui/material";
+import { Select, Card, Typography, Button, Row, Col, List } from "antd";
 import { FaHtml5, FaNodeJs, FaDatabase, FaCalculator } from 'react-icons/fa';
-import { BiNetworkChart } from 'react-icons/bi';
-import CourseDetail from "./Coursedetail";
+import axios from "axios";
+
+const { Option } = Select;
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -16,9 +17,8 @@ function Courses() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('http://localhost:8080/coursestutorinfo');
-      const data = await response.json();
-      setCourses(data);
+      const response = await axios.get('http://localhost:8080/coursestutorinfo');
+      setCourses(response.data);
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
@@ -47,54 +47,61 @@ function Courses() {
 
   return (
     <main className="container p-5">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <List component="ul" sx={{ display: 'flex', padding: 0, width: "100%" }}>
-            <ListItem button onClick={() => setCategory("")} style={{ color: "#0047AB", marginRight: '10px' }}>All</ListItem>
-            <ListItem button onClick={() => setCategory("Frontend")} style={{ color: "#0047AB", marginRight: '10px' }}><FaHtml5 /> Frontend</ListItem>
-            <ListItem button onClick={() => setCategory("Backend")} style={{ color: "#0047AB", marginRight: '10px' }}><FaNodeJs /> Backend</ListItem>
-            <ListItem button onClick={() => setCategory("Database")} style={{ color: "#0047AB", marginRight: '10px' }}><FaDatabase /> Database</ListItem>
-            <ListItem button onClick={() => setCategory("Math")} style={{ color: "#0047AB" }}><FaCalculator /> Mathematics</ListItem>
-          </List>
-        </Box>
-        <Box>
-          <FormControl variant="outlined" style={{ minWidth: 150 }}>
-            <InputLabel id="sort-by-label">Sort by:</InputLabel>
-            <Select
-              labelId="sort-by-label"
-              id="sort-by"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              label="Sort by"
-            >
-              <MenuItem value="default">Default</MenuItem>
-              <MenuItem value="title">Title</MenuItem>
-              <MenuItem value="rating">Rating</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-      <Grid container spacing={3} className="mt-4">
+      <Row justify="space-between" align="middle" style={{ marginBottom: '20px' }}>
+        <List
+          grid={{ gutter: 16, column: 5 }}
+          dataSource={[
+            { category: '', label: 'All', icon: null },
+            { category: 'Frontend', label: 'Frontend', icon: <FaHtml5 /> },
+            { category: 'Backend', label: 'Backend', icon: <FaNodeJs /> },
+            { category: 'Database', label: 'Database', icon: <FaDatabase /> },
+            { category: 'Math', label: 'Mathematics', icon: <FaCalculator /> },
+          ]}
+          renderItem={item => (
+            <List.Item onClick={() => setCategory(item.category)} style={{ cursor: 'pointer', color: "#0047AB" }}>
+              {item.icon} {item.label}
+            </List.Item>
+          )}
+        />
+        <Select value={sortBy} onChange={setSortBy} style={{ width: 200 }}>
+          <Option value="default">Default</Option>
+          <Option value="title">Title</Option>
+          <Option value="rating">Rating</Option>
+        </Select>
+      </Row>
+      <Row gutter={[16, 16]}>
         {sortedCourses.map((course) => (
-          <Grid item xs={12} sm={6} md={3} key={course.CourseID}>
-            <Card className="course-card">
-              <img src={course.Image} alt="Course" className="card-img" />
-              <CardContent>
-                <Typography variant="subtitle1" style={{ color: "gray" }}>
-                  {Array.from({ length: 5 }, (_, index) => (
-                    <span key={index} style={{ color: index < Math.floor(course.AverageRating) ? 'gold' : 'grey' }}>&#9733;</span>
-                  ))} <span className="" style={{ color: "gray", marginLeft: "8px", fontSize: "12px" }}>{course.AverageRating}/5 ({course.NumberOfReviews} reviews)</span>
-                </Typography>
-                <Typography variant="h6" style={{ color: "gray", fontWeight: "bolder" }}>{course.Title}</Typography>
-                <div style={{ marginTop: "8px" }}>
-                  <Typography style={{ color: "gray", fontWeight: "bolder", fontSize: "14px" }}>{course.TutorName}</Typography>
-                </div>
-                <Button component={Link} to={`/Home/CourseDetail/${course.CourseID}`} variant="contained" color="primary" style={{ marginTop: "16px" }}>See more...</Button>
-              </CardContent>
+          <Col xs={24} sm={12} md={8} lg={6} key={course.CourseID}>
+            <Card
+              hoverable
+              cover={<img alt="Course" src={course.Image} style={{ height: '140px', objectFit: 'cover' }} />}
+              style={{ height: '100%' }}
+            >
+              <Card.Meta
+                title={course.Title}
+                description={
+                  <>
+                    <Typography.Paragraph style={{ color: "gray" }}>
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <span key={index} style={{ color: index < Math.floor(course.AverageRating) ? 'gold' : 'grey' }}>
+                          &#9733;
+                        </span>
+                      ))}
+                      <span style={{ marginLeft: '8px', fontSize: '12px' }}>
+                        {course.AverageRating}/5 ({course.NumberOfReviews} reviews)
+                      </span>
+                    </Typography.Paragraph>
+                    <Typography.Paragraph style={{ color: "gray", fontWeight: "bold" }}>{course.TutorName}</Typography.Paragraph>
+                    <Button type="primary" block>
+                      <Link to={`/Home/CourseDetail/${course.CourseID}`} style={{ color: "white" }}>See more...</Link>
+                    </Button>
+                  </>
+                }
+              />
             </Card>
-          </Grid>
+          </Col>
         ))}
-      </Grid>
+      </Row>
     </main>
   );
 }

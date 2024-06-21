@@ -4,7 +4,13 @@ import { useLocation } from 'react-router-dom';
 import { notification, Modal } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, SmileOutlined, FrownOutlined } from '@ant-design/icons'; // Import icons
 
-function TakeExam() {
+function TakeExam({role}) {
+
+  if (role !== "Student") {
+    window.location.href = "/unauthorized";
+  }
+  
+
   const [questions, setQuestions] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [answersFeedback, setAnswersFeedback] = useState({});

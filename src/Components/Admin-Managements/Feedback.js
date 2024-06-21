@@ -5,7 +5,11 @@ import { Table, Typography, Input, Button, Space, message } from "antd";
 const { Title } = Typography;
 const { TextArea } = Input;
 
-function FeedbackTable() {
+function FeedbackTable({role}) {
+
+  if (role !== "Admin") {
+    window.location.href = "/unauthorized";
+  }
   const [feedbacks, setFeedbacks] = useState([]);
   const [editingReply, setEditingReply] = useState({});
 
@@ -41,7 +45,7 @@ function FeedbackTable() {
         reply: editingReply[FeedbackID]
       });
       message.success("Reply updated successfully");
-      fetchFeedbacks();  // Refresh feedbacks to show updated data
+      fetchFeedbacks();  
     } catch (error) {
       console.error("Error updating reply:", error);
       message.error("Failed to update reply");

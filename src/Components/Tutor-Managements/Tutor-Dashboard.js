@@ -15,7 +15,11 @@ import axios from 'axios'
 
 
 
-function TutorDashboard() {
+function TutorDashboard({role}) {
+
+    if (role !== "Tutor") {
+        window.location.href = "/unauthorized";
+      }
 
     const [noStudents,setNoStudents]=useState(null);
   

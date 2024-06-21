@@ -4,18 +4,23 @@ import { Button, Typography, Input, List, Avatar, Space, Modal } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import "./CourseManagement.css";
 import AddCourse from './AddCourse';
-import EditCourse from './EditCourse'; // Import the EditCourse component
+import EditCourse from './EditCourse';
 
 const { confirm } = Modal;
 
-const CourseManagement = () => {
+const CourseManagement = ({role}) => {
+
+  if (role !== "Tutor") {
+    window.location.href = "/unauthorized";
+  }
+
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editCourseData, setEditCourseData] = useState(null);
-  const [editCourseId, setEditCourseId] = useState(null); // State to hold the course ID for editing
+  const [editCourseId, setEditCourseId] = useState(null); 
 
   const fetchCourses = async () => {
     try {
@@ -82,7 +87,7 @@ const CourseManagement = () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => setAddModalVisible(true)} // Open add modal
+          onClick={() => setAddModalVisible(true)} 
         >
           Add Course
         </Button>
@@ -102,9 +107,9 @@ const CourseManagement = () => {
                 type="primary"
                 icon={<EditOutlined />}
                 onClick={() => {
-                  setEditCourseId(course.CourseID); // Set the course ID for editing
+                  setEditCourseId(course.CourseID); 
                   setEditCourseData(course);
-                  setEditModalVisible(true); // Open edit modal
+                  setEditModalVisible(true); 
                 }}
               >
                 Edit
@@ -127,7 +132,6 @@ const CourseManagement = () => {
         )}
       />
 
-      {/* Add Course Modal */}
       <Modal
         title="Add New Course"
         visible={addModalVisible}

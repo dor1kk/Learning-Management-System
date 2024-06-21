@@ -15,7 +15,7 @@ export function getTotalStudents(req,res,db){ //gets the total number of the stu
 }
 
 
-export function TotalStudentss(req,res,db){ //gets the total number of the students 
+export function TotalStudentss(req,res,db){ //gets the total number of the student
   db.query(`
   SELECT COUNT(students.ID) AS TotalStudents
   FROM students

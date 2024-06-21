@@ -1,15 +1,18 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, IconButton, InputBase, Typography, Divider, Paper, List, ListItem, ListItemText, ListItemAvatar, Avatar } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { AppBar, Toolbar, IconButton, InputBase, Typography, Divider, Paper, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import FeedbackIcon from '@mui/icons-material/Feedback';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary'; // Import the VideoLibraryIcon
-import { Modal, Input } from 'antd';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary'; 
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Modal, Input, Badge, Table } from 'antd';
 import axios from "axios";
-import { MapRounded } from "@mui/icons-material";
+import { DoneAll, MapRounded } from "@mui/icons-material";
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 
+import {List, ListItem, ListItemAvatar, ListItemText} from "@mui/material"
 
 function Topbar({ toggleDarkMode, colors }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +20,8 @@ function Topbar({ toggleDarkMode, colors }) {
     const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false);
     const [isUserModalVisible, setIsUserModalVisible] = useState(false);
     const [isAboutUsModalVisible, setIsAboutUsModalVisible] = useState(false); 
+    const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false); // State for notification modal
+    const [notifications, setNotifications] = useState([]); // State for notifications
     const [feedback, setFeedback] = useState('');
     const [userInfo, setUserInfo] = useState(null);
     const [isStepByStepGuideModalVisible, setIsStepByStepGuideModalVisible] = useState(false); 
@@ -45,8 +50,6 @@ function Topbar({ toggleDarkMode, colors }) {
         setIsFeedbackModalVisible(true);
     };
 
-
-
     const handleFeedbackOk = async () => {
         try {
             await axios.post('http://localhost:8080/insertFeedback', { feedback });
@@ -63,6 +66,25 @@ function Topbar({ toggleDarkMode, colors }) {
 
     const handleFeedbackChange = (e) => {
         setFeedback(e.target.value);
+    };
+
+    const getNotificationIcon = (notification) => {
+        // Implement the logic to determine the notification icon based on the notification type
+    };
+
+ 
+    
+    const getNotificationText = (notification) => {
+        switch (notification.NotificationType) {
+          case "course_upload":
+            return `A new course has been uploaded on the site. Check it out: ${notification.NotificationText}`;
+          case "announcement":
+            return `New announcement: ${notification.NotificationText}`;
+          case "grade":
+            return `You've been graded: ${notification.NotificationText}`;
+          default:
+            return notification.NotificationText;
+        }
     };
 
     const showUserModal = async () => {
@@ -107,6 +129,54 @@ function Topbar({ toggleDarkMode, colors }) {
         setIsStepByStepGuideModalVisible(false);
     };
 
+    const showNotificationModal = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/notifications");
+            console.log("Notifications fetched:", response.data); 
+            setIsNotificationModalVisible(true);
+            setNotifications(response.data);
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
+    };
+
+    const handleNotificationClick = async (notification) => {
+        try {
+          await axios.put(`http://localhost:8080/notifications/${notification.NotificationID}`)
+          showNotificationModal();
+        } catch (error) {
+          console.error("Error updating notification:", error);
+        }
+      };
+
+    const handleNotificationModalOk = () => {
+        setIsNotificationModalVisible(false);
+    };
+
+    const handleNotificationModalCancel = () => {
+        setIsNotificationModalVisible(false);
+    };
+
+    const columns = [
+        {
+            dataIndex: 'NotificationText',
+            key: 'NotificationText',
+            render: (text, record) => <a>{getNotificationText(record)}</a>,
+        },
+        {
+            key: 'action',
+            render: (text, record) => (
+                <Badge count={1} style={{ backgroundColor: 'red' }}>
+                    <Avatar 
+                        shape="circle" 
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleNotificationClick(record)} 
+                    />
+                </Badge>
+            ),
+        },
+    ];
+    
 
     return (
         <>
@@ -167,6 +237,11 @@ function Topbar({ toggleDarkMode, colors }) {
                                 <IconButton onClick={showStepByStepGuideModal}>
                                     <MapRounded style={{ color: "#2774AE" }} />
                                 </IconButton>
+                                <IconButton onClick={showNotificationModal}>
+                                    <Badge count={notifications.filter(n => !n.read).length}>
+                                        <NotificationsIcon style={{ color: "#2774AE" }} />
+                                    </Badge>
+                                </IconButton>
                             </div>
                         </Toolbar>
                         <Divider />
@@ -198,7 +273,6 @@ function Topbar({ toggleDarkMode, colors }) {
                         </video>
                 </Modal>
                     
-                    
                 <Modal
                         title="Feedback"
                         visible={isFeedbackModalVisible}
@@ -211,35 +285,42 @@ function Topbar({ toggleDarkMode, colors }) {
                             value={feedback}
                             onChange={handleFeedbackChange}
                             placeholder="Please enter your feedback"
-                        />
-                    </Modal>
-                    
-                    <Modal
-                        title="User Information"
-                        visible={isUserModalVisible}
-                        onOk={handleUserModalOk}
-                        onCancel={handleUserModalCancel}
-                        okText="Close"
-                    >
-                        {userInfo && (
-                            <>
-                                <p><strong>Name:</strong> {userInfo.Name}</p>
-                                <p><strong>Username:</strong> {userInfo.Username}</p>
-                                <p><strong>Email:</strong> {userInfo.Email}</p>
-                                <p><strong>Country:</strong> {userInfo.Country}</p>
-                                <p><strong>Role:</strong> {userInfo.Role}</p>
-                            </>
-                        )}
-                    </Modal>
-                    
-                    
-
-
-                    </>
+                            />
+                            </Modal>
+                            
+                            <Modal
+                                title="User Information"
+                                visible={isUserModalVisible}
+                                onOk={handleUserModalOk}
+                                onCancel={handleUserModalCancel}
+                                okText="Close"
+                            >
+                                {userInfo && (
+                                    <>
+                                        <p><strong>Name:</strong> {userInfo.Name}</p>
+                                        <p><strong>Username:</strong> {userInfo.Username}</p>
+                                        <p><strong>Email:</strong> {userInfo.Email}</p>
+                                        <p><strong>Country:</strong> {userInfo.Country}</p>
+                                        <p><strong>Role:</strong> {userInfo.Role}</p>
+                                    </>
+                                )}
+                            </Modal>
+                            
+                            <Modal
+                                title="Notifications"
+                                visible={isNotificationModalVisible}
+                                onOk={handleNotificationModalOk}
+                                onCancel={handleNotificationModalCancel}
+                                okText="Close"
+                            >
+                                <Table 
+                                    columns={columns} 
+                                    dataSource={notifications} 
+                                    rowKey="NotificationID" 
+                                />
+                            </Modal>
+                        </>
                     );
-                    }
-                    
-            export default Topbar;
-                    
-                    
-                       
+                }
+        
+        export default Topbar;

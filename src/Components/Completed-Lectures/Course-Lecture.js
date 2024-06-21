@@ -9,7 +9,12 @@ const { Meta } = Card;
 const { Search } = Input;
 const { Option } = Select;
 
-function CourseLecture() {
+function CourseLecture({role}) {
+
+  if (role !== "Student") {
+    window.location.href = "/unauthorized";
+  }
+  
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterValue, setFilterValue] = useState("");

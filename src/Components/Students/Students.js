@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button,Container,List,ListItem,ListItemText,
+  Container,List,ListItem,ListItemText,
   ListItemIcon,
   IconButton,
   Dialog,
@@ -12,7 +12,7 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
+  
   Grid,
   InputAdornment
 } from '@mui/material';
@@ -21,8 +21,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./Students.css";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Modal, Button } from 'antd';
 
-const StudentList = () => {
+const StudentList = ({role}) => {
+
+  if (role !== "Tutor") {
+    window.location.href = "/unauthorized";
+  }
+  
+
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,14 +38,13 @@ const StudentList = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await fetch('http://localhost:8080/studentikursi', {
-        credentials: 'include', 
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setStudents(data.students);
+      const studentResponse = await fetch('http://localhost:8080/student');
+      const studentData = await studentResponse.json();
+      setStudents(studentData);
+
+      const courseResponse = await fetch('http://localhost:8080/courses');
+      const courseData = await courseResponse.json();
+      setCourses(courseData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -67,6 +73,16 @@ const StudentList = () => {
     setGradeFilter('');
     setCourseFilter('');
   };
+
+  const handleDelete=(ID)=>
+    {
+      try{
+      axios.delete(`http://localhost:8080/deletestudentfromcourse/${ID}`);
+      }catch(err){
+        console.log(err);
+      }
+
+    }
 
   return (
     <Container>
@@ -144,19 +160,20 @@ const StudentList = () => {
               <ListItemIcon>
                 <School />
               </ListItemIcon>
-              <Link to={`Edit/${student.ID}`}>
-  <Button aria-label="edit" color="primary">
-    <Edit />
-  </Button>
-</Link>
-
               <IconButton aria-label="delete" color="secondary">
-                <Delete />
+                <Delete onClick={handleDelete(student.ID)} />
               </IconButton>
             </ListItem>
           );
         })}
       </List>
+
+
+
+
+
+
+
     </Container>
 
     

@@ -13,30 +13,41 @@ export function getCourses(req, res, db) {  //gets all the courses that are in t
 
 
   export function getCoursesTutorInfo(req, res, db) {
+    const StudentID = req.session.userid;
+
+    if (!StudentID) {
+        return res.status(400).json({ error: "User not logged in" });
+    }
+
     const sql = `
-      SELECT 
-        courses.*,
-        tutor.Name AS TutorName,
-        tutor.image_url AS TutorProfilePicture,
-        AVG(reviews.Rating) AS AverageRating,
-        COUNT(reviews.ReviewID) AS NumberOfReviews
-      FROM 
-        courses
-        INNER JOIN tutor ON courses.TutorID=tutor.UserID
-        LEFT JOIN reviews ON courses.CourseID = reviews.CourseID
-      GROUP BY 
-        courses.CourseID;
+        SELECT 
+            courses.*,
+            tutor.Name AS TutorName,
+            tutor.image_url AS TutorProfilePicture,
+            AVG(reviews.Rating) AS AverageRating,
+            COUNT(reviews.ReviewID) AS NumberOfReviews
+        FROM 
+            courses
+            INNER JOIN tutor ON courses.TutorID = tutor.UserID
+            LEFT JOIN reviews ON courses.CourseID = reviews.CourseID
+        WHERE 
+            courses.CourseID NOT IN (SELECT CourseID FROM enrollments WHERE StudentID = ?)
+        GROUP BY 
+            courses.CourseID, tutor.Name, tutor.image_url;
     `;
+
     console.log("SQL Query:", sql);
-    db.query(sql, (err, result) => {
-      if (err) {
-        console.error("Error occurred during query:", err);
-        return res.json({ error: "Error occurred" });
-      }
-      console.log("Query result:", result);
-      return res.json(result);
+
+    db.query(sql, [StudentID], (err, result) => {
+        if (err) {
+            console.error("Error occurred during query:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        console.log("Query result:", result);
+        return res.json(result);
     });
-  }
+}
+
   
 
 

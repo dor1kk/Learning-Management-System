@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Descriptions, Select, Spin, message, Row, Col, Typography, Modal, Form, Input } from 'antd';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './ContentManagement.css'; 
 
 const { Option } = Select;
-const { Title } = Typography;
 const { TextArea } = Input;
 
-const ContentManagement = () => {
+const ContentManagement = ({role}) => {
+
+  if (role !== "Admin") {
+    window.location.href = "/unauthorized";
+  }
+  
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +25,7 @@ const ContentManagement = () => {
     fetchRequests();
   }, []);
 
-  const fetchRequests=()=>{
+  const fetchRequests = () => {
     axios.get('http://localhost:8080/approval_req')
     .then(response => {
       setRequests(response.data);
@@ -31,7 +36,6 @@ const ContentManagement = () => {
       console.error('Error fetching requests:', error);
       setLoading(false);
     });
-
   }
 
   const handleFilterChange = (value) => {
@@ -55,10 +59,28 @@ const ContentManagement = () => {
 
       message.success(response.data.message);
     } catch (error) {
-      console.error('Error approving course request:', error);
-      message.error('Error approving course request');
+      console.error('Error approving request:', error);
+      message.error('Error approving request');
     }
   };
+
+  const handleTutorApprove = async (requestId, responseMessage) => {
+    try {
+      const response = await axios.post(`http://localhost:8080/accepttutor`, {
+        requestId,
+        approval: 'approved',
+        responseMessage
+      });
+
+      fetchRequests();
+
+      message.success(response.data.message);
+    } catch (error) {
+      console.error('Error approving request:', error);
+      message.error('Error approving request');
+    }
+  };
+  
   
 
   const handleReject = (requestId) => {
@@ -78,27 +100,26 @@ const ContentManagement = () => {
       status: 'rejected',
       responseMessage: rejectionReason
     })
-      .then(response => {
-        message.success('Request rejected successfully');
-        setModalVisible(false);
-        setRequests(requests.filter(request => request.RequestID !== selectedRequestId));
-        setFilteredRequests(filteredRequests.filter(request => request.RequestID !== selectedRequestId));
-      })
-      .catch(error => {
-        console.error('Error rejecting request:', error);
-        message.error('Error rejecting request');
-      });
+    .then(response => {
+      message.success('Request rejected successfully');
+      setModalVisible(false);
+      setRequests(requests.filter(request => request.RequestID !== selectedRequestId));
+      setFilteredRequests(filteredRequests.filter(request => request.RequestID !== selectedRequestId));
+    })
+    .catch(error => {
+      console.error('Error rejecting request:', error);
+      message.error('Error rejecting request');
+    });
   };
 
   if (loading) {
     return <Spin size="large" />;
   }
 
-  const categories = ['course_creation', 'content_approval', 'rolechange', 'other'];
+  const categories = ['course_creation', 'content_approval', 'role_change', 'other'];
 
   return (
-    <div className="c-container p-5">
-      <Title level={2} className='text-primary'>Content Management</Title>
+    <div className="container p-5">
       <div className="mb-3">
         <Select
           placeholder="Filter by request type"
@@ -117,28 +138,55 @@ const ContentManagement = () => {
           const requestDetails = JSON.parse(request.RequestDetails);
           return (
             <Col span={8} key={request.RequestID}>
-              <Card title={requestDetails.title} className="mb-3">
-                <Descriptions column={1}>
-                  <Descriptions.Item label="Description">{requestDetails.description}</Descriptions.Item>
-                  <Descriptions.Item label="Category">{requestDetails.category}</Descriptions.Item>
-                  <Descriptions.Item label="Duration">{requestDetails.duration}</Descriptions.Item>
-                  <Descriptions.Item label="Lectures">{requestDetails.lectures}</Descriptions.Item>
-                  <Descriptions.Item label="Assignments">{requestDetails.assignments}</Descriptions.Item>
-                </Descriptions>
-                <Button type="primary" onClick={() => handleApprove(request.RequestID)} style={{ marginRight: '10px' }}>
-                  Approve
-                </Button>
-                <Button type="danger" onClick={() => handleReject(request.RequestID)}>
-                  Reject
-                </Button>
-              </Card>
+              {request.RequestType === 'course_creation' ? (
+                <Card title={requestDetails.title} className="mb-3 custom-card">
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="Description">{requestDetails.description}</Descriptions.Item>
+                    <Descriptions.Item label="Category">{requestDetails.category}</Descriptions.Item>
+                    <Descriptions.Item label="Duration">{requestDetails.duration}</Descriptions.Item>
+                  </Descriptions>
+                  <div className="card-buttons">
+                    <Button type="primary" onClick={() => handleApprove(request.RequestID)} style={{ marginRight: '10px' }}>
+                      Approve
+                    </Button>
+                    <Button type="danger" onClick={() => handleReject(request.RequestID)}>
+                      Reject
+                    </Button>
+                  </div>
+                </Card>
+              ) : request.RequestType === 'role_change' ? (
+                <Card title={requestDetails.title} className="mb-3 custom-card">
+                  <Descriptions column={1}>
+                    <Descriptions.Item label="User">{requestDetails.name}</Descriptions.Item>
+                    <Descriptions.Item label="New Role Reqeust">From Student to Tutor</Descriptions.Item>
+                    <Descriptions.Item label="Expertise">{requestDetails.expertise}</Descriptions.Item>
+                    <Descriptions.Item label="Experience">{requestDetails.experience}</Descriptions.Item>
+                    <Descriptions.Item label="Bio">{requestDetails.bio}</Descriptions.Item>
+                    <Descriptions.Item label="Contact">{requestDetails.contact}</Descriptions.Item>
+                    <Descriptions.Item label="Email">{requestDetails.email}</Descriptions.Item>
+                    <Descriptions.Item label="Location">{requestDetails.location}</Descriptions.Item>
+
+
+                  </Descriptions>
+                  <div className="card-buttons">
+                    <Button type="primary" onClick={() => handleTutorApprove(request.RequestID)} style={{ marginRight: '10px' }}>
+                      Approve
+                    </Button>
+                    <Button type="danger" onClick={() => handleReject(request.RequestID)}>
+                      Reject
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <div></div>
+              )}
             </Col>
           );
         })}
       </Row>
       <Modal
         title="Reason for Rejection"
-        visible={modalVisible}
+        visible={        modalVisible}
         onOk={handleModalSubmit}
         onCancel={handleModalCancel}
       >
@@ -157,3 +205,4 @@ const ContentManagement = () => {
 };
 
 export default ContentManagement;
+
