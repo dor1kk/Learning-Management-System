@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 
-function Lecture() {
+function Lecture({role}) {
+
+    if (role !== "Student") {
+        window.location.href = "/unauthorized";
+      }
+      
+
     const { lectureId } = useParams();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);

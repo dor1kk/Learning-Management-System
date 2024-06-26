@@ -4,7 +4,12 @@ import './Account.css';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 
-function Account() {
+function Account({role}) {
+    if (role !== "Student") {
+        window.location.href = "/unauthorized";
+      }
+      
+
     const [student, setStudent] = useState({});
     const [updatedName, setUpdatedName] = useState('');
     const [updatedImage, setUpdatedImage] = useState('');

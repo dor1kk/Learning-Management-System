@@ -7,7 +7,12 @@ import AddAnnouncement from './AddAnnouncement'; // Import the AddAnnouncement c
 
 const { Option } = Select;
 
-const AnnouncementManagement = () => {
+const AnnouncementManagement = ({role}) => {
+
+  if (role !== "Tutor") {
+    window.location.href = "/unauthorized";
+  }
+
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [announcements, setAnnouncements] = useState([]);

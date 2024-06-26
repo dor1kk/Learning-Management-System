@@ -13,7 +13,7 @@ import { GetAllTutors, GetTutorById , getLoggedInTutorInfo, AddTutor , PasswordU
 import { getAllUsers, DeleteUsers, UpdateUsers } from "./Routes/Users.js";
 import { MyFriends, AcceptFriendRequest, RejectFriendRequest, FriendRequests, DeleteFriend, SendFriendRequest , SuggestedFriends  } from "./Routes/Friends.js";
 import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsByEnrolledCourses, DeleteExam, UpdateExam, getAvailableExams, getExamsByCourse, getExamsByTutor } from "./Routes/Exams.js";
-import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS ,  DeleteProfilS} from "./Routes/Students.js";
+import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, getStudentByTutor, deletestudentfromcourse ,  DeleteProfilS} from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, EditQuestion, getQuestionsByExam, getQuestionsByTutor } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
 import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
@@ -21,8 +21,8 @@ import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progr
 import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
 import { DeleteAnnouncement, EditAnnouncement, addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
 import { getNotifications, markNotificationsAsRead } from "./Routes/Notifications.js";
-import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies } from "./Routes/Emails.js";
-import { ApproveCourseRequest, getContentApproval, InsertCourseRequest, RejectRequest,  } from "./Routes/Approvals.js";
+import { AddReply, MarkAsRead, SendEmail, getAllEmails, getNotRepliedEmails, getRepliedEmails, getReplies, getSentEmails } from "./Routes/Emails.js";
+import { ApproveCourseRequest, ApproveTutorRequest, getContentApproval, InsertCourseRequest, RejectRequest, RequestTutorApproval,  } from "./Routes/Approvals.js";
 import { UFeedback, getAllFeedbacks, insertFeedback } from "./Routes/Feedback.js";
 import { AddComment, AddPost, getForumComments, getForumQuestions } from "./Routes/Forum.js";
 
@@ -58,6 +58,11 @@ const db = mysql.createConnection({
   password: '',
   database: 'learning_system',
 });
+
+
+
+
+
 
 
 
@@ -224,10 +229,15 @@ app.get('/tutors', (req, res) => {
 
 });
 
-app.post('/becomeTutor', (req, res) => {
-  AddTutor(req,res,db);
+app.post('/TutorRequest', (req, res) => {
+  RequestTutorApproval(req,res,db);
   
 });
+
+app.post('/accepttutor', (req, res) => {
+    ApproveTutorRequest(req,res,db);
+});
+
 
 app.get('/tutors/:id', (req, res) => {
     GetTutorById(req,res,db);
@@ -455,6 +465,18 @@ app.get('/studentsa', (req, res) => {
 });
 
 
+app.get('/student', (req, res) => {
+  getStudentByTutor(req,res,db);
+});
+
+
+app.delete('/deletestudentfromcourse/:id',(req,res)=>{
+  deletestudentfromcourse(req,res,db);
+})
+
+
+
+
 
 
 //Dashboard Info and Management
@@ -546,6 +568,12 @@ app.post('/send-email', (req,res)=>{
 app.get("/emails",(req,res)=>{
   getAllEmails(req,res,db);
 })
+
+
+app.get("/sentemails",(req,res)=>{
+  getSentEmails(req,res,db);
+})
+
 
 app.get("/replied-emails",(req,res)=>{
   getRepliedEmails(req,res,db);

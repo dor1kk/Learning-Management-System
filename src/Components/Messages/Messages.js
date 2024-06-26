@@ -1,15 +1,29 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { List, Avatar, Typography, Space, Spin, Tooltip, Empty, Menu, Dropdown, Button } from "antd";
-import { EyeOutlined, UserOutlined, DownOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Input, List, Typography, Space, Tooltip } from 'antd';
+import {
+  InboxOutlined,
+  SendOutlined,
+  FolderOpenOutlined,
+  UserOutlined,
+  GlobalOutlined,
+  CreditCardOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
+import axios from 'axios';
+import './Messages.css';
 
+const { Header, Sider, Content } = Layout;
+const { Search } = Input;
 const { Text } = Typography;
 
-const Messages = () => {
+const repliedEmailsEndpoint = "http://localhost:8080/replies";
+const sentEmailsEndpoint = "http://localhost:8080/sentemails";
+
+function Messages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
-  const repliedEmailsEndpoint = "http://localhost:8080/replies";
+  const [menuKey, setMenuKey] = useState('1');
 
   useEffect(() => {
     const fetchRepliedEmails = async () => {
@@ -24,12 +38,11 @@ const Messages = () => {
     };
 
     fetchRepliedEmails();
-  }, []); 
+  }, []);
 
   const handleMarkAsRead = async (messageId) => {
     try {
       await axios.put("http://localhost:8080/markasread", { messageId });
-      // Assuming messageId will be removed from the list, so updating state accordingly
       setMessages(messages.filter(message => message.id !== messageId));
     } catch (error) {
       console.error("Error marking message as read:", error);
@@ -38,6 +51,30 @@ const Messages = () => {
 
   const handleFilterChange = (filter) => {
     setFilter(filter.key);
+  };
+
+  const handleMenuClick = async (e) => {
+    setMenuKey(e.key);
+    setLoading(true);
+    if (e.key === '1') {
+      try {
+        const response = await axios.get(repliedEmailsEndpoint);
+        setMessages(response.data.results);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching replied emails:", error);
+        setLoading(false);
+      }
+    } else if (e.key === '3') {
+      try {
+        const response = await axios.get(sentEmailsEndpoint);
+        setMessages(response.data.results);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching sent emails:", error);
+        setLoading(false);
+      }
+    }
   };
 
   const filteredMessages = filter === "all" ? messages : messages.filter(message => filter === "read" ? message.read : !message.read);
@@ -55,62 +92,66 @@ const Messages = () => {
     </Space>
   );
 
-  const menu = (
-    <Menu onClick={handleFilterChange}>
-      <Menu.Item key="all">All</Menu.Item>
-      <Menu.Item key="read">Read</Menu.Item>
-      <Menu.Item key="unread">Unread</Menu.Item>
-    </Menu>
-  );
-
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
-      <div className="c-container" style={{ flex: "0 0 20%", padding: "24px" }}>
-        <Text strong>Filter by:</Text>
-        <Dropdown overlay={menu}>
-          <Button>
-            {filter === "all" ? "All" : filter === "read" ? "Read" : "Unread"} <DownOutlined />
-          </Button>
-        </Dropdown>
-      </div>
-      <div style={{ flex: "1", padding: "24px", backgroundColor: "#ffffff" }}>
-        {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
-            <Spin size="large" />
+    <Layout style={{ minHeight: '100vh', background: '#fff' }}>
+      <Sider width={200} style={{ background: '#fff' }}>
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={['1']}
+          selectedKeys={[menuKey]}
+          onClick={handleMenuClick}
+          style={{ height: '100%', borderRight: 0 }}
+        >
+          <Menu.Item key="1" icon={<InboxOutlined />}>
+            Inbox
+          </Menu.Item>
+          <Menu.Item key="3" icon={<SendOutlined />}>
+            Sent
+          </Menu.Item>
+          <Menu.ItemGroup key="g1" title="Labels">
+            <Menu.Item key="7" icon={<FolderOpenOutlined />}>
+              Work
+            </Menu.Item>
+            <Menu.Item key="8" icon={<UserOutlined />}>
+              Personal
+            </Menu.Item>
+            <Menu.Item key="9" icon={<GlobalOutlined />}>
+              Travel
+            </Menu.Item>
+            <Menu.Item key="10" icon={<CreditCardOutlined />}>
+              Receipts
+            </Menu.Item>
+          </Menu.ItemGroup>
+        </Menu>
+      </Sider>
+      <Layout style={{ padding: '0 24px 24px', background: '#fff' }}>
+        <Header style={{ background: '#fff', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Input.Search placeholder="Search mail" style={{ width: 300, marginRight: 20 }} />
+            <Text>All</Text>
+            <Text style={{ marginLeft: 20 }}>Unread</Text>
+            <Text style={{ marginLeft: 20 }}>Starred</Text>
           </div>
-        ) : (
-          filteredMessages.length > 0 ? (
-            <div style={{ border: "1px solid #e8e8e8", borderRadius: "5px", overflow: "hidden" }}>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                {filteredMessages.map(message => (
-                  <li key={message.id} style={{ borderBottom: "1px solid #e8e8e8" }}>
-                    <div style={{ display: "flex", alignItems: "center", padding: "12px" }}>
-                      <Avatar icon={<UserOutlined />} />
-                      <div style={{ flex: "1", marginLeft: "12px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
-                          <Text strong>{message.reply}</Text>
-                          <Space>
-                            {renderListItemActions(message)}
-                          </Space>
-                        </div>
-                        <div>
-                          <Text strong>From:</Text> {message.email} <br />
-                          <Text strong>Subject:</Text> {message.subject} <br />
-                          <Text strong>Received:</Text> {message.receivedAt} <br />
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <Empty description="No messages match the selected filter" />
-          )
-        )}
-      </div>
-    </div>
+        </Header>
+        <Content style={{ padding: '0 50px', marginTop: 24, background: '#fff' }}>
+          <List
+            loading={loading}
+            itemLayout="horizontal"
+            dataSource={filteredMessages}
+            renderItem={message => (
+              <List.Item actions={renderListItemActions(message)}>
+                <List.Item.Meta
+                  title={<>Reply From Tutor: <Text strong>{message.reply}</Text></>}
+                  description={<Text type="secondary">Message Sent: {message.message}</Text>}
+                />
+                <Text type="secondary">{message.date}</Text>
+              </List.Item>
+            )}
+          />
+        </Content>
+      </Layout>
+    </Layout>
   );
-};
+}
 
 export default Messages;

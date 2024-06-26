@@ -1,33 +1,30 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import axios from 'axios'; 
-import LockIcon from '@mui/icons-material/Lock';
-import EmailIcon from '@mui/icons-material/Email';
-import ImageIcon from '@mui/icons-material/Image'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import axios from 'axios';
 import Select from 'react-select';
 import countryList from 'react-select-country-list';
-import { ReactCountryFlag } from 'react-country-flag'; // Import ReactCountryFlag
-import "./Signin.css";
+import image from './image.png';
+import './Signin.css';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import FacebookLoginButton from './Signin'
+import { message, notification } from 'antd';
 
 const Signup = () => {
-  axios.defaults.withCredentials=true;
+  axios.defaults.withCredentials = true;
 
   const customCountries = [
     { label: 'Kosova', value: 'KS' },
   ];
 
-  const combinedCountries = [...customCountries,...countryList().getData()];
+  const combinedCountries = [...customCountries, ...countryList().getData()];
 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    name:"",
-    image:'',
-    country: '', 
+    name: '',
+    image: '',
+    country: '',
   });
 
   const handleChange = (e) => {
@@ -35,160 +32,143 @@ const Signup = () => {
   };
 
   const handleCountryChange = (selectedOption) => {
-    setFormData({ ...formData, country: selectedOption.label });
+    setFormData({ ...formData, country: selectedOption });
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/signup', formData);
-      window.location.href='/Home/Signin'; 
+      const countryValue = formData.country ? formData.country.value : '';
+      const updatedFormData = { ...formData, country: countryValue };
+      if (!formData.email.endsWith('@lms.com')) {
+        notification.error({
+          message: 'Error',
+          description: 'Please use an email address from the LMS domain (e.g., studenti1@lms.com)',
+        });
+
+        return;
+      }
+      const response = await axios.post('http://localhost:8080/signup', updatedFormData);
+      window.location.href = '/Home/Signin';
     } catch (error) {
       console.error('Error signing up:', error);
     }
   };
+  
 
   return (
-    <div className='signup-container' style={{  minHeight: '100vh', padding: '2rem 0' }}>
-      <Container className=' d-flex flex-row justify-content-center align-items-center' style={{width:"900px"}}>
-        <Row className="justify-content-md-center">
-          <Col md="12">
-            <div style={{marginTop:"50px", marginLeft:"240px",  background: 'transparent', padding: '2rem', borderRadius: '8px' }}>
-              <Typography variant="h4" component="h2" align="center" gutterBottom style={{color:"#1e4589"}}>
-                Sign Up for free
-              </Typography>
-              <Form onSubmit={handleSubmit}>
-                <div className='d-flex flex-row' style={{gap:"20px"}}>
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Name"
+    <Container fluid className="vh-100">
+      <Row className="h-100">
+        <Col md={6} className="d-flex align-items-center justify-content-center bg-white">
+          <div className="w-75">
+            <div className="text-center mb-4">
+              <h2 className="mb-3 text-primary">Sign Up for free</h2>
+
+              <p>Welcome back! Select method to sign up:</p>
+            </div>
+
+            <div className="mb-3 d-flex flex-row" style={{gap: "18px"}}>
+            <GoogleOAuthProvider>
+
+            <GoogleLogin
+              
+                />
+                    </GoogleOAuthProvider>
+
+                 
+            </div>
+
+            <p className="text-center mb-3">or continue with :</p>
+
+
+            <Form onSubmit={handleSubmit}>
+              <div className="d-flex flex-row mb-3" style={{ gap: "20px" }}>
+                <Form.Group controlId="formName" className="w-50">
+                  <Form.Control
+                    type="text"
+                    placeholder="Name"
                     name="name"
-                    autoComplete="name"
-                    autoFocus
                     value={formData.name}
                     onChange={handleChange}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircleIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                      ),
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="formCountry" className="w-50">
+                  <Select
+                    className="country-select"
+                    options={combinedCountries}
+                    value={formData.country}
+                    onChange={handleCountryChange}
+                    placeholder="Select Country"
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'transparent',
+                      }),
                     }}
                   />
-
-<Select
-  className="country-select w-100 mt-3 p-2"
-  options={combinedCountries} 
-  value={formData.country}
-  onChange={handleCountryChange}
-  placeholder="Select Country"
-  styles={{
-    control: (provided) => ({
-      ...provided,
-      backgroundColor: 'transparent', 
-      zIndex:"1000"
-    }),
-  }}
-/>
-               
-
-               
-                </div>
-                
-                <div className='d-flex flex-row' style={{gap:"20px"}}>
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Username"
+                </Form.Group>
+              </div>
+              <div className="d-flex flex-row mb-3" style={{ gap: "20px" }}>
+                <Form.Group controlId="formUsername" className="w-50">
+                  <Form.Control
+                    type="text"
+                    placeholder="Username"
                     name="username"
-                    autoComplete="username"
-                    autoFocus
                     value={formData.username}
                     onChange={handleChange}
-                    InputProps={{
-                      startAdornment: (
-                        <AccountCircleIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                      ),
-                    }}
-                  />
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
                     required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
+                  />
+                </Form.Group>
+                <Form.Group controlId="formEmail" className="w-50">
+                  <Form.Control
+                    type="email"
+                    placeholder="Email Address"
                     name="email"
-                    autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
-                    InputProps={{
-                      startAdornment: (
-                        <EmailIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                      ),
-                    }}
-                  />
-                  <TextField
-                    variant="outlined"
-                    margin="normal"
                     required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    InputProps={{
-                      startAdornment: (
-                        <LockIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                      ),
-                    }}
                   />
-                </div>
-                <div className='d-flex flex-row'>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
+                </Form.Group>
+              </div>
+              <Form.Group controlId="formPassword" className="mb-3">
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
-                  fullWidth
-                  name="image"
-                  label="Image"
+                />
+              </Form.Group>
+              <Form.Group controlId="formImage" className="mb-3">
+                <Form.Control
                   type="url"
-                  id="image"
+                  placeholder="Image URL"
+                  name="image"
                   value={formData.image}
                   onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <ImageIcon color="primary" style={{ marginRight: '0.5rem' }} />
-                    ),
-                  }}
+                  required
                 />
-
-
-
-</div>
-
-                <div className="form-group form-check">
-                  <input type="checkbox" className="form-check-input" id="exampleCheck" />
-                  <label className="form-check-label" htmlFor="exampleCheck">I agree to the terms and conditions</label>
-                </div>
-                <Button type="submit" variant="contained" style={{backgroundColor:"#1e4589", color:"white"}} fullWidth>
-                  Sign Up
-                </Button>
-              </Form>
-            </div>
-          </Col>
-        </Row>
-      </Container>
-    </div>
+              </Form.Group>
+              <Form.Group controlId="formTerms" className="mb-3">
+                <Form.Check type="checkbox" label="I agree to the terms and conditions" required />
+              </Form.Group>
+              <Button type="submit" variant="primary" className="w-100 bg-primary" style={{ color: "white" }}>
+                Sign Up
+              </Button>
+            </Form>
+          </div>
+        </Col>
+        <Col md={6} className="d-flex align-items-center justify-content-center" style={{ backgroundColor: "#065ad8" }}>
+          <div className="w-75 text-center">
+            <img src={image} alt="Connect with every application" className="img-fluid" />
+            <p className="text-white mt-4">Connect with every application.</p>
+            <p className="text-white">Everything you need in an easily customizable dashboard.</p>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

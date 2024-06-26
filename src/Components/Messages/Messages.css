@@ -1,0 +1,47 @@
+.containerrr {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  
+  .sider {
+    background: #fff;
+    border-right: 1px solid #e8e8e8;
+  }
+  
+  .header {
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  
+  .content {
+    padding: 24px;
+  }
+  
+  .email-list {
+    width: 100%;
+  }
+  
+  .email-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  
+  .email-item-meta {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .email-item-meta-title {
+    font-weight: bold;
+  }
+  
+  .email-item-meta-description {
+    color: rgba(0, 0, 0, 0.45);
+  }
+  

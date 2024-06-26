@@ -7,7 +7,14 @@ import './Exams.css';
 
 const { Meta } = Card;
 
-const Exam = () => {
+const Exam = ({role}) => {
+
+  if (role !== "Student") {
+    window.location.href = "/unauthorized";
+  }
+  
+
+
   const [passedExams, setPassedExams] = useState([]);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);

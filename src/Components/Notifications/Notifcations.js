@@ -6,7 +6,13 @@ import "./Notifications.css";
 
 const { TabPane } = Tabs;
 
-function Notifications() {
+function Notifications({role}) {
+
+  if (role !== "Student") {
+    window.location.href = "/unauthorized";
+  }
+  
+
   const [notifications, setNotifications] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all'); // Initial active category
 

@@ -5,7 +5,12 @@ import { CheckOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-function GradeManagement() {
+function GradeManagement({role}) {
+
+    if (role !== "Tutor") {
+        window.location.href = "/unauthorized";
+      }
+
     const [exams, setExams] = useState([]);
     const [grades, setGrades] = useState([]);
     const [formData, setFormData] = useState({

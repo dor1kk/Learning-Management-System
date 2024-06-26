@@ -117,3 +117,50 @@ export function DeletePhotoProfilS(req,res,db){
       });
     });
   }
+  
+
+  
+export function getStudentByTutor(req,res,db){ //returns the info of the Students that have passed a specific exam
+  const userID = req.session.userid;
+  const sql = `
+  SELECT students.Name, students.Image, students.Grade
+  FROM students
+  INNER JOIN enrollments ON students.UserID = enrollments.StudentID
+  INNER JOIN courses ON enrollments.CourseID = courses.CourseID
+  WHERE courses.TutorID = ?
+  `;
+  db.query(sql, [userID], (error, results) => {
+    if (error) {
+      console.error('Error fetching exams:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
+}
+
+
+
+export function deletestudentfromcourse(req,res,db){
+  // e fshin foton te acounti i studentit
+    const id = req.params.id;
+  
+    const sql = "DELETE FROM students WHERE ID=?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error occurred during delete:", err);
+            return res.status(500).json({ error: "An error occurred during delete" });
+        }
+  
+        if (result.affectedRows === 0) {
+            console.log("User not found");
+            return res.status(404).json({ error: "User not found" });
+        }
+  
+        console.log("User image deleted successfully");
+        return res.json({ success: true, message: "User image deleted successfully" });
+    });
+ 
+  }
+
+  
+ 

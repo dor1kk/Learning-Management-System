@@ -39,7 +39,7 @@ const AddCourse = ({ onClose }) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:8080/courses', courseData);
-      onClose(); // Close the modal
+      onClose(); 
     } catch (error) {
       console.error('Error adding course:', error);
     }

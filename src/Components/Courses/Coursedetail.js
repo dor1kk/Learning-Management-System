@@ -42,7 +42,6 @@ function CourseDetail() {
   const location=useLocation();
   const id=location.pathname.split('/').pop();
   const course = courses.find((course) => course.id === id);
-  const [selectedVideo, setSelectedVideo] = useState(course ? course.videos[0] : null);
   const [activeTab, setActiveTab] = useState("courseInfo");
   const [ratingsNumber,setRatingsNumber]=useState(null);
   const [ratingsAverage,setRatingsAverage]=useState(null);

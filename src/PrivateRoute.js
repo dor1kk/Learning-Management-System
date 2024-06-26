@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Sidebaar from "./Sidebaar";
+import Sidebar from "./Sidebaar";
 import Dashboard from "./Components/Dashboard/Dashboard"; 
 import Courses from "./Components/Courses/Courses";
 import Account from "./Components/Account/Account";
@@ -43,50 +43,56 @@ import ContentManagement from "./Components/Admin-Managements/ContentManagement/
 import Forum from "./Components/Forum/Forum";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
+import Homepage from "./Components/Home/Home";
 
 
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState('');
 
-
-
-  axios.defaults.withCredentials=true;
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
-    console.log("Checking authentication...");
-    axios.get('http://localhost:8080/')
-      .then(res => {
-        console.log("Authentication response:", res.data);
-        if (res.data.valid) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      })
-      .catch(err => {
-        console.error('Error checking authentication:', err);
+    const fetchAuthStatus = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/');
+        setIsLoggedIn(res.data.valid);
+      } catch (err) {
         setIsLoggedIn(false);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    const fetchRole = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/role');
+        if (res.data.valid) {
+          setRole(res.data.role);
+          console.log("Role fetched:", res.data.role);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchAuthStatus();
+    fetchRole();
   }, []);
 
   if (loading) {
-    console.log("Loading...");
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   if (!isLoggedIn) {
-    console.log("User not authenticated, redirecting to signin page.");
     return <Navigate to="/signin" />;
   }
 
-  console.log("User authenticated, rendering private routes.");
   return (
-    <Sidebaar>
+    <Sidebar>
       <Routes>
+<<<<<<< HEAD
         <Route path="/Courses" element={<Courses />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Accounttt" element={<Accounttt />} />
@@ -132,8 +138,53 @@ const PrivateRoute = () => {
         <Route path="/Forum" element={<Forum />}></Route>
      
    
+=======
+      <Route path="/Courses" element={<Courses role={role} />} />
+<Route path="/Account" element={<Account role={role} />} />
+<Route path="/Accounttt" element={<Accounttt role={role} />} />
+<Route path="/Tutors" element={<Tutors role={role} />} />
+<Route path="/BecomeTutor" element={<BecomeTutor role={role} />} />
+<Route path="/TutorProfile/:id" element={<TutorProfile role={role} />} />
+<Route path="/Students" element={<StudentList role={role} />} />
+<Route path="/AdminDashboard" element={<Dashboard role={role} />} />
+<Route path="/YourCourses" element={<YourCourses role={role} />} />
+<Route path="/CourseDetail/:id" element={<CourseDetail role={role} />} />
+<Route path="/CourseDetails/Details" element={<Details role={role} />}></Route>
+<Route path="/Notifications" element={<Notifications role={role} />} />
+<Route path="/T-TutorDashboard" element={<TutorDashboard role={role} />} />
+<Route path="/T-CoursesManagement" element={<CourseManagement role={role} />} />
+<Route path="/T-GradesManagement" element={<GradeManagement role={role} />} />
+<Route path="/T-ExamsManagement" element={<ExamManagement role={role} />} />
+<Route path="/T-LecturesManagement" element={<LectureManagement role={role} />} />
+<Route path="/T-EnrollManagement" element={<EnrollManagement role={role} />} />
+<Route path="/addcourse" element={<AddCourse role={role} />} />
+<Route path="/" element={<Homepage role={role} />}></Route>
+<Route path="/UserManagement" element={<UserManagment role={role} />}></Route>
+<Route path="/EditUser/:id" element={<EditUser role={role} />}></Route>
+<Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage role={role} />}></Route>
+<Route path="/Courseslecture" element={<CourseLecture role={role} />}></Route>
+<Route path="/lecture/:lectureId" element={<Lecture role={role} />}></Route>
+<Route path="/Friends" element={<Friends role={role} />}></Route>
+<Route path="/editexam/:id" element={<EditExam role={role} />}></Route>
+<Route path="/ManageQuestions" element={<ManageQuestions role={role} />}></Route>
+<Route path="/exams" element={<Exams role={role} />}></Route>
+<Route path="/exam" element={<Exam role={role} />} />
+<Route path="/takeExam" element={<TakeExam role={role} />}></Route>
+<Route path="/AddCourse" element={<AddCourse role={role} />}></Route>
+<Route path="/EditCourse/:id" element={<EditCourse role={role} />}></Route>
+<Route path="/CoursesManagement" element={<CoursesManagement role={role} />}></Route>
+<Route path="/CompletedCourses" element={<CompletedCourses role={role} />}></Route>
+<Route path="/Certificate/:id" element={<CertificatePage role={role} />}></Route>
+<Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement role={role} />}></Route>
+<Route path="/Mailbox" element={<Mailbox role={role} />}></Route>
+<Route path="/Feedback" element={<Feedback role={role} />}></Route>
+<Route path="/Messages" element={<Messages role={role} />}></Route>
+<Route path="/Analytics" element={<AnalyticsPage role={role} />}></Route>
+<Route path="/ContentManagement" element={<ContentManagement role={role} />}></Route>
+<Route path="/Forum" element={<Forum role={role} />}></Route>
+>>>>>>> f1d87f95286a543edc9c1c97712087abe4998e5d
       </Routes>
-    </Sidebaar>
+    </Sidebar>
   );
 };
 

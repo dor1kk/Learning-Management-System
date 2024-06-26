@@ -30,6 +30,22 @@ export function getAllEmails(req,res,db){
 }
 
 
+export function getSentEmails(req,res,db){  
+  const senderId = req.session.userid; 
+
+  const sql="SELECT * FROM emails WHERE sender_id=?";
+  db.query(sql,[senderId], (error,results)=>{
+      if (error) {
+          console.error("Adding Lecture error:", error);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+        res.status(201).json({results});
+      }
+  )
+}
+
+
+
 export function getRepliedEmails(req,res,db){  
     const receiverId = req.session.userid; 
   

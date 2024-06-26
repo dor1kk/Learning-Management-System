@@ -3,7 +3,13 @@ import { Row, Col, Card, Statistic, Typography } from 'antd';
 import { FaGlobe, FaStar } from 'react-icons/fa';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const AnalyticsPage = () => {
+const AnalyticsPage = ({role}) => {
+
+  if (role !== "Admin") {
+    window.location.href = "/unauthorized";
+  }
+
+
   const [pageLoadTime, setPageLoadTime] = useState(null);
   const [averageRating, setAverageRating] = useState(0);
   const [userReviewsByCountry, setUserReviewsByCountry] = useState([]);

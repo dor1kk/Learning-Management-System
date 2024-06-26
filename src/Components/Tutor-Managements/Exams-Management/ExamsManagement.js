@@ -8,7 +8,12 @@ import AddQuestion from './AddQuestion';
 import { Link } from 'react-router-dom';
 import { FaPlus } from 'react-icons/fa';
 
-const ExamManagement = () => {
+const ExamManagement = ({role}) => {
+
+  if (role !== "Tutor") {
+    window.location.href = "/unauthorized";
+  }
+
     const [examToDelete, setExamToDelete] = useState(null);
     const [exams, setExams] = useState([]);
     const [addExamModalVisible, setAddExamModalVisible] = useState(false);

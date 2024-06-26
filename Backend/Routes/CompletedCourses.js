@@ -16,6 +16,8 @@ export function AddCompletedCourse(req, res, db) {
     const studentIdsSql = 'SELECT UserID FROM students WHERE ID=?';
     const courseTitleSql = 'SELECT Title FROM courses WHERE CourseID=?'; 
 
+  
+
     db.query(studentIdsSql, [userId], (error, studentIds) => {
       if (error) {
         console.error('Error fetching student IDs:', error);
@@ -37,6 +39,7 @@ export function AddCompletedCourse(req, res, db) {
           });
         });
 
+       
         res.status(201).json({ message: 'Course added successfully' });
       });
     });

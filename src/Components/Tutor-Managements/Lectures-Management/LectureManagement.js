@@ -9,7 +9,13 @@ import { Link } from '@mui/material';
 
 const { Option } = Select;
 
-const LectureManagement = () => {
+const LectureManagement = ({role}) => {
+
+
+  if (role !== "Tutor") {
+    window.location.href = "/unauthorized";
+  }
+
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [lectures, setLectures] = useState([]);

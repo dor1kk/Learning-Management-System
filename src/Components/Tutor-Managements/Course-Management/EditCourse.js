@@ -37,7 +37,6 @@ const EditCourse = ({ courseId }) => {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:8080/courses/${courseId}`, editCourseData);
-      // Handle success
     } catch (error) {
       console.error('Error updating course:', error);
     }

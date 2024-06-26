@@ -36,7 +36,7 @@ const ReviewModal = ({ visible, onClose, courseId }) => {
         rating: "",
         comment: ""
       });
-      onClose(); // Close the modal on successful submission
+      onClose();
     } catch (error) {
       console.log('Error:', error);
     }

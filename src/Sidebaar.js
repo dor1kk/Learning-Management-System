@@ -40,7 +40,7 @@ const Sidebar = ({ children }) => {
   const handleLogout = async () => {
     try {
       const res = await axios.post('http://localhost:8080/logout');
-      if (res.data.Status === "Success") {
+      if (res.data.status === "Success") {
         setAuth(false);
         setName('');
         setRole('');
@@ -49,10 +49,11 @@ const Sidebar = ({ children }) => {
         alert("Error");
       }
     } catch (err) {
-      console.log(err);
+      console.error('Error logging out:', err);
+      alert("Error logging out. Please try again later.");
     }
   };
-
+  
   useEffect(() => {
     axios.get('http://localhost:8080/')
       .then(res => {
@@ -98,7 +99,7 @@ const Sidebar = ({ children }) => {
             </ListItem>
             {role === "Admin" && (
               <>
-                <ListItem button component={Link} to="/Home/Dashboard" onClick={handleMenuItemClick}>
+                <ListItem button component={Link} to="/Home/AdminDashboard" onClick={handleMenuItemClick}>
                   <ListItemIcon>
                     <Dashboard style={{ color: 'white' }} />
                   </ListItemIcon>
@@ -153,7 +154,7 @@ const Sidebar = ({ children }) => {
             )}
             {role === "Tutor" && (
               <>
-           <ListItem button component={Link} to="/Home/TutorDashboard" onClick={handleMenuItemClick}>
+           <ListItem button component={Link} to="/Home/t-TutorDashboard" onClick={handleMenuItemClick}>
   <ListItemIcon>
     <Dashboard style={{ color: 'white' }} />
   </ListItemIcon>
@@ -257,12 +258,7 @@ const Sidebar = ({ children }) => {
   </ListItemIcon>
   <ListItemText primary="Forums" />
 </ListItem>
-<ListItem button component={Link} to="/Home/Notifications" onClick={handleMenuItemClick}>
-                  <ListItemIcon>
-                    <Notifications style={{ color: 'white' }} />
-                  </ListItemIcon>
-                  <ListItemText primary="Notifications" />
-                </ListItem>
+
 
                 <ListItem button component={Link} to="/Home/Accounttt" onClick={handleMenuItemClick}>
                   <ListItemIcon>

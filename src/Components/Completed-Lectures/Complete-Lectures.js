@@ -3,7 +3,12 @@ import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Lock } from '@mui/icons-material';
 
-function CompletedLecturesPage({ completedLecturesCount, totalLecturesCount, courseName }) {
+function CompletedLecturesPage({role }) {
+
+    if (role !== "Student") {
+        window.location.href = "/unauthorized";
+      }
+      
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
