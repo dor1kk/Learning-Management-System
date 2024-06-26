@@ -26,6 +26,8 @@ import { ApproveCourseRequest, getContentApproval, InsertCourseRequest, RejectRe
 import { UFeedback, getAllFeedbacks, insertFeedback } from "./Routes/Feedback.js";
 import { AddComment, AddPost, getForumComments, getForumQuestions } from "./Routes/Forum.js";
 
+
+
 const app = express();
 app.use(cors({
   origin: ["http://localhost:3000"],
@@ -643,8 +645,6 @@ app.get('/comments',(req,res)=>{
 app.post('/comments',(req,res)=>{
   AddComment(req,res,db);
 })
-
-
 
 
 

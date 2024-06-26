@@ -48,11 +48,7 @@ function CoursesManagement() {
       dataIndex: 'Title',
       key: 'Title',
     },
-    {
-      title: 'Description',
-      dataIndex: 'Description',
-      key: 'Description',
-    },
+  
     {
       title: 'Category',
       dataIndex: 'Category',

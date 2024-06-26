@@ -44,6 +44,7 @@ import Forum from "./Components/Forum/Forum";
 import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
 import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
 
+
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -129,6 +130,7 @@ const PrivateRoute = () => {
         <Route path="/Analytics" element={<AnalyticsPage />}></Route>
         <Route path="/ContentManagement" element={<ContentManagement />}></Route>
         <Route path="/Forum" element={<Forum />}></Route>
+     
    
       </Routes>
     </Sidebaar>
