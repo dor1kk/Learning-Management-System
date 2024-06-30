@@ -15,6 +15,42 @@ export function getTotalStudents(req,res,db){ //gets the total number of the stu
 }
 
 
+export function getTotalExams(req,res,db){ //gets the total number of the students enrolled on a course
+  const tutorID= req.session.userid;
+
+  const sql = `
+  SELECT COUNT(examId) AS TotalExams from exam where tutorId=?
+  `
+
+  db.query(sql, [tutorID], (error, results) => {
+      if (error) {
+          console.error('Error getting total lectures count:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      res.status(200).json({ message: 'Fetched successfully', totalExams: results[0].TotalExams});
+    });
+}
+
+
+export function getTotalCourses(req,res,db){ //gets the total number of the students enrolled on a course
+  const tutorID= req.session.userid;
+
+  const sql = `
+  SELECT COUNT(CourseID) AS TotalCourses from courses where TutorID=?
+  `
+
+  db.query(sql, [tutorID], (error, results) => {
+      if (error) {
+          console.error('Error getting total lectures count:', error);
+          return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      res.status(200).json({ message: 'Fetched successfully', totalCourses: results[0].TotalCourses});
+    });
+}
+
+
 export function TotalStudentss(req,res,db){ //gets the total number of the student
   db.query(`
   SELECT COUNT(students.ID) AS TotalStudents

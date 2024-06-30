@@ -1,6 +1,5 @@
-// AddCourse.js
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, TextField, Button, Grid, Select, MenuItem } from '@mui/material';
+import { Container, TextField, Button, Grid, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 
 const AddCourse = ({ onClose }) => {
@@ -14,21 +13,20 @@ const AddCourse = ({ onClose }) => {
     duration: '',
     lectures: 0,
     assignments: 0,
-    tutorid: '', 
+    tutorid: '',
   });
 
   useEffect(() => {
     axios.get('http://localhost:8080/userid')
       .then(res => {
-        console.log(res.data); 
+        console.log(res.data);
         if (res.data.valid) {
           setTutorId(res.data.userid);
           setCourseData({ ...courseData, tutorid: res.data.userid });
-        } 
+        }
       })
       .catch(err => console.log(err));
-
-  },[]);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +37,7 @@ const AddCourse = ({ onClose }) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:8080/courses', courseData);
-      onClose(); 
+      onClose();
     } catch (error) {
       console.error('Error adding course:', error);
     }
@@ -47,8 +45,7 @@ const AddCourse = ({ onClose }) => {
 
   return (
     <div className='container'>
-      <Container  maxWidth="md" style={{ marginTop: '20px' }}>
-    
+      <Container maxWidth="md" style={{ marginTop: '20px' }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -121,7 +118,6 @@ const AddCourse = ({ onClose }) => {
                 onChange={handleChange}
               />
             </Grid>
-            
             <Grid item xs={12}>
               <Button variant="contained" color="primary" type="submit">
                 Add Course

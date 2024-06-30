@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, TextField, Button, Grid } from '@mui/material';
+import { Container, TextField, Button, Grid } from '@mui/material';
 import axios from 'axios';
 
 const EditCourse = ({ courseId, onUpdateSuccess }) => {
@@ -15,7 +15,9 @@ const EditCourse = ({ courseId, onUpdateSuccess }) => {
   });
 
   useEffect(() => {
-    fetchCourseData(courseId);
+    if (courseId) {
+      fetchCourseData(courseId);
+    }
   }, [courseId]);
 
   const fetchCourseData = async (id) => {
@@ -43,7 +45,7 @@ const EditCourse = ({ courseId, onUpdateSuccess }) => {
   };
 
   return (
-    <Container className='container' maxWidth="md" style={{ marginTop: '20px' }}>
+    <Container className="container" maxWidth="md" style={{ marginTop: '20px' }}>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -110,7 +112,6 @@ const EditCourse = ({ courseId, onUpdateSuccess }) => {
               onChange={handleChange}
             />
           </Grid>
-          
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
               Update Course

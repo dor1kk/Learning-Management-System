@@ -4,11 +4,11 @@ export function AddPost(req, res, db) {
     const user_id = req.session.userid;
 
     const query = `
-        INSERT INTO forum (user_id, parent_id, title, body, created_at)
-        VALUES (?, ?, ?, ?, NOW())
+        INSERT INTO forum (user_id, title, body, created_at)
+        VALUES (?, ?, ?, NOW())
     `;
 
-    db.query(query, [user_id, parent_id, title, body], (error, results) => {
+    db.query(query, [user_id, title, body], (error, results) => {
         if (error) {
             console.error('Error inserting post:', error);
             return res.status(500).json({ error: 'Internal server error' });

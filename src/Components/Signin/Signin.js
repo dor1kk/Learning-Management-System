@@ -48,7 +48,7 @@ const Signin = () => {
     axios.post('http://localhost:8080/signin', formData)
       .then(res => {
         if (res.data.Login) {
-          window.location.href = '/Home/YourCourses';
+          window.location.href = '/Home/';
         } else {
           setErr('Invalid username or password');
         }

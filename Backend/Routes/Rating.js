@@ -19,10 +19,9 @@ export function addRating(req,res,db){  // adds a new question in the selected e
 
 export function getRatings(req, res, db) {
     const courseId = req.params.id;
-    const studentId = req.session.userid;
   
-    const sql = 'SELECT * FROM reviews INNER JOIN students ON students.UserID = reviews.UserID WHERE reviews.CourseID = ? AND reviews.UserID = ?';
-    db.query(sql, [courseId, studentId], (error, results) => {
+    const sql = 'SELECT * FROM reviews INNER JOIN students ON students.UserID = reviews.UserID WHERE reviews.CourseID = ?';
+    db.query(sql, [courseId], (error, results) => {
       if (error) {
         console.error('Error retrieving ratings:', error);
         return res.status(500).json({ error: 'Internal server error' });

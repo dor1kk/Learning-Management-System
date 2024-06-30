@@ -29,6 +29,7 @@ import {
   MailOutline as MailOutlineIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { message } from 'antd';
 import "./TutorProfile.css";
 
 function TutorProfile() {
@@ -64,16 +65,19 @@ function TutorProfile() {
     setOpenModal(false);
   };
 
-  const handleSendEmail = (e) => {
+  const handleSendEmail = async (e) => {
     e.preventDefault();
-    try{
-      axios.post("http://localhost:8080/send-email",{
-        TutorID:tutorId,
-        Subject:emailSubject,
-        Message:emailContent
+    try {
+      await axios.post("http://localhost:8080/send-email", {
+        TutorID: tutorId,
+        Subject: emailSubject,
+        Message: emailContent
       });
-    }catch(error){
-      console.log(error);
+      message.success('Email sent successfully.');
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error sending email:', error);
+      message.error('Failed to send email.');
     }
   };
 
@@ -96,14 +100,12 @@ function TutorProfile() {
                 <Button variant="outlined" className="ms-1" onClick={handleOpenModal}>Message</Button>
               </CardContent>
             </Card>
-
           </Grid>
-
           <Grid item lg={8}>
             <Card className="mb-4">
               <CardContent>
                 <Typography variant="body1" gutterBottom>{tutor?.bio}</Typography>
-                <Typography variant="subtitle1" gutterBottom> Expertise</Typography>
+                <Typography variant="subtitle1" gutterBottom>Expertise</Typography>
                 <Typography variant="body1" gutterBottom>{tutor?.expertise}</Typography>
                 <Typography variant="subtitle1" gutterBottom>Experience</Typography>
                 <Typography variant="body1" gutterBottom>{tutor?.experience}</Typography>
@@ -115,14 +117,10 @@ function TutorProfile() {
                 <Typography variant="body1" gutterBottom>{tutor?.availability}</Typography>
               </CardContent>
             </Card>
-
-       
-
           </Grid>
         </Grid>
       </Container>
 
-      {/* Email Modal */}
       <Dialog open={openModal} onClose={handleCloseModal}>
         <DialogTitle>Send Email</DialogTitle>
         <DialogContent>
@@ -159,4 +157,3 @@ function TutorProfile() {
 }
 
 export default TutorProfile;
-

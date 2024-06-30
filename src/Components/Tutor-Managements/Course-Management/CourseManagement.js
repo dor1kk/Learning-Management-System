@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Typography, Input, List, Avatar, Space, Modal } from 'antd';
+import { Button, Typography, Input, List, Avatar, Space, Modal, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import "./CourseManagement.css";
 import AddCourse from './AddCourse';
@@ -8,7 +8,7 @@ import EditCourse from './EditCourse';
 
 const { confirm } = Modal;
 
-const CourseManagement = ({role}) => {
+const CourseManagement = ({ role }) => {
 
   if (role !== "Tutor") {
     window.location.href = "/unauthorized";
@@ -20,7 +20,7 @@ const CourseManagement = ({role}) => {
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editCourseData, setEditCourseData] = useState(null);
-  const [editCourseId, setEditCourseId] = useState(null); 
+  const [editCourseId, setEditCourseId] = useState(null);
 
   const fetchCourses = async () => {
     try {
@@ -53,11 +53,13 @@ const CourseManagement = ({role}) => {
       const response = await axios.delete(`http://localhost:8080/courses/${id}`);
       if (response.status === 200) {
         fetchCourses();
+        message.success('Course deleted successfully.');
       } else {
         throw new Error('Failed to delete course');
       }
     } catch (error) {
       console.error('Error deleting course:', error);
+      message.error('Failed to delete course.');
     }
   };
 
@@ -67,6 +69,18 @@ const CourseManagement = ({role}) => {
 
   const clearFilters = () => {
     setSearchTerm('');
+  };
+
+  const handleAddSuccess = () => {
+    message.success('Course added for review succesfully');
+    setAddModalVisible(false);
+    fetchCourses();
+  };
+
+  const handleUpdateSuccess = () => {
+    message.success('Course updated successfully.');
+    setEditModalVisible(false);
+    fetchCourses();
   };
 
   const filteredCourses = courses.filter(course =>
@@ -100,16 +114,16 @@ const CourseManagement = ({role}) => {
         renderItem={course => (
           <List.Item
             className="bg-white mt-2"
-            style={{boxShadow:"0 2px 6px rgba(0,0,0,0.1)"}}
+            style={{ boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}
             key={course.CourseID}
             actions={[
               <Button
                 type="primary"
                 icon={<EditOutlined />}
                 onClick={() => {
-                  setEditCourseId(course.CourseID); 
+                  setEditCourseId(course.CourseID);
                   setEditCourseData(course);
-                  setEditModalVisible(true); 
+                  setEditModalVisible(true);
                 }}
               >
                 Edit
@@ -124,7 +138,7 @@ const CourseManagement = ({role}) => {
             ]}
           >
             <List.Item.Meta
-              avatar={<Avatar style={{marginLeft:"20px"}} src={course.Image} />}
+              avatar={<Avatar style={{ marginLeft: "20px" }} src={course.Image} />}
               title={course.Title}
               description={course.Description}
             />
@@ -138,19 +152,17 @@ const CourseManagement = ({role}) => {
         onCancel={() => setAddModalVisible(false)}
         footer={null}
       >
-        <AddCourse onClose={() => setAddModalVisible(false)} />
+        <AddCourse onClose={handleAddSuccess} />
       </Modal>
 
       <Modal
-  title="Edit Course"
-  visible={editModalVisible}
-  onCancel={() => setEditModalVisible(false)}
-  footer={null}
->
-  <EditCourse courseId={editCourseId} onClose={() => setEditModalVisible(false)} />
-</Modal>
-
-
+        title="Edit Course"
+        visible={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        footer={null}
+      >
+        <EditCourse courseId={editCourseId} onUpdateSuccess={handleUpdateSuccess} />
+      </Modal>
     </div>
   );
 };

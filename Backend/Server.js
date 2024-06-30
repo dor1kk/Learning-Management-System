@@ -16,7 +16,7 @@ import { addNewExam, getPassedExamInfo, AddPassedExam, getPassedExams, getExamsB
 import { getStudentByPassedExam, getLogggedInStudentInfo,UpdatestudentA, DeletePhotoProfilS, getStudentByTutor, deletestudentfromcourse ,  DeleteProfilS} from "./Routes/Students.js";
 import { addQuestion, DeleteQuestion, EditQuestion, getQuestionsByExam, getQuestionsByTutor } from "./Routes/Questions.js";
 import { AddCompletedCourse, checkGradeStatus, getCompletedCourses, getCompletedCoursesById} from "./Routes/CompletedCourses.js";
-import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess,} from "./Routes/Dashboard.js";
+import { getTotalStudents,  TotalStudentss, TotalTutorss , TotalUserss,TotalCoursess, getTotalExams, getTotalCourses,} from "./Routes/Dashboard.js";
 import { getCompletedLecturesNumber, getAllLecturesNumber } from "./Routes/Progress.js";
 import { addRating, getRatings, getRatingsAverage, getRatingsNumber } from "./Routes/Rating.js";
 import { DeleteAnnouncement, EditAnnouncement, addAnnouncement, getAnnouncements } from "./Routes/Announcement.js";
@@ -468,7 +468,7 @@ app.get('/student', (req, res) => {
 });
 
 
-app.delete('/deletestudentfromcourse/:id',(req,res)=>{
+app.delete('/deletestudent',(req,res)=>{
   deletestudentfromcourse(req,res,db);
 })
 
@@ -484,19 +484,27 @@ app.get('/totalStudents', (req, res) => {
 });
 
 app.get('/totalTutors', (req, res) => {
-  getTotalTutors(req,res,db);
+  TotalTutorss(req,res,db);
 });
 
 app.get('/allStudents', (req, res) => {
-  getAllStudents(req,res,db);
+  TotalStudentss(req,res,db);
 });
 
 app.get('/getAllUsers', (req, res) => {
-  getAllUsers(req,res,db);
+  TotalUserss(req,res,db);
 });
 
 app.get('/allCourses', (req, res) => {
-  getAllCourses(req,res,db);
+  TotalCoursess(req,res,db);
+});
+
+app.get('/totalExams', (req, res) => {
+  getTotalExams(req,res,db);
+});
+
+app.get('/totalCourses', (req, res) => {
+  getTotalCourses(req,res,db);
 });
 
 

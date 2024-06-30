@@ -93,7 +93,6 @@ function FeedbackTable({role}) {
 
   return (
     <div style={{ padding: 20 }}>
-      <Title level={2}>Feedbacks</Title>
       <Table
         dataSource={feedbacks}
         columns={columns}

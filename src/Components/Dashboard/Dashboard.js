@@ -21,23 +21,23 @@ const Dashboard = () => {
 
 
   const fetchAllStudents=async ()=>{
-    const response=await axios.get("http://localhost:8080/total-students");
-    setAllStudents(response.data.totalStudentat);
+    const response=await axios.get("http://localhost:8080/totalStudents");
+    setAllStudents(response.data.totalStudents);
   }
 
   
   const fetchAllTutors=async ()=>{
-    const response=await axios.get("http://localhost:8080/total-tutors");
+    const response=await axios.get("http://localhost:8080/totalTutors");
     setAllTutors(response.data.totalTutors);
   }
 
   const fetchAllCourses=async ()=>{
-    const response=await axios.get("http://localhost:8080/total-users");
+    const response=await axios.get("http://localhost:8080/allCourses");
     setAllCourses(response.data.totalCourses);
   }
 
   const fetchAllUsers=async ()=>{
-    const response=await axios.get("http://localhost:8080/total-courses");
+    const response=await axios.get("http://localhost:8080/getAllUsers");
     setAllUsers(response.data.totalUsers);
   }
 

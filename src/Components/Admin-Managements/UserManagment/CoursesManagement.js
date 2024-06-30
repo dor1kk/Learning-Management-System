@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Space, Button, message } from 'antd'; // Import Ant Design components
-import { DeleteOutlined } from '@ant-design/icons'; // Import Ant Design icons
-import { Link } from 'react-router-dom';
+import { Table, Space, Button, message, Modal } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Link, useHistory } from 'react-router-dom';
+import EditCourse from './EditCourse';
 
-function CoursesManagement({role}) {
+function CoursesManagement({ role }) {
+;
 
-  if (role !== "Admin") {
-    window.location.href = "/unauthorized";
-  }
+  useEffect(() => {
+    if (role !== 'Admin') {
+      window.location.href="/unauthorized"
+    }
+  }, [role]);
 
   const [courses, setCourses] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editCourseId, setEditCourseId] = useState('');
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
 
   useEffect(() => {
     fetchCourses();
@@ -27,7 +34,7 @@ function CoursesManagement({role}) {
 
   const deleteCourse = async (courseId) => {
     try {
-      console.log("Attempting to delete course with ID:", courseId);  // Add logging
+      console.log('Attempting to delete course with ID:', courseId);
       await axios.delete(`http://localhost:8080/courses/${courseId}`);
       message.success('Course deleted successfully.');
       fetchCourses();
@@ -37,16 +44,24 @@ function CoursesManagement({role}) {
     }
   };
 
+  const handleUpdateSuccess = () => {
+    message.success('Course updated successfully.');
+    setShowEditModal(false);
+    fetchCourses();
+  };
+
+  const toggleDescription = (courseId) => {
+    setExpandedDescriptions(prevState => ({
+      ...prevState,
+      [courseId]: !prevState[courseId],
+    }));
+  };
+
   const columns = [
     {
       title: 'Course ID',
       dataIndex: 'CourseID',
       key: 'CourseID',
-    },
-    {
-      title: 'Tutor ID',
-      dataIndex: 'TutorID',
-      key: 'TutorID',
     },
     {
       title: 'Title',
@@ -57,6 +72,14 @@ function CoursesManagement({role}) {
       title: 'Description',
       dataIndex: 'Description',
       key: 'Description',
+      render: (text, course) => (
+        <div>
+          {expandedDescriptions[course.CourseID] ? text : `${text.substring(0, 100)}...`}
+          <Button type="link" onClick={() => toggleDescription(course.CourseID)}>
+            {expandedDescriptions[course.CourseID] ? 'See Less' : 'See More'}
+          </Button>
+        </div>
+      ),
     },
     {
       title: 'Category',
@@ -73,20 +96,16 @@ function CoursesManagement({role}) {
       dataIndex: 'Lectures',
       key: 'Lectures',
     },
-    {
-      title: 'Assignments',
-      dataIndex: 'Assignments',
-      key: 'Assignments',
-    },
+  
     {
       title: 'Actions',
       key: 'actions',
       render: (text, course) => (
         <Space size="middle">
-          <Link to={`/home/EditCourse/${course.CourseID}`} style={{ textDecoration: "none", borderRadius: "8px" }} className='bg-primary p-1 text-white'>
+          <Button onClick={() => { setShowEditModal(true); setEditCourseId(course.CourseID); }}>
             Edit
-          </Link>
-          <Button type="danger" icon={<DeleteOutlined />} onClick={() => deleteCourse(course.CourseID)}>
+          </Button>
+          <Button danger icon={<DeleteOutlined />} onClick={() => deleteCourse(course.CourseID)}>
             Delete
           </Button>
         </Space>
@@ -96,13 +115,16 @@ function CoursesManagement({role}) {
 
   return (
     <div className="courses-management-container p-5">
-      <h2 className="courses-list-title">Course List</h2>
       <Table
         dataSource={courses}
         columns={columns}
         rowKey={(course) => course.CourseID}
         pagination={{ pageSize: 10 }}
       />
+
+      <Modal open={showEditModal} title="Edit Course" onCancel={() => setShowEditModal(false)} footer={null}>
+        <EditCourse courseId={editCourseId} onUpdateSuccess={handleUpdateSuccess} />
+      </Modal>
     </div>
   );
 }

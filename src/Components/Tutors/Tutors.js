@@ -95,7 +95,7 @@ function Tutors() {
                 <Title level={5}>{tutor.name}</Title>
                 <Text>Expertise: {tutor.expertise}</Text><br />
                 <Text>Experience: {tutor.experience} years</Text><br />
-                <Button type="primary" style={{ marginTop: '8px' }} onClick={() => navigate(`/Home/TutorProfile/${tutor.id}`)}>View Profile</Button>
+                <Button type="primary" style={{ marginTop: '8px' }} onClick={() => navigate(`/Home/TutorProfile/${tutor.TutorID}`)}>View Profile</Button>
               </div>
             </div>
           </Card>
