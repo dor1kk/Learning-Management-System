@@ -45,6 +45,7 @@ import CourseManagement from "./Components/Tutor-Managements/Course-Management/C
 import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
 import Homepage from "./Components/Home/Home";
 
+
 const PrivateRoute = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,53 @@ const PrivateRoute = () => {
   return (
     <Sidebar>
       <Routes>
+<<<<<<< HEAD
+        <Route path="/Courses" element={<Courses />} />
+        <Route path="/Account" element={<Account />} />
+        <Route path="/Accounttt" element={<Accounttt />} />
+        <Route path="/Tutors" element={<Tutors />} />
+        <Route path="/BecomeTutor" element={<BecomeTutor />} />
+        <Route path="/TutorProfile/:id" element={<TutorProfile />} />
+        <Route path="/Students" element={<StudentList />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/YourCourses" element={<YourCourses />} />
+        <Route path="/CourseDetail/:id" element={<CourseDetail />} />
+        <Route path="/CourseDetails/Details" element={<Details />}></Route>
+        <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/TutorDashboard" element={<TutorDashboard />} />
+        <Route path="/T-CoursesManagement" element={<CourseManagement />} />
+        <Route path="/T-GradesManagement" element={<GradeManagement />} />
+        <Route path="/T-ExamsManagement" element={<ExamManagement />} />
+        <Route path="/T-LecturesManagement" element={<LectureManagement />} />
+        <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
+        <Route path="/addcourse" element={<AddCourse />} />
+        <Route path="/UserManagement" element={<UserManagment />}></Route>    
+        <Route path="/EditUser/:id" element={<EditUser />}></Route>    
+        <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
+        <Route path="/Courseslecture" element={<CourseLecture />}></Route>
+        <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
+        <Route path="/Friends" element={<Friends />}></Route>
+        <Route path="/editexam/:id" element={<EditExam />}></Route>
+        <Route path="/ManageQuestions" element={<ManageQuestions />}></Route>
+        <Route path="/exams" element={<Exams />}></Route>
+        <Route path="/exam" element={<Exam />} />
+        <Route path="/takeExam" element={<TakeExam />}></Route>
+        <Route path="/AddCourse" element={<AddCourse />}></Route>
+        <Route path="/EditCourse/:id" element={<EditCourse />}></Route>
+        <Route path="/CoursesManagement" element={<CoursesManagement />}></Route>
+        <Route path="/CompletedCourses" element={<CompletedCourses />}></Route>
+        <Route path="/Certificate/:id" element={<CertificatePage />}></Route>
+        <Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement />}></Route>
+        <Route path="/Mailbox" element={<Mailbox />}></Route>
+        <Route path="/Feedback" element={<Feedback />}></Route>
+        <Route path="/Messages" element={<Messages />}></Route>
+        <Route path="/Analytics" element={<AnalyticsPage />}></Route>
+        <Route path="/ContentManagement" element={<ContentManagement />}></Route>
+        <Route path="/Forum" element={<Forum />}></Route>
+     
+   
+=======
       <Route path="/Courses" element={<Courses role={role} />} />
 <Route path="/Account" element={<Account role={role} />} />
 <Route path="/Accounttt" element={<Accounttt role={role} />} />
@@ -134,6 +182,7 @@ const PrivateRoute = () => {
 <Route path="/Analytics" element={<AnalyticsPage role={role} />}></Route>
 <Route path="/ContentManagement" element={<ContentManagement role={role} />}></Route>
 <Route path="/Forum" element={<Forum role={role} />}></Route>
+>>>>>>> f1d87f95286a543edc9c1c97712087abe4998e5d
       </Routes>
     </Sidebar>
   );

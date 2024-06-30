@@ -68,19 +68,7 @@ function CoursesManagement({ role }) {
       dataIndex: 'Title',
       key: 'Title',
     },
-    {
-      title: 'Description',
-      dataIndex: 'Description',
-      key: 'Description',
-      render: (text, course) => (
-        <div>
-          {expandedDescriptions[course.CourseID] ? text : `${text.substring(0, 100)}...`}
-          <Button type="link" onClick={() => toggleDescription(course.CourseID)}>
-            {expandedDescriptions[course.CourseID] ? 'See Less' : 'See More'}
-          </Button>
-        </div>
-      ),
-    },
+  
     {
       title: 'Category',
       dataIndex: 'Category',

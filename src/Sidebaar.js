@@ -135,6 +135,21 @@ const Sidebar = ({ children }) => {
                   </ListItemIcon>
                   <ListItemText primary="Analytics" />
                 </ListItem>
+
+                <ListItem button component={Link} to="/Home/Team" onClick={handleMenuItemClick}>
+                  <ListItemIcon>
+                    <PieChart style={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Team" />
+                </ListItem>
+
+                
+                <ListItem button component={Link} to="/Home/Player" onClick={handleMenuItemClick}>
+                  <ListItemIcon>
+                    <PieChart style={{ color: 'white' }} />
+                  </ListItemIcon>
+                  <ListItemText primary="Player" />
+                </ListItem>
               </>
             )}
             {role === "Tutor" && (
