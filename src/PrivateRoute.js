@@ -1,49 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Sidebar from "./Sidebaar";
-import Dashboard from "./Components/Dashboard/Dashboard"; 
-import Courses from "./Components/Courses/Courses";
-import Account from "./Components/Account/Account";
-import Accounttt from "./Components/Account/Accounttt";
-import CourseDetail from "./Components/Courses/Coursedetail";
-import StudentList from "./Components/Students/Students";
-import Notifications from "./Components/Notifications/Notifcations";
-import Tutors from "./Components/Tutors/Tutors";
-import BecomeTutor from "./Components/Tutors/BecomeTutor";
-import TutorProfile from "./Components/Tutors/TutorProfile";
-import YourCourses from "./Components/YourCourses/YourCourses";
-import TutorDashboard from "./Components/Tutor-Managements/Tutor-Dashboard";
-import GradeManagement from "./Components/Tutor-Managements/GradeManagement";
-import ExamManagement from "./Components/Tutor-Managements/Exams-Management/ExamsManagement";
-import LectureManagement from "./Components/Tutor-Managements/Lectures-Management/LectureManagement";
-import EnrollManagement from "./Components/Tutor-Managements/EnrollManagement";
-import AddCourse from "./Components/Tutor-Managements/Course-Management/AddCourse";
-import UserManagment from "./Components/Admin-Managements/UserManagment/UserManagment";
-import CompletedLecturesPage from "./Components/Completed-Lectures/Complete-Lectures";
-import Lecture from "./Components/Lectures/Lecture";
-import CourseLecture from "./Components/Completed-Lectures/Course-Lecture";
-import Friends from "./Components/Friends/Friends";
-import EditExam from "./Components/Tutor-Managements/Exams-Management/EditExam";
-import Exams from "./Components/Exams/Exams";
-import Exam from "./Components/Exams/Exam";
-import TakeExam from "./Components/Exams/takeExam";
+import Sidebar from "./Components/Sidebar/Sidebar";
+import Dashboard from "./Pages/Admin/Dashboard/Dashboard"; 
+import Courses from "./Pages/Student/Courses/Courses";
+import Account from "./Pages/Home/Account/Account";
+import Accounttt from "./Pages/Home/Account/Accounttt";
+import CourseDetail from "./Pages/Student/Courses/Coursedetail";
+import Notifications from "./Pages/Home/Notifications/Notifcations";
+import Tutors from "./Pages/Student/Tutors/Tutors";
+import BecomeTutor from "./Pages/Student/Tutors/BecomeTutor";
+import TutorProfile from "./Pages/Student/Tutors/TutorProfile";
+import YourCourses from "./Pages/Student/YourCourses/YourCourses";
+import TutorDashboard from "./Pages/Tutor/TutorDashboard/Tutor-Dashboard";
+import GradeManagement from "./Pages/Tutor/GradeManagement/GradeManagement";
+import ExamManagement from "./Pages/Tutor/Exams-Management/ExamsManagement";
+import LectureManagement from "./Pages/Tutor/Lectures-Management/LectureManagement";
+import AddCourse from "./Pages/Tutor/Course-Management/AddCourse";
+import UserManagment from "./Pages/Admin/UserManagement/UserManagment";
+import CompletedLecturesPage from "./Pages/Student/Lectures/Complete-Lectures";
+import Lecture from "./Pages/Student/Lectures/Lecture";
+import CourseLecture from "./Pages/Student/Lectures/Course-Lecture";
+import EditExam from "./Pages/Tutor/Exams-Management/EditExam";
+import Exams from "./Pages/Student/Exams/Exams";
+import Exam from "./Pages/Student/Exams/Exam";
+import TakeExam from "./Pages/Student/Exams/takeExam";
 import axios from "axios";
-import EditCourse from "./Components/Tutor-Managements/Course-Management/EditCourse";
-import CompletedCourses from "./Components/YourCourses/CompletedCourses";
-import CertificatePage from "./Components/YourCourses/Certificate";
-import EditUser from "./Components/Admin-Managements/UserManagment/EditUser";
-import Feedback from "./Components/Admin-Managements/Feedback";
-import Details from "./Components/Courses/Details";
-import AnnouncementManagement from "./Components/Tutor-Managements/Announcements-Management/Announcement";
-import Mailbox from "./Components/Tutor-Managements/Mail-Box/Mailbox";
-import Messages from "./Components/Messages/Messages";
-import AnalyticsPage from "./Components/Admin-Managements/Analytics/Analytics";
-import CoursesManagement from "./Components/Admin-Managements/UserManagment/CoursesManagement";
-import ContentManagement from "./Components/Admin-Managements/ContentManagement/ContentManagement";
-import Forum from "./Components/Forum/Forum";
-import CourseManagement from "./Components/Tutor-Managements/Course-Management/CourseManagement";
-import ManageQuestions from "./Components/Tutor-Managements/Exams-Management/ManageQuestions";
-import Homepage from "./Components/Home/Home";
+import EditCourse from "./Pages/Tutor/Course-Management/EditCourse";
+import CompletedCourses from "./Pages/Student/YourCourses/CompletedCourses";
+import CertificatePage from "./Pages/Student/YourCourses/Certificate";
+import EditUser from "./Pages/Admin/UserManagement/EditUser";
+import Feedback from "./Pages/Admin/Feedbacks/Feedback";
+import Details from "./Pages/Student/Courses/Details";
+import AnnouncementManagement from "./Pages/Tutor/Announcements-Management/Announcement";
+import Mailbox from "./Pages/Tutor/Mail-Box/Mailbox";
+import Messages from "./Pages/Student/Messages/Messages";
+import AnalyticsPage from "./Pages/Admin/AnalyticsPage/Analytics";
+import CoursesManagement from "./Pages/Admin/CourseManagement/CoursesManagement";
+import ContentManagement from "./Pages/Admin/ContentManagement/ContentManagement";
+import Forum from "./Pages/Student/Forum/Forum";
+import CourseManagement from "./Pages/Tutor/Course-Management/CourseManagement";
+import ManageQuestions from "./Pages/Tutor/Exams-Management/ManageQuestions";
 
 
 const PrivateRoute = () => {
@@ -98,7 +94,6 @@ const PrivateRoute = () => {
         <Route path="/Tutors" element={<Tutors />} />
         <Route path="/BecomeTutor" element={<BecomeTutor />} />
         <Route path="/TutorProfile/:id" element={<TutorProfile />} />
-        <Route path="/Students" element={<StudentList />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/YourCourses" element={<YourCourses />} />
@@ -110,14 +105,12 @@ const PrivateRoute = () => {
         <Route path="/T-GradesManagement" element={<GradeManagement />} />
         <Route path="/T-ExamsManagement" element={<ExamManagement />} />
         <Route path="/T-LecturesManagement" element={<LectureManagement />} />
-        <Route path="/T-EnrollManagement" element={<EnrollManagement/>} />
         <Route path="/addcourse" element={<AddCourse />} />
         <Route path="/UserManagement" element={<UserManagment />}></Route>    
         <Route path="/EditUser/:id" element={<EditUser />}></Route>    
         <Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage />}></Route>
         <Route path="/Courseslecture" element={<CourseLecture />}></Route>
         <Route path="/lecture/:lectureId" element={<Lecture />}></Route>
-        <Route path="/Friends" element={<Friends />}></Route>
         <Route path="/editexam/:id" element={<EditExam />}></Route>
         <Route path="/ManageQuestions" element={<ManageQuestions />}></Route>
         <Route path="/exams" element={<Exams />}></Route>

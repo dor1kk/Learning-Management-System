@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Signin from "./Components/Signin/Signin";
-import Signup from "./Components/Signin/Signup";
 import PrivateRoute from "./PrivateRoute";
 import Unauthorized from "./UnAuthorized";
 import axios from "axios";
+import Signin from "./Pages/Auth/Signin";
+import Signup from "./Pages/Auth/Signup";
 
 const App = () => {
 

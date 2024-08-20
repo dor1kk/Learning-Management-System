@@ -1,30 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { AppBar, Toolbar, IconButton, InputBase, Typography, Divider, Paper, Avatar } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import FeedbackIcon from '@mui/icons-material/Feedback';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary'; 
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import React, { useState } from "react";
 import { Modal, Input, Badge, Table } from 'antd';
 import axios from "axios";
 import { DoneAll, MapRounded } from "@mui/icons-material";
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { List, ListItem, ListItemAvatar, ListItemText, Avatar } from "@mui/material";
+import { Menu as MenuIcon, Search as SearchIcon, AccountCircle as AccountCircleIcon, Feedback as FeedbackIcon, Notifications as NotificationsIcon } from "@mui/icons-material";
 
-import {List, ListItem, ListItemAvatar, ListItemText} from "@mui/material"
-
-function Topbar({ toggleDarkMode, colors }) {
+function Topbar({ toggleDarkMode, colors, handleDrawerToggle }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false);
     const [isUserModalVisible, setIsUserModalVisible] = useState(false);
-    const [isAboutUsModalVisible, setIsAboutUsModalVisible] = useState(false); 
-    const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false); // State for notification modal
-    const [notifications, setNotifications] = useState([]); // State for notifications
+    const [isNotificationModalVisible, setIsNotificationModalVisible] = useState(false);
+    const [notifications, setNotifications] = useState([]);
     const [feedback, setFeedback] = useState('');
     const [userInfo, setUserInfo] = useState(null);
-    const [isStepByStepGuideModalVisible, setIsStepByStepGuideModalVisible] = useState(false); 
 
     const courses = [
         { id: 1, title: 'Course 1', image: 'course1.jpg' },
@@ -43,7 +32,7 @@ function Topbar({ toggleDarkMode, colors }) {
     };
 
     const handleCourseClick = () => {
-        window.location.href = `/Home/Courses`; 
+        window.location.href = '/Home/Courses';
     };
 
     const showFeedbackModal = () => {
@@ -68,22 +57,16 @@ function Topbar({ toggleDarkMode, colors }) {
         setFeedback(e.target.value);
     };
 
-    const getNotificationIcon = (notification) => {
-        // Implement the logic to determine the notification icon based on the notification type
-    };
-
- 
-    
     const getNotificationText = (notification) => {
         switch (notification.NotificationType) {
-          case "course_upload":
-            return `A new course has been uploaded on the site. Check it out: ${notification.NotificationText}`;
-          case "announcement":
-            return `New announcement: ${notification.NotificationText}`;
-          case "grade":
-            return `You've been graded: ${notification.NotificationText}`;
-          default:
-            return notification.NotificationText;
+            case "course_upload":
+                return `A new course has been uploaded on the site. Check it out: ${notification.NotificationText}`;
+            case "announcement":
+                return `New announcement: ${notification.NotificationText}`;
+            case "grade":
+                return `You've been graded: ${notification.NotificationText}`;
+            default:
+                return notification.NotificationText;
         }
     };
 
@@ -105,34 +88,9 @@ function Topbar({ toggleDarkMode, colors }) {
         setIsUserModalVisible(false);
     };
 
-    const showAboutUsModal = () => {
-        setIsAboutUsModalVisible(true);
-    };
-
-    const handleAboutUsOk = () => {
-        setIsAboutUsModalVisible(false);
-    };
-
-    const handleAboutUsCancel = () => {
-        setIsAboutUsModalVisible(false);
-    };
-
-    const showStepByStepGuideModal = () => {
-        setIsStepByStepGuideModalVisible(true);
-    };
-
-    const handleStepByStepGuideOk = () => {
-        setIsStepByStepGuideModalVisible(false);
-    };
-
-    const handleStepByStepGuideCancel = () => {
-        setIsStepByStepGuideModalVisible(false);
-    };
-
     const showNotificationModal = async () => {
         try {
             const response = await axios.get("http://localhost:8080/notifications");
-            console.log("Notifications fetched:", response.data); 
             setIsNotificationModalVisible(true);
             setNotifications(response.data);
         } catch (error) {
@@ -142,12 +100,12 @@ function Topbar({ toggleDarkMode, colors }) {
 
     const handleNotificationClick = async (notification) => {
         try {
-          await axios.put(`http://localhost:8080/notifications/${notification.NotificationID}`)
-          showNotificationModal();
+            await axios.put(`http://localhost:8080/notifications/${notification.NotificationID}`);
+            showNotificationModal();
         } catch (error) {
-          console.error("Error updating notification:", error);
+            console.error("Error updating notification:", error);
         }
-      };
+    };
 
     const handleNotificationModalOk = () => {
         setIsNotificationModalVisible(false);
@@ -176,151 +134,111 @@ function Topbar({ toggleDarkMode, colors }) {
             ),
         },
     ];
-    
 
     return (
         <>
-            <AppBar position="static" elevation={0} style={{ backgroundColor: "white" }}>
-                <Toolbar>
-                    <Typography variant="h6" component="div" style={{ flexGrow: 1, color:"#2774AE" }}>
-                        Education.
-                    </Typography>
-                    <div style={{ flexGrow: 1 }}>
-                        <form className="d-flex align-items-center">
-                            <InputBase
-                                type="text"
-                                className="form-control bg-light"
-                                placeholder="Search courses..."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                style={{ marginRight: "10px" }}
-                            />
-                            <IconButton type="submit">
-                                <SearchIcon style={{ color: "#2774AE"}} />
-                            </IconButton>
-                        </form>
-                        {searchResults.length > 0 && (
-                            <Paper style={{ position: 'absolute', zIndex: 1, top: '40px', width: '37%' }}>
-                                <List>
-                                    {searchResults.map(course => (
-                                        <ListItem
-                                            key={course.id}
-                                            button
-                                            onClick={()=> handleCourseClick()}
-                                                >
-                                                    <ListItemAvatar>
-                                                        <Avatar alt={course.title} src={course.image} />
-                                                    </ListItemAvatar>
-                                                    <ListItemText primary={course.title} />
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    </Paper>
-                                )}
-                            </div>
-                            <div style={{ flexGrow: 1, textAlign: "end" }}>
-                                <IconButton edge="start" style={{color:"#2774AE"}} aria-label="menu">
-                                    <MenuIcon />
-                                </IconButton>
-                                <IconButton onClick={showUserModal}>
-                                    <AccountCircleIcon style={{ color:"#2774AE"}} />
-                                </IconButton>
-                                <IconButton onClick={toggleDarkMode} >
-                                    <WbSunnyIcon style={{ color: "#2774AE" }} />
-                                </IconButton>
-                                <IconButton onClick={showFeedbackModal}>
-                                    <FeedbackIcon style={{ color: "#2774AE" }} />
-                                </IconButton>
-                                <IconButton onClick={showAboutUsModal}>
-                                    <VideoLibraryIcon style={{ color: "#2774AE" }} />
-                                </IconButton>
-                                <IconButton onClick={showStepByStepGuideModal}>
-                                    <MapRounded style={{ color: "#2774AE" }} />
-                                </IconButton>
-                                <IconButton onClick={showNotificationModal}>
-                                    <Badge count={notifications.filter(n => !n.read).length}>
-                                        <NotificationsIcon style={{ color: "#2774AE" }} />
-                                    </Badge>
-                                </IconButton>
-                            </div>
-                        </Toolbar>
-                        <Divider />
-                    </AppBar>
+            <div className="bg-white shadow-md flex items-center justify-between p-4">
+                <div className="flex items-center space-x-4">
+                    <button onClick={handleDrawerToggle} className="text-gray-600">
+                        <MenuIcon />
+                    </button>
+                    <h1 className="text-gray-600 text-xl font-semibold">Education.</h1>
+                </div>
+                <div className="flex-1 mx-4 relative">
+                    <input
+                        type="text"
+                        placeholder="Search courses..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="w-full py-2 px-4 border rounded-md bg-gray-100 focus:outline-none"
+                    />
+                    <button className="absolute right-0 top-0 mt-2 mr-2 text-gray-600">
+                        <SearchIcon />
+                    </button>
+                    {searchResults.length > 0 && (
+                        <div className="absolute z-10 bg-white border border-gray-300 rounded-md w-full mt-2 shadow-lg">
+                            <List>
+                                {searchResults.map(course => (
+                                    <ListItem
+                                        key={course.id}
+                                        button
+                                        onClick={() => handleCourseClick()}
+                                    >
+                                        <ListItemAvatar>
+                                            <Avatar alt={course.title} src={course.image} />
+                                        </ListItemAvatar>
+                                        <ListItemText primary={course.title} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </div>
+                    )}
+                </div>
+                <div className="flex items-center space-x-4">
+                    <button onClick={showUserModal} className="text-gray-600">
+                        <AccountCircleIcon />
+                    </button>
+                    <button onClick={showFeedbackModal} className="text-gray-600">
+                        <FeedbackIcon />
+                    </button>
+                    <div className="relative">
+                        <button onClick={showNotificationModal} className="text-gray-600">
+                            <NotificationsIcon />
+                        </button>
+                        <Badge count={notifications.filter(n => !n.read).length} className="absolute top-0 right-0">
+                            <span className="sr-only">Notifications</span>
+                        </Badge>
+                    </div>
+                </div>
+            </div>
 
-                    <Modal
-                        title="About Us"
-                        visible={isAboutUsModalVisible}
-                        onOk={handleAboutUsOk}
-                        onCancel={handleAboutUsCancel}
-                        okText="Close"
-                        >
-                        <video width="470" height="315" controls poster="https://visme.co/blog/wp-content/uploads/2023/02/What-Is-a-Learning-Management-System-How-to-Choose-the-Right-LMS-Thumbnail.jpg">
-                        <source src={require('./LearningManagement.mp4')} type="video/mp4" />
-                        Your browser does not support the video tag.
-                        </video>
-                </Modal>
+            <Modal
+                title="User Info"
+                open={isUserModalVisible}
+                onOk={handleUserModalOk}
+                onCancel={handleUserModalCancel}
+            >
+                {userInfo ? (
+                    <div>
+                        <p>Username: {userInfo.username}</p>
+                        <p>Email: {userInfo.email}</p>
+                        <p>Role: {userInfo.role}</p>
+                    </div>
+                ) : (
+                    <p>Loading...</p>
+                )}
+            </Modal>
 
-                <Modal
-                        title="Step by Step Guide"
-                        visible={isStepByStepGuideModalVisible}
-                        onOk={handleStepByStepGuideOk}
-                        onCancel={handleStepByStepGuideCancel}
-                        okText="Close"
-                        >
-                        <video width="470" height="315" controls poster="https://document360.com/wp-content/uploads/2024/03/Onboarding-Process-Checklist-scaled.jpg">
-                        <source src={require('./Stepbystep.mp4')} type="video/mp4" />
-                        Your browser does not support the video tag.
-                        </video>
-                </Modal>
-                    
-                <Modal
-                        title="Feedback"
-                        visible={isFeedbackModalVisible}
-                        onOk={handleFeedbackOk}
-                        onCancel={handleFeedbackCancel}
-                        okText="Submit"
-                    >
-                        <Input.TextArea
-                            rows={4}
-                            value={feedback}
-                            onChange={handleFeedbackChange}
-                            placeholder="Please enter your feedback"
-                            />
-                            </Modal>
-                            
-                            <Modal
-                                title="User Information"
-                                visible={isUserModalVisible}
-                                onOk={handleUserModalOk}
-                                onCancel={handleUserModalCancel}
-                                okText="Close"
-                            >
-                                {userInfo && (
-                                    <>
-                                        <p><strong>Name:</strong> {userInfo.Name}</p>
-                                        <p><strong>Username:</strong> {userInfo.Username}</p>
-                                        <p><strong>Email:</strong> {userInfo.Email}</p>
-                                        <p><strong>Country:</strong> {userInfo.Country}</p>
-                                        <p><strong>Role:</strong> {userInfo.Role}</p>
-                                    </>
-                                )}
-                            </Modal>
-                            
-                            <Modal
-                                title="Notifications"
-                                visible={isNotificationModalVisible}
-                                onOk={handleNotificationModalOk}
-                                onCancel={handleNotificationModalCancel}
-                                okText="Close"
-                            >
-                                <Table 
-                                    columns={columns} 
-                                    dataSource={notifications} 
-                                    rowKey="NotificationID" 
-                                />
-                            </Modal>
-                        </>
-                    );
-                }
-        
-        export default Topbar;
+            <Modal
+                title="Feedback"
+                open={isFeedbackModalVisible}
+                onOk={handleFeedbackOk}
+                onCancel={handleFeedbackCancel}
+            >
+                <Input.TextArea
+                    rows={4}
+                    value={feedback}
+                    onChange={handleFeedbackChange}
+                    placeholder="Write your feedback here..."
+                />
+            </Modal>
+
+            <Modal
+                title="Notifications"
+                open={isNotificationModalVisible}
+                onOk={handleNotificationModalOk}
+                onCancel={handleNotificationModalCancel}
+                width={800}
+            >
+                <Table
+                    dataSource={notifications}
+                    columns={columns}
+                    pagination={false}
+                    rowKey="NotificationID"
+                />
+            </Modal>
+        </>
+    );
+}
+
+export default Topbar;
