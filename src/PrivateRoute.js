@@ -92,7 +92,6 @@ const PrivateRoute = () => {
   return (
     <Sidebar>
       <Routes>
-<<<<<<< HEAD
         <Route path="/Courses" element={<Courses />} />
         <Route path="/Account" element={<Account />} />
         <Route path="/Accounttt" element={<Accounttt />} />
@@ -138,51 +137,6 @@ const PrivateRoute = () => {
         <Route path="/Forum" element={<Forum />}></Route>
      
    
-=======
-      <Route path="/Courses" element={<Courses role={role} />} />
-<Route path="/Account" element={<Account role={role} />} />
-<Route path="/Accounttt" element={<Accounttt role={role} />} />
-<Route path="/Tutors" element={<Tutors role={role} />} />
-<Route path="/BecomeTutor" element={<BecomeTutor role={role} />} />
-<Route path="/TutorProfile/:id" element={<TutorProfile role={role} />} />
-<Route path="/Students" element={<StudentList role={role} />} />
-<Route path="/AdminDashboard" element={<Dashboard role={role} />} />
-<Route path="/YourCourses" element={<YourCourses role={role} />} />
-<Route path="/CourseDetail/:id" element={<CourseDetail role={role} />} />
-<Route path="/CourseDetails/Details" element={<Details role={role} />}></Route>
-<Route path="/Notifications" element={<Notifications role={role} />} />
-<Route path="/T-TutorDashboard" element={<TutorDashboard role={role} />} />
-<Route path="/T-CoursesManagement" element={<CourseManagement role={role} />} />
-<Route path="/T-GradesManagement" element={<GradeManagement role={role} />} />
-<Route path="/T-ExamsManagement" element={<ExamManagement role={role} />} />
-<Route path="/T-LecturesManagement" element={<LectureManagement role={role} />} />
-<Route path="/T-EnrollManagement" element={<EnrollManagement role={role} />} />
-<Route path="/addcourse" element={<AddCourse role={role} />} />
-<Route path="/" element={<Homepage role={role} />}></Route>
-<Route path="/UserManagement" element={<UserManagment role={role} />}></Route>
-<Route path="/EditUser/:id" element={<EditUser role={role} />}></Route>
-<Route path="/ligjeratat/:courseId" element={<CompletedLecturesPage role={role} />}></Route>
-<Route path="/Courseslecture" element={<CourseLecture role={role} />}></Route>
-<Route path="/lecture/:lectureId" element={<Lecture role={role} />}></Route>
-<Route path="/Friends" element={<Friends role={role} />}></Route>
-<Route path="/editexam/:id" element={<EditExam role={role} />}></Route>
-<Route path="/ManageQuestions" element={<ManageQuestions role={role} />}></Route>
-<Route path="/exams" element={<Exams role={role} />}></Route>
-<Route path="/exam" element={<Exam role={role} />} />
-<Route path="/takeExam" element={<TakeExam role={role} />}></Route>
-<Route path="/AddCourse" element={<AddCourse role={role} />}></Route>
-<Route path="/EditCourse/:id" element={<EditCourse role={role} />}></Route>
-<Route path="/CoursesManagement" element={<CoursesManagement role={role} />}></Route>
-<Route path="/CompletedCourses" element={<CompletedCourses role={role} />}></Route>
-<Route path="/Certificate/:id" element={<CertificatePage role={role} />}></Route>
-<Route path="/T-AnnouncementsManagement" element={<AnnouncementManagement role={role} />}></Route>
-<Route path="/Mailbox" element={<Mailbox role={role} />}></Route>
-<Route path="/Feedback" element={<Feedback role={role} />}></Route>
-<Route path="/Messages" element={<Messages role={role} />}></Route>
-<Route path="/Analytics" element={<AnalyticsPage role={role} />}></Route>
-<Route path="/ContentManagement" element={<ContentManagement role={role} />}></Route>
-<Route path="/Forum" element={<Forum role={role} />}></Route>
->>>>>>> f1d87f95286a543edc9c1c97712087abe4998e5d
       </Routes>
     </Sidebar>
   );

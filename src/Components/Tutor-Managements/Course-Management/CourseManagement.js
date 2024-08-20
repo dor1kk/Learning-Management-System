@@ -10,10 +10,6 @@ const { confirm } = Modal;
 
 const CourseManagement = ({ role }) => {
 
-  if (role !== "Tutor") {
-    window.location.href = "/unauthorized";
-  }
-
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourse, setSelectedCourse] = useState(null);

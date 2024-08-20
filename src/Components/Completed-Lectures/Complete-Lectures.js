@@ -3,11 +3,9 @@ import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Lock } from '@mui/icons-material';
 
-function CompletedLecturesPage({role }) {
+function CompletedLecturesPage({role}) {
 
-    if (role !== "Student") {
-        window.location.href = "/unauthorized";
-      }
+
       
 
     const location = useLocation();

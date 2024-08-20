@@ -2,7 +2,7 @@ export function signUpUser(req, res, db) {
   const { username, password, email, name, image, country } = req.body;
   console.log('Received data:', { username, password, email });
 
-  db.query('INSERT INTO users (Username, Password, Email, Country) VALUES (?, ?, ?,?)', [username, password, email, country], (error, userResults) => {
+  db.query('INSERT INTO users (username, password, email, country) VALUES (?, ?, ?,?)', [username, password, email, country], (error, userResults) => {
     if (error) {
       console.error('Error registering user:', error);
       return res.status(500).json({ error: 'Internal server error' });
